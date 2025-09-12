@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
+import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -38,9 +39,13 @@ public class SourceNode extends Node {
     }
 
     @Override
-    public void playTick(Consumer<Node> callback) {
+    public void playTick() {
         if (isPlaying) {
-            speakers.forEach(callback);
+            ParticleUtils.spawnShriekerParticles(this);
+            speakers.forEach(n -> {
+                ParticleUtils.spawnVibrationParticles(this, n);
+                n.playTick();
+            });
         }
     }
 

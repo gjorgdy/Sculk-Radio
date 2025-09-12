@@ -10,7 +10,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,15 +68,8 @@ public class JukeboxManagerMixin {
     @Redirect(method = "tick", at= @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
     public void onSpawnNotes(WorldAccess world, BlockPos pos) {
         var sn = getSourceNode(world);
-        if (sn == null) {
-            spawnNoteParticles(world, pos);
-            return;
-        }
-        ParticleUtils.spawnShriekerParticles(sn);
-        sn.playTick(n -> {
-            ParticleUtils.spawnVibrationParticles(sn, n);
-            ParticleUtils.spawnNoteParticles(n);
-        });
+        if (sn == null) spawnNoteParticles(world, pos);
+        else sn.playTick();
     }
 
     @Unique

@@ -38,10 +38,6 @@ public abstract class Node {
         callback.accept(this);
     }
 
-    public void playTick(Consumer<Node> callback) {
-        if (isPlaying) {
-            callback.accept(this);
-        }
-    }
+    public abstract void playTick();
 
 }

@@ -11,6 +11,11 @@ public class CalibratedNode extends Node {
         super(pos, world);
     }
 
+    @Override
+    public void playTick() {
+
+    }
+
     public int getFrequency() {
         return frequency;
     }
