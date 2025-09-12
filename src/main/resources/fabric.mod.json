@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "sculk_radio",
+  "version": "${version}",
+  "name": "Sculk Radio",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/sculk_radio/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "nl.gjorgdy.sculk_radio.SculkRadio"
+    ]
+  },
+  "mixins": [
+    "sculk_radio.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

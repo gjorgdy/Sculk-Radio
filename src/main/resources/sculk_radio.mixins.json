@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "nl.gjorgdy.sculk_radio.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "JukeboxManagerMixin",
+    "SculkSensorBlockEntityMixin",
+    "SculkSensorVibrationCallbackMixin",
+    "SculkShriekerBlockEntityMixin",
+    "WorldChunkMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}
