@@ -1,6 +1,7 @@
 package nl.gjorgdy.sculk_radio.objects;
 
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
 
@@ -11,8 +12,8 @@ public class SourceNode extends Node {
 
     private final Set<Node> speakers = new ObjectArraySet<>();
 
-    public SourceNode(BlockPos pos) {
-        super(pos);
+    public SourceNode(BlockPos pos, ServerWorld world) {
+        super(pos, world);
     }
 
     @Override

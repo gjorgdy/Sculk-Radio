@@ -1,5 +1,6 @@
 package nl.gjorgdy.sculk_radio;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.enums.NodeTypes;
 import nl.gjorgdy.sculk_radio.objects.Node;
@@ -29,20 +30,20 @@ public class NodeRegistry {
      * @param pos The position of the jukebox block.
      * @return The node that was registered.
      */
-    public Node registerSourceNode(BlockPos pos, NodeTypes type) {
+    public Node registerSourceNode(ServerWorld world, BlockPos pos, NodeTypes type) {
         Node node;
         System.out.println("Registered node at " + pos + " with type " + type + ".");
         switch (type) {
             case SOURCE:
-                node = new SourceNode(pos);
+                node = new SourceNode(pos, world);
                 sourceNodes.add(node);
                 return node;
             case REPEATER:
-                node = new ReceiverNode(pos);
+                node = new ReceiverNode(pos, world);
                 repeaterNodes.add(node);
                 return node;
             case RECEIVER:
-                node = new ReceiverNode(pos);
+                node = new ReceiverNode(pos, world);
                 receiverNodes.add(node);
                 return node;
             default:

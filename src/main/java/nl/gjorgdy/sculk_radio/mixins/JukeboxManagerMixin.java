@@ -1,21 +1,16 @@
 package nl.gjorgdy.sculk_radio.mixins;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.jukebox.JukeboxManager;
 import net.minecraft.block.jukebox.JukeboxSong;
-import net.minecraft.particle.ShriekParticleEffect;
-import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
 import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
+import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,8 +20,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static net.minecraft.block.SculkSensorBlock.SCULK_SENSOR_PHASE;
 
 @Mixin(JukeboxManager.class)
 public class JukeboxManagerMixin {
@@ -80,10 +73,10 @@ public class JukeboxManagerMixin {
             spawnNoteParticles(world, pos);
             return;
         }
-        spawnShriekerParticles((ServerWorld) world, pos);
+        ParticleUtils.spawnShriekerParticles(sn);
         sn.playTick(n -> {
-            spawnVibrationParticles((ServerWorld) world, pos, n.getPos());
-            spawnNoteParticles(world, n.getPos().up());
+            ParticleUtils.spawnVibrationParticles(sn, n);
+            ParticleUtils.spawnNoteParticles(n);
         });
     }
 
@@ -104,32 +97,6 @@ public class JukeboxManagerMixin {
             world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
             world.syncWorldEvent(1011, pos, 0);
             this.changeNotifier.notifyChange();
-        }
-    }
-
-    @Unique
-    public void spawnShriekerParticles(ServerWorld world, BlockPos pos) {
-        for (int ah = 0; ah < 5; ++ah) {
-            world.spawnParticles(
-                new ShriekParticleEffect(ah * 5),
-                (double) pos.getX() + 0.5,
-                (double) pos.getY() + 1.5,
-                (double) pos.getZ() + 0.5,
-                1, 0.0, 0.0, 0.0, 0.0
-            );
-        }
-    }
-
-    @Unique
-    public void spawnVibrationParticles(ServerWorld world, BlockPos source, BlockPos destination) {
-        world.spawnParticles(new VibrationParticleEffect(
-                        new BlockPositionSource(destination.up()), 20),
-                source.getX() + 0.5, source.getY() + 1, source.getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
-
-        BlockState sensorBlockState = world.getBlockState(destination);
-        if (sensorBlockState.isOf(Blocks.SCULK_SENSOR) || sensorBlockState.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) {
-            world.setBlockState(destination, sensorBlockState.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), 3);
-            world.scheduleBlockTick(destination, sensorBlockState.getBlock(), 20);
         }
     }
 

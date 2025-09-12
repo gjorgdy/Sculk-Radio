@@ -1,13 +1,14 @@
 package nl.gjorgdy.sculk_radio.objects;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 public class CalibratedNode extends Node {
 
     private int frequency;
 
-    public CalibratedNode(BlockPos pos) {
-        super(pos);
+    public CalibratedNode(BlockPos pos, ServerWorld world) {
+        super(pos, world);
     }
 
     public int getFrequency() {
