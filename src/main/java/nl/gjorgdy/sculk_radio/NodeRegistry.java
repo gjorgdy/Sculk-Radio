@@ -51,6 +51,20 @@ public class NodeRegistry {
         }
     }
 
+    public List<Node> connectNodes(SourceNode sourceNode) {
+        if (sourceNode.getFrequency() > 0) {
+            return receiverNodes.stream()
+                .filter(n -> {
+                    if (n instanceof ReceiverNode rn) {
+                        return rn.getFrequency() == sourceNode.getFrequency();
+                    }
+                    return false;
+                })
+                .toList();
+        }
+        return List.of(getClosestReceiver(sourceNode.getPos()));
+    }
+
     public Node getClosestReceiver(BlockPos pos) {
         return receiverNodes.stream()
             .min(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(pos)))

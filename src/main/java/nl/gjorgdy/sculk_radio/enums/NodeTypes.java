@@ -4,5 +4,6 @@ public enum NodeTypes {
     SOURCE,
     REPEATER,
     RECEIVER,
+    CALIBRATED_RECEIVER,
     NONE
 }

@@ -28,13 +28,13 @@ public abstract class Node {
         return isPlaying;
     }
 
-    public void stop(Consumer<Node> callback) {
-        isPlaying = false;
+    public void play(Consumer<Node> callback) {
+        isPlaying = true;
         callback.accept(this);
     }
 
-    public void play(Consumer<Node> callback) {
-        isPlaying = true;
+    public void stop(Consumer<Node> callback) {
+        isPlaying = false;
         callback.accept(this);
     }
 

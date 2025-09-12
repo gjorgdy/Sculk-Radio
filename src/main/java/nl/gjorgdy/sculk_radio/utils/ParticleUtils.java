@@ -19,7 +19,7 @@ public class ParticleUtils {
             node.getWorld().spawnParticles(
                     new ShriekParticleEffect(ah * 5),
                     (double) node.getPos().getX() + 0.5,
-                    (double) node.getPos().getY() + 1.5,
+                    (double) node.getPos().getY() + 0.5,
                     (double) node.getPos().getZ() + 0.5,
                     1, 0.0, 0.0, 0.0, 0.0
             );
@@ -29,7 +29,7 @@ public class ParticleUtils {
     public static void spawnVibrationParticles(Node from, Node to) {
         from.getWorld().spawnParticles(new VibrationParticleEffect(
                         new BlockPositionSource(to.getPos().up()), 20),
-                from.getPos().getX() + 0.5, from.getPos().getY() + 1, from.getPos().getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
+                from.getPos().getX() + 0.5, from.getPos().getY(), from.getPos().getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
 
         BlockState sensorBlockState = from.getWorld().getBlockState(to.getPos());
         if (sensorBlockState.isOf(Blocks.SCULK_SENSOR) || sensorBlockState.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) {
@@ -39,7 +39,7 @@ public class ParticleUtils {
     }
 
     public static void spawnNoteParticles(Node node) {
-        Vec3d vec3d = Vec3d.ofBottomCenter(node.getPos()).add(0.0F, 1.7F, 0.0F);
+        Vec3d vec3d = Vec3d.ofBottomCenter(node.getPos()).add(0.0F, 0.7F, 0.0F);
         float f = (float) node.getWorld().getRandom().nextInt(4) / 24.0F;
         node.getWorld().spawnParticles(ParticleTypes.NOTE, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0, f, 0.0F, 0.0F, 1.0F);
     }

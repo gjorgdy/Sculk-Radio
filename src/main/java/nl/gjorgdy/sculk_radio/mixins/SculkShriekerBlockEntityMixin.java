@@ -21,4 +21,5 @@ public class SculkShriekerBlockEntityMixin implements NodeContainer {
     public Node sculkRadio$getNode() {
         return node;
     }
+
 }

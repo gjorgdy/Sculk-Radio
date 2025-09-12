@@ -9,7 +9,7 @@ import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class SourceNode extends Node {
+public class SourceNode extends CalibratedNode {
 
     private final Set<Node> speakers = new ObjectArraySet<>();
 
@@ -24,16 +24,15 @@ public class SourceNode extends Node {
 
     @Override
     public void stop(Consumer<Node> callback) {
-        if (!speakers.isEmpty() && isPlaying) {
-            speakers.forEach(callback);
-        }
+        speakers.forEach(callback);
         isPlaying = false;
         speakers.clear();
     }
 
     @Override
     public void play(Consumer<Node> callback) {
-        speakers.add(NodeRegistry.INSTANCE.getClosestReceiver(this.getPos()));
+        updateFrequency();
+        speakers.addAll(NodeRegistry.INSTANCE.connectNodes(this));
         speakers.forEach(callback);
         isPlaying = true;
     }
