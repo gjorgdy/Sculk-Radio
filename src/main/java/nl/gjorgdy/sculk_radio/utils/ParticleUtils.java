@@ -3,6 +3,7 @@ package nl.gjorgdy.sculk_radio.utils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.SculkSensorPhase;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.particle.VibrationParticleEffect;
@@ -26,10 +27,17 @@ public class ParticleUtils {
         }
     }
 
+    public static void activateSensor(Node node) {
+        var blockstate = node.getWorld().getBlockState(node.getPos());
+        node.getWorld().getPlayers().forEach(player ->
+                player.networkHandler.sendPacket(new BlockUpdateS2CPacket(node.getPos(), blockstate.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)))
+        );
+    }
+
     public static void spawnVibrationParticles(Node from, Node to) {
         from.getWorld().spawnParticles(new VibrationParticleEffect(
-                        new BlockPositionSource(to.getPos().up()), 20),
-                from.getPos().getX() + 0.5, from.getPos().getY(), from.getPos().getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
+                        new BlockPositionSource(to.getPos()), 20),
+                from.getPos().getX() + 0.5, from.getPos().getY() + 0.5, from.getPos().getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
 
         BlockState sensorBlockState = from.getWorld().getBlockState(to.getPos());
         if (sensorBlockState.isOf(Blocks.SCULK_SENSOR) || sensorBlockState.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) {

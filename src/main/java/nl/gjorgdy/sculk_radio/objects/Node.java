@@ -11,10 +11,12 @@ public abstract class Node {
     private final BlockPos pos;
     private final ServerWorld world;
 
-    public Node(BlockPos pos, ServerWorld world) {
-        this.pos = pos;
+    public Node(ServerWorld world, BlockPos pos) {
         this.world = world;
+        this.pos = pos;
     }
+
+    public abstract int getFrequency();
 
     public BlockPos getPos() {
         return pos;

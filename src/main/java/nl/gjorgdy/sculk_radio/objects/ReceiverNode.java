@@ -4,14 +4,20 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
-public class ReceiverNode extends CalibratedNode {
+public class ReceiverNode extends Node {
 
-    public ReceiverNode(BlockPos pos, ServerWorld world) {
-        super(pos, world);
+    public ReceiverNode(ServerWorld world, BlockPos pos) {
+        super(world, pos);
+    }
+
+    @Override
+    public int getFrequency() {
+        return 0;
     }
 
     @Override
     public void playTick() {
+        ParticleUtils.activateSensor(this);
         ParticleUtils.spawnNoteParticles(this);
     }
 

@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -13,8 +14,8 @@ public class SourceNode extends CalibratedNode {
 
     private final Set<Node> speakers = new ObjectArraySet<>();
 
-    public SourceNode(BlockPos pos, ServerWorld world) {
-        super(pos, world);
+    public SourceNode(ServerWorld world, BlockPos pos) {
+        super(world, pos);
     }
 
     @Override
@@ -32,7 +33,7 @@ public class SourceNode extends CalibratedNode {
     @Override
     public void play(Consumer<Node> callback) {
         updateFrequency();
-        speakers.addAll(NodeRegistry.INSTANCE.connectNodes(this));
+        NodeRegistry.INSTANCE.connectNodes(this);
         speakers.forEach(callback);
         isPlaying = true;
     }
@@ -42,10 +43,18 @@ public class SourceNode extends CalibratedNode {
         if (isPlaying) {
             ParticleUtils.spawnShriekerParticles(this);
             speakers.forEach(n -> {
-                ParticleUtils.spawnVibrationParticles(this, n);
+                if (n instanceof ReceiverNode) {
+                    ParticleUtils.spawnVibrationParticles(this, n);
+                }
                 n.playTick();
             });
         }
+    }
+
+    public boolean connect(Node... speaker) {
+        if (isPlaying) return false;
+        speakers.addAll(Arrays.asList(speaker));
+        return true;
     }
 
 }

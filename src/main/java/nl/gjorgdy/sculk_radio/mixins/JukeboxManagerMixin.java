@@ -86,10 +86,10 @@ public class JukeboxManagerMixin {
         if (this.song != null) {
             this.song = null;
             this.ticksSinceSongStarted = 0L;
-            world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
-            world.syncWorldEvent(1011, pos, 0);
-            this.changeNotifier.notifyChange();
         }
+        world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
+        world.syncWorldEvent(1011, pos, 0);
+        this.changeNotifier.notifyChange();
     }
 
 }

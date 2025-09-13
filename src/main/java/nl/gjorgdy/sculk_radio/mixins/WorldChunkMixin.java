@@ -11,7 +11,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
-import nl.gjorgdy.sculk_radio.enums.NodeTypes;
 import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,24 +22,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(WorldChunk.class)
 public abstract class WorldChunkMixin {
 
-    @Shadow public abstract BlockState getBlockState(BlockPos pos);
+    @Shadow
+    public abstract BlockState getBlockState(BlockPos pos);
 
-    @Shadow @Final World world;
+    @Shadow
+    @Final
+    World world;
 
     @Inject(method = "setBlockEntity", at = @At("RETURN"))
     public void onLoadBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
-        if ((blockEntity instanceof SculkSensorBlockEntity || blockEntity instanceof CalibratedSculkSensorBlockEntity)
-                && blockEntity instanceof NodeContainer nc) {
-            if (this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
-                var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos(), NodeTypes.RECEIVER);
-                nc.sculkRadio$setNode(node);
-            }
+        // generic receiver node
+        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
+            var node = NodeRegistry.INSTANCE.registerReceiverNode((ServerWorld) this.world, blockEntity.getPos());
+            nc.sculkRadio$setNode(node);
         }
-        if (blockEntity instanceof SculkShriekerBlockEntity && blockEntity instanceof NodeContainer nc) {
-            if (this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX)) {
-                var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos(), NodeTypes.SOURCE);
-                nc.sculkRadio$setNode(node);
-            }
+        // calibrated receiver node
+        if (blockEntity instanceof CalibratedSculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
+            var node = NodeRegistry.INSTANCE.registerCalibratedReceiverNode((ServerWorld) this.world, blockEntity.getPos());
+            nc.sculkRadio$setNode(node);
+        }
+        // source node
+        if (blockEntity instanceof SculkShriekerBlockEntity && blockEntity instanceof NodeContainer nc
+                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX)) {
+            var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos());
+            nc.sculkRadio$setNode(node);
         }
     }
 

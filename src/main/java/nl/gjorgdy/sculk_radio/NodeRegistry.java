@@ -2,7 +2,7 @@ package nl.gjorgdy.sculk_radio;
 
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import nl.gjorgdy.sculk_radio.enums.NodeTypes;
+import nl.gjorgdy.sculk_radio.objects.CalibratedReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.Node;
 import nl.gjorgdy.sculk_radio.objects.ReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
@@ -15,60 +15,58 @@ public class NodeRegistry {
 
     public static NodeRegistry INSTANCE = new NodeRegistry();
 
-    private final List<Node> sourceNodes;
+    private final List<SourceNode> sourceNodes;
     private final List<Node> repeaterNodes;
-    private final List<Node> receiverNodes;
+    private final List<ReceiverNode> receiverNodes;
+    private final List<CalibratedReceiverNode> calibratedReceiverNodes;
 
     private NodeRegistry() {
         sourceNodes = new ArrayList<>();
         repeaterNodes = new ArrayList<>();
         receiverNodes = new ArrayList<>();
+        calibratedReceiverNodes = new ArrayList<>();
     }
 
     /**
      * Register a source node.
-     * @param pos The position of the jukebox block.
+     *
+     * @param pos The position of the sculk shrieker.
      * @return The node that was registered.
      */
-    public Node registerSourceNode(ServerWorld world, BlockPos pos, NodeTypes type) {
-        Node node;
-        System.out.println("Registered node at " + pos + " with type " + type + ".");
-        switch (type) {
-            case SOURCE:
-                node = new SourceNode(pos, world);
-                sourceNodes.add(node);
-                return node;
-            case REPEATER:
-                node = new ReceiverNode(pos, world);
-                repeaterNodes.add(node);
-                return node;
-            case RECEIVER:
-                node = new ReceiverNode(pos, world);
-                receiverNodes.add(node);
-                return node;
-            default:
-                return null;
-        }
+    public SourceNode registerSourceNode(ServerWorld world, BlockPos pos) {
+        var node = new SourceNode(world, pos);
+        sourceNodes.add(node);
+        return node;
     }
 
-    public List<Node> connectNodes(SourceNode sourceNode) {
-        if (sourceNode.getFrequency() > 0) {
-            return receiverNodes.stream()
-                .filter(n -> {
-                    if (n instanceof ReceiverNode rn) {
-                        return rn.getFrequency() == sourceNode.getFrequency();
-                    }
-                    return false;
-                })
-                .toList();
+    public ReceiverNode registerReceiverNode(ServerWorld world, BlockPos pos) {
+        var node = new ReceiverNode(world, pos);
+        receiverNodes.add(node);
+        return node;
+    }
+
+    public CalibratedReceiverNode registerCalibratedReceiverNode(ServerWorld world, BlockPos pos) {
+        var node = new CalibratedReceiverNode(world, pos);
+        calibratedReceiverNodes.add(node);
+        return node;
+    }
+
+    public void connectNodes(SourceNode sn) {
+        if (sn.getFrequency() > 0) {
+            for (var rn : calibratedReceiverNodes) {
+                if (rn.getFrequency() == sn.getFrequency() && !rn.isPlaying()) {
+                    sn.connect(rn);
+                }
+            }
+        } else {
+            sn.connect(getClosestReceiver(sn.getPos()));
         }
-        return List.of(getClosestReceiver(sourceNode.getPos()));
     }
 
     public Node getClosestReceiver(BlockPos pos) {
         return receiverNodes.stream()
-            .min(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(pos)))
-            .orElse(null);
+                .min(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(pos)))
+                .orElse(null);
     }
 
 }

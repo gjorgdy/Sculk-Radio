@@ -1,20 +1,20 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 
 public abstract class CalibratedNode extends Node {
 
-    private int frequency;
+    protected int frequency;
 
-    public CalibratedNode(BlockPos pos, ServerWorld world) {
-        super(pos, world);
-        ServerLifecycleEvents.SERVER_STARTED
-            .register(s -> updateFrequency());
+    public CalibratedNode(ServerWorld world, BlockPos pos) {
+        super(world, pos);
+        SculkRadio.RunIfServerActive(this::updateFrequency);
     }
 
+    @Override
     public int getFrequency() {
         return frequency;
     }
