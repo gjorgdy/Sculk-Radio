@@ -79,6 +79,11 @@ public class NodeRegistry {
 
     private void internalConnectNodes(Node node, int depth) {
         if (depth >= 8 || node == null) return;
+        // connect to receivers
+        for (var rn : getClosestNodes(node, receiverNodes, 8)) {
+            boolean connected = node.connect(rn);
+            if (connected) rn.connect(node);
+        }
         // connect to repeaters
         while (true) {
             var rn = getClosestNode(node, repeaterNodes);
@@ -87,16 +92,11 @@ public class NodeRegistry {
             if (connected) internalConnectNodes(rn, depth + 1);
             else break;
         }
-        // connect to receivers
-        for (var rn : getClosestNodes(node, receiverNodes, 8)) {
-            boolean connected = node.connect(rn);
-            if (connected) rn.connect(node);
-        }
     }
 
     public <T extends Node> Collection<T> getClosestNodes(Node node, Collection<T> nodes, int count) {
         return nodes.stream()
-                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16)
+                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16 && n != node)
                 .sorted(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(node.getPos())))
                 .limit(count)
                 .collect(Collectors.toSet());
@@ -105,7 +105,7 @@ public class NodeRegistry {
     @Nullable
     public <T extends Node> T getClosestNode(Node node, Collection<T> nodes) {
         return nodes.stream()
-                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16)
+                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16 && n != node)
                 .min(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(node.getPos())))
                 .orElse(null);
     }
