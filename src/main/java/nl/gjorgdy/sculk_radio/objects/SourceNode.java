@@ -23,17 +23,17 @@ public class SourceNode extends CalibratedNode {
     }
 
     @Override
-    public void stop(Consumer<Node> callback) {
-        receivers.forEach(n -> n.stop(callback));
+    public void stop() {
+        receivers.forEach(Node::stop);
         receivers.clear();
         isPlaying = false;
     }
 
     @Override
-    public void play(Consumer<Node> callback) {
+    public void play(Consumer<Node> callback, Consumer<Node> stopCallback) {
         updateFrequency();
         NodeRegistry.INSTANCE.connectNodes(this);
-        receivers.forEach(n -> n.play(callback));
+        receivers.forEach(n -> n.play(callback, stopCallback));
         isPlaying = true;
     }
 

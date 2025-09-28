@@ -5,8 +5,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
-import java.util.function.Consumer;
-
 public class CalibratedReceiverNode extends CalibratedNode {
 
     private Node sourceNode = null;
@@ -31,8 +29,8 @@ public class CalibratedReceiverNode extends CalibratedNode {
     }
 
     @Override
-    public void stop(Consumer<Node> callback) {
-        super.stop(callback);
+    public void stop() {
+        super.stop();
         ParticleUtils.deactivateSensor(this);
         sourceNode = null;
     }

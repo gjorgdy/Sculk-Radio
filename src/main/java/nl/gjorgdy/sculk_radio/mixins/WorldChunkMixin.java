@@ -1,5 +1,6 @@
 package nl.gjorgdy.sculk_radio.mixins;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,6 +30,9 @@ public abstract class WorldChunkMixin {
     @Final
     World world;
 
+    @Shadow
+    public abstract World getWorld();
+
     @Inject(method = "setBlockEntity", at = @At("RETURN"))
     public void onLoadBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
         // generic receiver node
@@ -54,6 +58,17 @@ public abstract class WorldChunkMixin {
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX)) {
             var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
+        }
+    }
+
+    @Inject(method = "removeBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;removeGameEventListener(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/server/world/ServerWorld;)V"))
+    public void onBreakBlockEntity(BlockPos pos, CallbackInfo ci, @Local BlockEntity blockEntity) {
+        if (blockEntity instanceof NodeContainer nc) {
+            var node = nc.sculkRadio$getNode();
+            if (node != null) {
+                NodeRegistry.INSTANCE.removeNode(node);
+                System.out.println("removed node at " + pos);
+            }
         }
     }
 

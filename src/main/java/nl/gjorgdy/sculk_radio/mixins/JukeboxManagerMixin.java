@@ -23,17 +23,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(JukeboxManager.class)
 public class JukeboxManagerMixin {
 
-    @Shadow @Final private BlockPos pos;
+    @Shadow
+    @Final
+    private BlockPos pos;
 
-    @Shadow @Nullable private RegistryEntry<JukeboxSong> song;
+    @Shadow
+    @Nullable
+    private RegistryEntry<JukeboxSong> song;
 
-    @Shadow private long ticksSinceSongStarted;
+    @Shadow
+    private long ticksSinceSongStarted;
 
-    @Shadow @Final private JukeboxManager.ChangeNotifier changeNotifier;
+    @Shadow
+    @Final
+    private JukeboxManager.ChangeNotifier changeNotifier;
 
-    @Unique private SourceNode sourceNode;
+    @Unique
+    private SourceNode sourceNode;
 
-    @Shadow private static void spawnNoteParticles(WorldAccess worldAccess, BlockPos blockPos) {
+    @Shadow
+    private static void spawnNoteParticles(WorldAccess worldAccess, BlockPos blockPos) {
     }
 
     @Unique
@@ -49,23 +58,26 @@ public class JukeboxManagerMixin {
         return sourceNode;
     }
 
-    @Inject(method = "startPlaying", at= @At("HEAD"), cancellable = true)
+    @Inject(method = "startPlaying", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song, CallbackInfo ci) {
         var sn = getSourceNode(world);
         if (sn == null) return;
-        sn.play(n -> play(world, song, n.getPos()));
+        sn.play(
+                n -> play(world, song, n.getPos()),
+                n -> stop(world, n.getPos())
+        );
         ci.cancel();
     }
 
-    @Inject(method = "stopPlaying", at= @At("HEAD"), cancellable = true)
+    @Inject(method = "stopPlaying", at = @At("HEAD"), cancellable = true)
     public void onStopPlaying(WorldAccess world, BlockState state, CallbackInfo ci) {
         var sn = getSourceNode(world);
         if (sn == null) return;
-        sn.stop(n -> stop(world, state, n.getPos()));
+        sn.stop();
         ci.cancel();
     }
 
-    @Redirect(method = "tick", at= @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
+    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
     public void onSpawnNotes(WorldAccess world, BlockPos pos) {
         var sn = getSourceNode(world);
         if (sn == null) spawnNoteParticles(world, pos);
@@ -82,12 +94,12 @@ public class JukeboxManagerMixin {
     }
 
     @Unique
-    public void stop(WorldAccess world, BlockState state, BlockPos pos) {
+    public void stop(WorldAccess world, BlockPos pos) {
         if (this.song != null) {
             this.song = null;
             this.ticksSinceSongStarted = 0L;
         }
-        world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(state));
+        world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(world.getBlockState(pos)));
         world.syncWorldEvent(1011, pos, 0);
         this.changeNotifier.notifyChange();
     }

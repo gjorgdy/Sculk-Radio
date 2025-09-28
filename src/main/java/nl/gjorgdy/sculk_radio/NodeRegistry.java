@@ -57,6 +57,14 @@ public class NodeRegistry {
         return node;
     }
 
+    public void removeNode(Node node) {
+        if (node instanceof SourceNode) sourceNodes.remove(node);
+        else if (node instanceof RepeaterNode) repeaterNodes.remove(node);
+        else if (node instanceof ReceiverNode) receiverNodes.remove(node);
+        else if (node instanceof CalibratedReceiverNode) calibratedReceiverNodes.remove(node);
+        node.stop();
+    }
+
     public void connectNodes(SourceNode sn) {
         if (sn.getFrequency() > 0) {
             for (var rn : calibratedReceiverNodes) {

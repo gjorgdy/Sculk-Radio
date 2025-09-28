@@ -4,6 +4,7 @@
   "package": "nl.gjorgdy.sculk_radio.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "BlockMixin",
     "CalibratedSculkSensorBlockMixin",
     "JukeboxManagerMixin",
     "SculkSensorBlockEntityMixin",

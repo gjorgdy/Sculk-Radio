@@ -10,6 +10,7 @@ public abstract class Node {
     protected boolean isPlaying = false;
     private final BlockPos pos;
     private final ServerWorld world;
+    private Consumer<Node> stopCallback;
 
     public Node(ServerWorld world, BlockPos pos) {
         this.world = world;
@@ -30,14 +31,15 @@ public abstract class Node {
         return isPlaying;
     }
 
-    public void play(Consumer<Node> callback) {
+    public void play(Consumer<Node> callback, Consumer<Node> stopCallback) {
+        this.stopCallback = stopCallback;
         isPlaying = true;
         callback.accept(this);
     }
 
-    public void stop(Consumer<Node> callback) {
+    public void stop() {
+        if (stopCallback != null) stopCallback.accept(this);
         isPlaying = false;
-        callback.accept(this);
     }
 
     public abstract void playTick();

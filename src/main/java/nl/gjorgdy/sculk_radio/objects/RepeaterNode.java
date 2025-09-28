@@ -32,14 +32,15 @@ public class RepeaterNode extends Node {
     }
 
     @Override
-    public void play(Consumer<Node> callback) {
-        receivers.forEach(node -> node.play(callback));
+    public void play(Consumer<Node> callback, Consumer<Node> stopCallback) {
+        receivers.forEach(node -> node.play(callback, stopCallback));
     }
 
     @Override
-    public void stop(Consumer<Node> callback) {
-        receivers.forEach(node -> node.stop(callback));
+    public void stop() {
+        super.stop();
         ParticleUtils.deactivateSensor(this);
+        receivers.forEach(Node::stop);
         receivers.clear();
     }
 
