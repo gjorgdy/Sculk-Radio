@@ -6,13 +6,12 @@ import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
 
 public class SourceNode extends CalibratedNode {
 
-    private final Set<Node> speakers = new ObjectArraySet<>();
+    private final Set<Node> receivers = new ObjectArraySet<>(8);
 
     public SourceNode(ServerWorld world, BlockPos pos) {
         super(world, pos);
@@ -25,16 +24,16 @@ public class SourceNode extends CalibratedNode {
 
     @Override
     public void stop(Consumer<Node> callback) {
-        speakers.forEach(callback);
+        receivers.forEach(n -> n.stop(callback));
+        receivers.clear();
         isPlaying = false;
-        speakers.clear();
     }
 
     @Override
     public void play(Consumer<Node> callback) {
         updateFrequency();
         NodeRegistry.INSTANCE.connectNodes(this);
-        speakers.forEach(callback);
+        receivers.forEach(n -> n.play(callback));
         isPlaying = true;
     }
 
@@ -42,19 +41,26 @@ public class SourceNode extends CalibratedNode {
     public void playTick() {
         if (isPlaying) {
             ParticleUtils.spawnShriekerParticles(this);
-            speakers.forEach(n -> {
-                if (n instanceof ReceiverNode) {
-                    ParticleUtils.spawnVibrationParticles(this, n);
-                }
+            receivers.forEach(n -> {
+                if (!n.isConnected()) return;
+                ParticleUtils.spawnVibrationParticles(this, n);
                 n.playTick();
             });
         }
     }
 
-    public boolean connect(Node... speaker) {
-        if (isPlaying) return false;
-        speakers.addAll(Arrays.asList(speaker));
-        return true;
+    @Override
+    public boolean isConnected() {
+        return !receivers.isEmpty();
+    }
+
+    @Override
+    public boolean connect(Node node) {
+        if (isPlaying || node == this) return false;
+        if (receivers.size() < 8) {
+            return receivers.add(node);
+        }
+        return false;
     }
 
 }

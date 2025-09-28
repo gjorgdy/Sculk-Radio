@@ -4,7 +4,11 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
+import java.util.function.Consumer;
+
 public class ReceiverNode extends Node {
+
+    private Node sourceNode = null;
 
     public ReceiverNode(ServerWorld world, BlockPos pos) {
         super(world, pos);
@@ -19,6 +23,26 @@ public class ReceiverNode extends Node {
     public void playTick() {
         ParticleUtils.activateSensor(this);
         ParticleUtils.spawnNoteParticles(this);
+    }
+
+    @Override
+    public void stop(Consumer<Node> callback) {
+        super.stop(callback);
+        ParticleUtils.deactivateSensor(this);
+        sourceNode = null;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return sourceNode != null;
+    }
+
+    @Override
+    public boolean connect(Node node) {
+        if (isPlaying || node == this) return false;
+        if (!isConnected())
+            sourceNode = node;
+        return isConnected();
     }
 
 }

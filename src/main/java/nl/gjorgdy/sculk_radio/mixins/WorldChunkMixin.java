@@ -37,6 +37,12 @@ public abstract class WorldChunkMixin {
             var node = NodeRegistry.INSTANCE.registerReceiverNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
         }
+        // repeater node
+        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.AMETHYST_BLOCK)) {
+            var node = NodeRegistry.INSTANCE.registerRepeaterNode((ServerWorld) this.world, blockEntity.getPos());
+            nc.sculkRadio$setNode(node);
+        }
         // calibrated receiver node
         if (blockEntity instanceof CalibratedSculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {

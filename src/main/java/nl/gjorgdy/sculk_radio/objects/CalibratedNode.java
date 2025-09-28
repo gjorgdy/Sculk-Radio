@@ -24,7 +24,6 @@ public abstract class CalibratedNode extends Node {
                 + getWorld().getEmittedRedstonePower(getPos().east(), Direction.EAST)
                 + getWorld().getEmittedRedstonePower(getPos().south(), Direction.SOUTH)
                 + getWorld().getEmittedRedstonePower(getPos().west(), Direction.WEST);
-        System.out.println("setting frequency to " + frequency + ".");
     }
 
 }

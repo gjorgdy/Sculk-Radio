@@ -29,8 +29,17 @@ public class ParticleUtils {
 
     public static void activateSensor(Node node) {
         var blockstate = node.getWorld().getBlockState(node.getPos());
+        if (!blockstate.isOf(Blocks.SCULK_SENSOR) && !blockstate.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) return;
         node.getWorld().getPlayers().forEach(player ->
                 player.networkHandler.sendPacket(new BlockUpdateS2CPacket(node.getPos(), blockstate.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)))
+        );
+    }
+
+    public static void deactivateSensor(Node node) {
+        var blockstate = node.getWorld().getBlockState(node.getPos());
+        if (!blockstate.isOf(Blocks.SCULK_SENSOR) && !blockstate.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) return;
+        node.getWorld().getPlayers().forEach(player ->
+                player.networkHandler.sendPacket(new BlockUpdateS2CPacket(node.getPos(), blockstate.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE)))
         );
     }
 

@@ -42,4 +42,8 @@ public abstract class Node {
 
     public abstract void playTick();
 
+    public abstract boolean isConnected();
+
+    public abstract boolean connect(Node node);
+
 }
