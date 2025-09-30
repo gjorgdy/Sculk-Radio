@@ -5,9 +5,11 @@ import net.minecraft.block.jukebox.JukeboxManager;
 import net.minecraft.block.jukebox.JukeboxSong;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
 import org.jetbrains.annotations.Nullable;
@@ -60,21 +62,26 @@ public class JukeboxManagerMixin {
 
     @Inject(method = "startPlaying", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song, CallbackInfo ci) {
-        var sn = getSourceNode(world);
-        if (sn == null) return;
-        sn.play(
-                n -> play(world, song, n.getPos()),
-                n -> stop(world, n.getPos())
-        );
-        ci.cancel();
+        if (world instanceof ServerWorld sw) {
+            SculkRadio.API.play(
+                    sw,
+                    this.pos,
+                    n -> play(world, song, n.getPos()),
+                    n -> stop(world, n.getPos())
+            );
+            ci.cancel();
+        }
     }
 
     @Inject(method = "stopPlaying", at = @At("HEAD"), cancellable = true)
     public void onStopPlaying(WorldAccess world, BlockState state, CallbackInfo ci) {
-        var sn = getSourceNode(world);
-        if (sn == null) return;
-        sn.stop();
-        ci.cancel();
+        if (world instanceof ServerWorld sw) {
+            SculkRadio.API.stop(
+                    sw,
+                    this.pos
+            );
+            ci.cancel();
+        }
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
