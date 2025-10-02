@@ -15,6 +15,7 @@ public class SourceNode extends TransmittingNode implements ICalibrated {
 
     public SourceNode(ServerWorld world, BlockPos pos) {
         super(world, pos);
+        onInitialize();
     }
 
     @Override

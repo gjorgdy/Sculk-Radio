@@ -72,15 +72,17 @@ public class NodeRegistry {
     }
 
     public void connectNodes(SourceNode sn) {
-        if (sn.getFrequency() > 0) {
-            for (var rn : calibratedReceiverNodes) {
-                if (rn.getFrequency() == sn.getFrequency() && !rn.isConnected()) {
-                    sn.connect(rn);
-                }
-            }
-        } else {
-            internalConnectNodes(sn, 0);
-        }
+        internalConnectNodes(sn, 0);
+//  frequency-based connections disabled for the time being
+//        if (sn.getFrequency() > 0) {
+//            for (var rn : calibratedReceiverNodes) {
+//                if (rn.getFrequency() == sn.getFrequency() && !rn.isConnected()) {
+//                    sn.connect(rn);
+//                }
+//            }
+//        } else {
+//            internalConnectNodes(sn, 0);
+//        }
     }
 
     private void internalConnectNodes(Node node, int depth) {
