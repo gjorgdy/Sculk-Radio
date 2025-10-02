@@ -6,6 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.interfaces.ISculkRadioApi;
 import nl.gjorgdy.sculk_radio.objects.Node;
+import nl.gjorgdy.sculk_radio.objects.SourceNode;
 
 import java.util.function.Consumer;
 
@@ -32,10 +33,10 @@ public class SculkRadio {
         }
 
         @Override
-        public boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
+        public boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
             var node = getNode(world, pos);
-            if (node != null) {
-                node.initiate(connectCallback, disconnectCallback);
+            if (node instanceof SourceNode sn) {
+                sn.initialize(connectCallback, disconnectCallback, tickCallback);
                 return true;
             }
             return false;

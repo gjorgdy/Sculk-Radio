@@ -16,6 +16,7 @@ public abstract class Node {
     protected Node transmitter = null;
 
     private Consumer<Node> disconnectCallback;
+    private Consumer<Node> tickCallback;
 
     public Node(ServerWorld world, BlockPos pos) {
         this.world = world;
@@ -30,8 +31,9 @@ public abstract class Node {
         return world;
     }
 
-    public void initiate(Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
+    protected void internalInitialize(Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
         this.disconnectCallback = disconnectCallback;
+        this.tickCallback = tickCallback;
         connectCallback.accept(this);
     }
 
@@ -55,7 +57,10 @@ public abstract class Node {
     }
 
     public final void tick() {
-        if (isConnected()) internalTick();
+        if (isConnected()) {
+            tickCallback.accept(this);
+            internalTick();
+        }
     }
 
     protected abstract void internalTick();

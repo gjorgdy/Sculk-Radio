@@ -32,8 +32,8 @@ public abstract class TransmittingNode extends Node {
     }
 
     @Override
-    public void initiate(Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
-        receivers.forEach(node -> node.initiate(connectCallback, disconnectCallback));
+    protected void internalInitialize(Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
+        receivers.forEach(node -> node.internalInitialize(connectCallback, disconnectCallback, tickCallback));
     }
 
     @Override

@@ -6,6 +6,7 @@ import nl.gjorgdy.sculk_radio.objects.Node;
 
 import java.util.function.Consumer;
 
+@SuppressWarnings("unused")
 public interface ISculkRadioApi {
 
     /**
@@ -22,11 +23,26 @@ public interface ISculkRadioApi {
      *
      * @param world              the world the jukebox is in
      * @param pos                the jukebox's position
-     * @param connectCallback    the callback to run on the jukebox and speakers
-     * @param disconnectCallback the callback to run on the jukebox and speakers when the sound stops playing
+     * @param connectCallback    the callback to run on the jukebox and note-blocks
+     * @param disconnectCallback the callback to run on the jukebox and note-blocks when the sound stops playing
      * @return true if the callback was run, false if there is no jukebox at the given position
      */
-    boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback);
+    default boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
+        return connect(world, pos, connectCallback, disconnectCallback, n -> {
+        });
+    }
+
+    /**
+     * Connect a jukebox to noteblocks and run a callback on it and the connected note-blocks
+     *
+     * @param world              the world the jukebox is in
+     * @param pos                the jukebox's position
+     * @param connectCallback    the callback to run on the jukebox and note-blocks
+     * @param disconnectCallback the callback to run on the jukebox and note-blocks when the sound stops playing
+     * @param tickCallback       the callback to run on the jukebox and note-blocks every tick
+     * @return true if the callback was run, false if there is no jukebox at the given position
+     */
+    boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback);
 
     /**
      * Disconnected a jukebox or note-block and its connected noteblocks
