@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
+import nl.gjorgdy.sculk_radio.objects.Node;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -35,30 +36,25 @@ public abstract class WorldChunkMixin {
 
     @Inject(method = "setBlockEntity", at = @At("RETURN"))
     public void onLoadBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
-        // generic receiver node
-        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
-                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
-            var node = NodeRegistry.INSTANCE.registerReceiverNode((ServerWorld) this.world, blockEntity.getPos());
-            nc.sculkRadio$setNode(node);
-        }
-        // repeater node
-        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
-                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.AMETHYST_BLOCK)) {
-            var node = NodeRegistry.INSTANCE.registerRepeaterNode((ServerWorld) this.world, blockEntity.getPos());
-            nc.sculkRadio$setNode(node);
-        }
+        if (!(blockEntity instanceof INodeContainer nc)) return;
+        Node node = null;
         // calibrated receiver node
-        if (blockEntity instanceof CalibratedSculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
-                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
-            var node = NodeRegistry.INSTANCE.registerCalibratedReceiverNode((ServerWorld) this.world, blockEntity.getPos());
-            nc.sculkRadio$setNode(node);
+        switch (blockEntity) {
+            case CalibratedSculkSensorBlockEntity calibratedSculkSensorBlockEntity when this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK) ->
+                    node = NodeRegistry.INSTANCE.registerCalibratedReceiverNode((ServerWorld) this.world, blockEntity.getPos());
+            // generic receiver node
+            case SculkSensorBlockEntity sculkSensorBlockEntity when this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK) ->
+                    node = NodeRegistry.INSTANCE.registerReceiverNode((ServerWorld) this.world, blockEntity.getPos());
+            // repeater node
+            case SculkSensorBlockEntity sculkSensorBlockEntity when this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.AMETHYST_BLOCK) ->
+                    node = NodeRegistry.INSTANCE.registerRepeaterNode((ServerWorld) this.world, blockEntity.getPos());
+            // source node
+            case SculkShriekerBlockEntity sculkShriekerBlockEntity when this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX) ->
+                    node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos());
+            default -> {
+            }
         }
-        // source node
-        if (blockEntity instanceof SculkShriekerBlockEntity && blockEntity instanceof INodeContainer nc
-                && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX)) {
-            var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos());
-            nc.sculkRadio$setNode(node);
-        }
+        if (node != null) nc.sculkRadio$setNode(node);
     }
 
     @Inject(method = "removeBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;removeGameEventListener(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/server/world/ServerWorld;)V"))
@@ -67,7 +63,6 @@ public abstract class WorldChunkMixin {
             var node = nc.sculkRadio$getNode();
             if (node != null) {
                 NodeRegistry.INSTANCE.removeNode(node);
-                System.out.println("removed node at " + pos);
             }
         }
     }
