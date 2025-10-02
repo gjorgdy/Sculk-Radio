@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.mixins;
+package nl.gjorgdy.sculk_radio.mixins.vanilla_impl;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.jukebox.JukeboxManager;
@@ -62,7 +62,13 @@ public class JukeboxManagerMixin {
                     sw,
                     this.pos
             );
-            if (stopped) ci.cancel();
+            if (stopped) {
+                if (this.song != null) {
+                    this.song = null;
+                    this.ticksSinceSongStarted = 0L;
+                }
+                ci.cancel();
+            }
         }
     }
 
@@ -88,10 +94,6 @@ public class JukeboxManagerMixin {
 
     @Unique
     public void stop(WorldAccess world, BlockPos pos) {
-        if (this.song != null) {
-            this.song = null;
-            this.ticksSinceSongStarted = 0L;
-        }
         world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Emitter.of(world.getBlockState(pos)));
         world.syncWorldEvent(1011, pos, 0);
         this.changeNotifier.notifyChange();
