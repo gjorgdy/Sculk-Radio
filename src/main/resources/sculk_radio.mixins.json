@@ -6,12 +6,12 @@
   "mixins": [
     "BlockMixin",
     "CalibratedSculkSensorBlockMixin",
-    "JukeboxManagerMixin",
     "SculkSensorBlockEntityMixin",
     "SculkSensorVibrationCallbackMixin",
     "SculkShriekerBlockEntityMixin",
     "SculkShriekerBlockMixin",
-    "WorldChunkMixin"
+    "WorldChunkMixin",
+    "vanilla_impl.JukeboxManagerMixin"
   ],
   "client": [
   ],

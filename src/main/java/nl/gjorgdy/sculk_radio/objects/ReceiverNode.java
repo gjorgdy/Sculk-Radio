@@ -6,41 +6,30 @@ import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 public class ReceiverNode extends Node {
 
-    private Node sourceNode = null;
-
     public ReceiverNode(ServerWorld world, BlockPos pos) {
         super(world, pos);
     }
 
     @Override
-    public int getFrequency() {
-        return 0;
-    }
-
-    @Override
-    public void playTick() {
+    public void internalTick() {
         ParticleUtils.activateSensor(this);
         ParticleUtils.spawnNoteParticles(this);
     }
 
     @Override
-    public void stop() {
-        super.stop();
+    public void disconnect() {
         ParticleUtils.deactivateSensor(this);
-        sourceNode = null;
+        super.disconnect();
     }
 
     @Override
-    public boolean isConnected() {
-        return sourceNode != null;
-    }
-
-    @Override
-    public boolean connect(Node node) {
-        if (isPlaying || node == this) return false;
-        if (!isConnected())
-            sourceNode = node;
+    public boolean isActive() {
         return isConnected();
+    }
+
+    @Override
+    public boolean connect(Node toNode) {
+        return false;
     }
 
 }

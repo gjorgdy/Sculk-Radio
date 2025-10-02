@@ -35,7 +35,7 @@ public class SculkRadio {
         public boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
             var node = getNode(world, pos);
             if (node != null) {
-                node.play(connectCallback, disconnectCallback);
+                node.initiate(connectCallback, disconnectCallback);
                 return true;
             }
             return false;
@@ -45,7 +45,7 @@ public class SculkRadio {
         public boolean disconnect(ServerWorld world, BlockPos pos) {
             var node = getNode(world, pos);
             if (node != null) {
-                node.stop();
+                node.disconnect();
                 return true;
             }
             return false;
@@ -55,7 +55,7 @@ public class SculkRadio {
         public boolean tick(ServerWorld world, BlockPos pos) {
             var node = getNode(world, pos);
             if (node != null) {
-                node.playTick();
+                node.tick();
                 return true;
             }
             return false;

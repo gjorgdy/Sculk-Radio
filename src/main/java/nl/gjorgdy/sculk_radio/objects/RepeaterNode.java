@@ -1,60 +1,24 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
-import java.util.Set;
-import java.util.function.Consumer;
-
-public class RepeaterNode extends Node {
-
-    private final Set<Node> receivers = new ObjectArraySet<>(8);
+public class RepeaterNode extends TransmittingNode {
 
     public RepeaterNode(ServerWorld world, BlockPos pos) {
         super(world, pos);
     }
 
     @Override
-    public int getFrequency() {
-        return 0;
-    }
-
-    @Override
-    public void playTick() {
+    public void internalTick() {
         ParticleUtils.activateSensor(this);
-        receivers.forEach(n -> {
-            if (!n.isConnected()) return;
-            ParticleUtils.spawnVibrationParticles(this, n);
-            n.playTick();
-        });
+        super.internalTick();
     }
 
     @Override
-    public void play(Consumer<Node> callback, Consumer<Node> stopCallback) {
-        receivers.forEach(node -> node.play(callback, stopCallback));
-    }
-
-    @Override
-    public void stop() {
-        super.stop();
+    public void disconnect() {
         ParticleUtils.deactivateSensor(this);
-        receivers.forEach(Node::stop);
-        receivers.clear();
-    }
-
-    @Override
-    public boolean connect(Node node) {
-        if (node == this) return false;
-        if (receivers.size() < 8) {
-            return receivers.add(node);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isConnected() {
-        return !receivers.isEmpty();
+        super.disconnect();
     }
 }

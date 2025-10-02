@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "sculk_radio",
+  "id": "sculk-radio",
   "version": "${version}",
   "name": "Sculk Radio",
   "description": "",

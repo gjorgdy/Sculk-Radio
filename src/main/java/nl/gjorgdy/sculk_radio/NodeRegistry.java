@@ -58,17 +58,23 @@ public class NodeRegistry {
     }
 
     public void removeNode(Node node) {
-        if (node instanceof SourceNode) sourceNodes.remove(node);
-        else if (node instanceof RepeaterNode) repeaterNodes.remove(node);
-        else if (node instanceof ReceiverNode) receiverNodes.remove(node);
-        else if (node instanceof CalibratedReceiverNode) calibratedReceiverNodes.remove(node);
-        node.stop();
+        System.out.println("removed node at " + node.getPos());
+        switch (node) {
+            case SourceNode sourceNode -> sourceNodes.remove(sourceNode);
+            case RepeaterNode repeaterNode -> repeaterNodes.remove(repeaterNode);
+            case CalibratedReceiverNode calibratedReceiverNode ->
+                    calibratedReceiverNodes.remove(calibratedReceiverNode);
+            case ReceiverNode receiverNode -> receiverNodes.remove(receiverNode);
+            default -> {
+            }
+        }
+        node.disconnect();
     }
 
     public void connectNodes(SourceNode sn) {
         if (sn.getFrequency() > 0) {
             for (var rn : calibratedReceiverNodes) {
-                if (rn.getFrequency() == sn.getFrequency() && !rn.isPlaying()) {
+                if (rn.getFrequency() == sn.getFrequency() && !rn.isConnected()) {
                     sn.connect(rn);
                 }
             }
