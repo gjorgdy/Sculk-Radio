@@ -10,8 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 import nl.gjorgdy.sculk_radio.SculkRadio;
-import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
-import nl.gjorgdy.sculk_radio.objects.SourceNode;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,55 +38,43 @@ public class JukeboxManagerMixin {
     @Final
     private JukeboxManager.ChangeNotifier changeNotifier;
 
-    @Unique
-    private SourceNode sourceNode;
-
     @Shadow
     private static void spawnNoteParticles(WorldAccess worldAccess, BlockPos blockPos) {
-    }
-
-    @Unique
-    @Nullable
-    public SourceNode getSourceNode(WorldAccess world) {
-        if (world.isClient()) return null;
-        if (sourceNode == null) {
-            var up = world.getBlockEntity(this.pos.up());
-            if (up instanceof NodeContainer nc && nc.sculkRadio$getNode() instanceof SourceNode sn) {
-                sourceNode = sn;
-            }
-        }
-        return sourceNode;
     }
 
     @Inject(method = "startPlaying", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song, CallbackInfo ci) {
         if (world instanceof ServerWorld sw) {
-            SculkRadio.API.play(
+            boolean started = SculkRadio.api().connect(
                     sw,
                     this.pos,
                     n -> play(world, song, n.getPos()),
                     n -> stop(world, n.getPos())
             );
-            ci.cancel();
+            if (started) ci.cancel();
         }
     }
 
     @Inject(method = "stopPlaying", at = @At("HEAD"), cancellable = true)
     public void onStopPlaying(WorldAccess world, BlockState state, CallbackInfo ci) {
         if (world instanceof ServerWorld sw) {
-            SculkRadio.API.stop(
+            boolean stopped = SculkRadio.api().disconnect(
                     sw,
                     this.pos
             );
-            ci.cancel();
+            if (stopped) ci.cancel();
         }
     }
 
     @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
     public void onSpawnNotes(WorldAccess world, BlockPos pos) {
-        var sn = getSourceNode(world);
-        if (sn == null) spawnNoteParticles(world, pos);
-        else sn.playTick();
+        if (world instanceof ServerWorld sw) {
+            boolean executed = SculkRadio.api().tick(
+                    sw,
+                    this.pos
+            );
+            if (!executed) spawnNoteParticles(world, pos);
+        }
     }
 
     @Unique

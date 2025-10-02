@@ -12,7 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
-import nl.gjorgdy.sculk_radio.interfaces.NodeContainer;
+import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,25 +36,25 @@ public abstract class WorldChunkMixin {
     @Inject(method = "setBlockEntity", at = @At("RETURN"))
     public void onLoadBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
         // generic receiver node
-        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
             var node = NodeRegistry.INSTANCE.registerReceiverNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
         }
         // repeater node
-        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+        if (blockEntity instanceof SculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.AMETHYST_BLOCK)) {
             var node = NodeRegistry.INSTANCE.registerRepeaterNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
         }
         // calibrated receiver node
-        if (blockEntity instanceof CalibratedSculkSensorBlockEntity && blockEntity instanceof NodeContainer nc
+        if (blockEntity instanceof CalibratedSculkSensorBlockEntity && blockEntity instanceof INodeContainer nc
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.NOTE_BLOCK)) {
             var node = NodeRegistry.INSTANCE.registerCalibratedReceiverNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
         }
         // source node
-        if (blockEntity instanceof SculkShriekerBlockEntity && blockEntity instanceof NodeContainer nc
+        if (blockEntity instanceof SculkShriekerBlockEntity && blockEntity instanceof INodeContainer nc
                 && this.getBlockState(blockEntity.getPos().down()).isOf(Blocks.JUKEBOX)) {
             var node = NodeRegistry.INSTANCE.registerSourceNode((ServerWorld) this.world, blockEntity.getPos());
             nc.sculkRadio$setNode(node);
@@ -63,7 +63,7 @@ public abstract class WorldChunkMixin {
 
     @Inject(method = "removeBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;removeGameEventListener(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/server/world/ServerWorld;)V"))
     public void onBreakBlockEntity(BlockPos pos, CallbackInfo ci, @Local BlockEntity blockEntity) {
-        if (blockEntity instanceof NodeContainer nc) {
+        if (blockEntity instanceof INodeContainer nc) {
             var node = nc.sculkRadio$getNode();
             if (node != null) {
                 NodeRegistry.INSTANCE.removeNode(node);
