@@ -1,6 +1,7 @@
 package nl.gjorgdy.sculk_radio.compat;
 
 import me.fallenbreath.conditionalmixin.api.mixin.RestrictiveMixinConfigPlugin;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 
 import java.util.List;
 import java.util.Set;
@@ -9,6 +10,7 @@ public class MixinConfigPlugin extends RestrictiveMixinConfigPlugin {
 
     public MixinConfigPlugin() {
         super();
+        SculkRadio.LOGGER.info("Loaded MixinConfigPlugin");
     }
 
     @Override
