@@ -9,8 +9,11 @@ import nl.gjorgdy.sculk_radio.objects.Node;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
 
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 public class SculkRadio {
+
+    public static Logger LOGGER = Logger.getLogger("Sculk Radio");
 
     public static void RunIfServerActive(Runnable runnable) {
         ServerLifecycleEvents.SERVER_STARTED.register(s -> runnable.run());

@@ -31,15 +31,16 @@ dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     // Plugin for conditional mixins
     modImplementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     include 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     // Audio Player compatibility
-    modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}:fabric-stub"
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${voicechat_mod_version}"
-    modImplementation "de.maxhenkel.voicechat:voicechat-api:${voicechat_api_version}"
-    modImplementation "de.maxhenkel.audioplayer:audioplayer:${audioplayer_mod_version}"
+    modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
+    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
+    modImplementation "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    modImplementation "de.maxhenkel.audioplayer:audioplayer:${project.audioplayer_mod_version}"
 }
 
 processResources {
@@ -51,7 +52,11 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version,
                 "minecraft_version": project.minecraft_version,
-                "loader_version": project.loader_version
+                "loader_version": project.loader_version,
+                "fabric_version": project.fabric_version,
+                "voicechat_api_version": project.voicechat_api_version,
+                "voicechat_mod_version": project.voicechat_mod_version,
+                "audioplayer_mod_version": project.audioplayer_mod_version
     }
 }
 

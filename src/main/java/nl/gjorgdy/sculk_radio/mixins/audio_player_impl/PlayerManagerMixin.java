@@ -4,15 +4,12 @@ import com.llamalad7.mixinextras.sugar.Local;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;
 import de.maxhenkel.audioplayer.apiimpl.events.PlayEventImpl;
 import de.maxhenkel.audioplayer.audioplayback.PlayerManager;
-import de.maxhenkel.audioplayer.interfaces.CustomJukeboxSongPlayer;
 import de.maxhenkel.audioplayer.utils.ChatUtils;
 import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
-import me.fallenbreath.conditionalmixin.api.annotation.Condition;
-import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -27,14 +24,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.UUID;
 
-@Restriction(
-        require = {
-                @Condition(value = "audioplayer"),
-                @Condition(value = "voicechat")
-        }
-)
 @Mixin(PlayerManager.class)
-public abstract class PlayerManagerMixin implements CustomJukeboxSongPlayer {
+public class PlayerManagerMixin {
 
     @Redirect(
             method = "playType(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/server/network/ServerPlayerEntity;Lde/maxhenkel/audioplayer/audioloader/AudioData;Lde/maxhenkel/audioplayer/audioplayback/PlayerType;Lnet/fabricmc/fabric/api/event/Event;Lnet/fabricmc/fabric/api/event/Event;Lnet/minecraft/util/math/Vec3d;)Lde/maxhenkel/audioplayer/api/ChannelReference;",
