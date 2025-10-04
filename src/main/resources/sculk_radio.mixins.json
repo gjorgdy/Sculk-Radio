@@ -6,11 +6,14 @@
   "mixins": [
     "BlockMixin",
     "CalibratedSculkSensorBlockMixin",
+    "JukeboxManagerMixin",
     "SculkSensorBlockEntityMixin",
     "SculkSensorVibrationCallbackMixin",
     "SculkShriekerBlockEntityMixin",
     "SculkShriekerBlockMixin",
     "WorldChunkMixin",
+    "audio_player_impl.JukeboxBlockEntityMixin",
+    "audio_player_impl.PlayerManagerMixin",
     "vanilla_impl.JukeboxManagerMixin"
   ],
   "client": [
@@ -20,5 +23,6 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "plugin": "nl.gjorgdy.sculk_radio.compat.MixinConfigPlugin"
 }

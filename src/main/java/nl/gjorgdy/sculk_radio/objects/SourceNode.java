@@ -45,8 +45,7 @@ public class SourceNode extends TransmittingNode implements ICalibrated {
     public void internalInitialize(Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
         updateFrequency();
         NodeRegistry.INSTANCE.connectNodes(this);
-        if (!isConnected()) disconnect();
-        receivers.forEach(n -> n.internalInitialize(connectCallback, disconnectCallback, tickCallback));
+        super.internalInitialize(connectCallback, disconnectCallback, tickCallback);
     }
 
     @Override

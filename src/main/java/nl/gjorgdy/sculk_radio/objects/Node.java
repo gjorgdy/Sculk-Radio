@@ -58,7 +58,7 @@ public abstract class Node {
 
     public final void tick() {
         if (isConnected()) {
-            tickCallback.accept(this);
+            if (tickCallback != null) tickCallback.accept(this);
             internalTick();
         }
     }

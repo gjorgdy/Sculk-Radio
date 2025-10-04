@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(JukeboxManager.class)
@@ -37,10 +36,6 @@ public class JukeboxManagerMixin {
     @Shadow
     @Final
     private JukeboxManager.ChangeNotifier changeNotifier;
-
-    @Shadow
-    private static void spawnNoteParticles(WorldAccess worldAccess, BlockPos blockPos) {
-    }
 
     @Inject(method = "startPlaying", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(WorldAccess world, RegistryEntry<JukeboxSong> song, CallbackInfo ci) {
@@ -69,17 +64,6 @@ public class JukeboxManagerMixin {
                 }
                 ci.cancel();
             }
-        }
-    }
-
-    @Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;spawnNoteParticles(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/util/math/BlockPos;)V"))
-    public void onSpawnNotes(WorldAccess world, BlockPos pos) {
-        if (world instanceof ServerWorld sw) {
-            boolean executed = SculkRadio.api().tick(
-                    sw,
-                    this.pos
-            );
-            if (!executed) spawnNoteParticles(world, pos);
         }
     }
 
