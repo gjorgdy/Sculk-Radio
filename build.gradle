@@ -39,7 +39,7 @@ dependencies {
     // Audio Player compatibility
     modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
-    modImplementation "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    modCompileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
     modImplementation "de.maxhenkel.audioplayer:audioplayer:${project.audioplayer_mod_version}"
 }
 

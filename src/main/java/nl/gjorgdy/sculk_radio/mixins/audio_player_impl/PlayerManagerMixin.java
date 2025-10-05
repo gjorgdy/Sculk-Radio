@@ -10,6 +10,8 @@ import de.maxhenkel.voicechat.api.Player;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
+import me.fallenbreath.conditionalmixin.api.annotation.Condition;
+import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -24,6 +26,12 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.util.UUID;
 
+@Restriction(
+        require = {
+                @Condition(value = "audioplayer"),
+                @Condition(value = "voicechat")
+        }
+)
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
 
