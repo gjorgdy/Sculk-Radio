@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -109,3 +110,33 @@ publishing {
         }
     }
 }
+
+static String getModrinthToken() {
+    return new File('.env')
+            .readLines()
+            .findAll { it?.trim() && !it.trim().startsWith('#') }
+            .collect { it.split('=') }
+            .find { it[0] == 'MODRINTH_TOKEN' }[1]
+}
+
+static String readChangelog() {
+    return new File('changelog.md')
+            .readLines()
+            .join('\n')
+}
+
+modrinth {
+    token = getModrinthToken()
+    projectId = project.mod_id
+    versionNumber = "${project.version}"
+    changelog = readChangelog()
+    versionType = project.mod_release_type
+    uploadFile = remapJar
+    gameVersions = [project.minecraft_version]
+    loaders = ["fabric"]
+    dependencies {
+        required.project "fabric-api" // Creates a new required dependency on Fabric API
+        optional.version "audioplayer", "fabric-${project.audioplayer_mod_version}" // Creates a new optional dependency on this specific version of Sodium
+    }
+}
+
