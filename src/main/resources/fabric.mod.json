@@ -11,7 +11,8 @@
   "environment": "server",
   "entrypoints": {},
   "mixins": [
-    "sculk_radio.mixins.json"
+    "sculk_radio.mixins.json",
+    "sculk_radio_compat.mixins.json"
   ],
   "depends": {
     "fabricloader": ">=${loader_version}",

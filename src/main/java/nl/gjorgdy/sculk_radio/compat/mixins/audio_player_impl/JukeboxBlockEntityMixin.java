@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.mixins.audio_player_impl;
+package nl.gjorgdy.sculk_radio.compat.mixins.audio_player_impl;
 
 import me.fallenbreath.conditionalmixin.api.annotation.Condition;
 import me.fallenbreath.conditionalmixin.api.annotation.Restriction;

@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.mixins.audio_player_impl;
+package nl.gjorgdy.sculk_radio.compat.mixins.audio_player_impl;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import de.maxhenkel.audioplayer.apiimpl.ChannelReferenceImpl;

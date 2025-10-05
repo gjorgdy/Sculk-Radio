@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "nl.gjorgdy.sculk_radio.compat.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "audio_player_impl.JukeboxBlockEntityMixin",
+    "audio_player_impl.PlayerManagerMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "plugin": "nl.gjorgdy.sculk_radio.compat.CompatMixinsPlugin"
+}
