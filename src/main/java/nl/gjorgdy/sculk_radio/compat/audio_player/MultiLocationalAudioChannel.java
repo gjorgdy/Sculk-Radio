@@ -89,6 +89,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
 
     @Override
     public void flush() {
+        System.out.println("Flushing MultiLocationalAudioChannel");
         audioChannels.values().forEach(AudioChannel::flush);
     }
 
