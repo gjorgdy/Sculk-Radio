@@ -58,7 +58,7 @@ public abstract class PlayerManagerMixin {
         }
 
         UUID channelID = UUID.randomUUID();
-        MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(channelID, api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()), () -> SculkRadio.api().disconnect(level, blockPos));
+        MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(channelID, api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()));
         if (category != null) {
             mlChannel.setCategory(category);
         }
