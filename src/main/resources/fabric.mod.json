@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Sculk Radio",
   "description": "",
-  "authors": [],
+  "authors": ["Gjorgdy"],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/sculk_radio/logo.jpg",
@@ -17,10 +17,13 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": [
+      ">=${min_minecraft_version}",
+      "<=${minecraft_version}"
+    ]
   },
   "suggests": {
     "voicechat": ">=${voicechat_api_version}",
-    "audioplayer": ">=${audioplayer_mod_version}"
+    "audioplayer": ">=${audioplayer_api_version}"
   }
 }

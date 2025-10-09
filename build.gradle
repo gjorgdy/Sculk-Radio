@@ -4,13 +4,13 @@ plugins {
     id "com.modrinth.minotaur" version "2.+"
 }
 
-version = project.version
+var min_minecraft_version = project.minecraft_versions.split(',').first()
+version = "${project.version}+${min_minecraft_version}"
 group = project.maven_group
 
 base {
     archivesName = project.archives_base_name
 }
-
 
 repositories {
     maven { url = 'https://maven.maxhenkel.de/repository/public' }
@@ -40,23 +40,23 @@ dependencies {
     modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
     modCompileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
-    modImplementation "de.maxhenkel.audioplayer:audioplayer:${project.audioplayer_mod_version}"
+    modImplementation "de.maxhenkel.audioplayer:audioplayer:${project.audioplayer_mod_version}" // no maven available, build to local maven to use
 }
 
 processResources {
-    inputs.property "version", project.version
+    inputs.property "version", version
     inputs.property "minecraft_version", project.minecraft_version
     inputs.property "loader_version", project.loader_version
     filteringCharset "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version,
+        expand "version": version,
                 "minecraft_version": project.minecraft_version,
+                "min_minecraft_version": min_minecraft_version,
                 "loader_version": project.loader_version,
                 "fabric_version": project.fabric_version,
                 "voicechat_api_version": project.voicechat_api_version,
-                "voicechat_mod_version": project.voicechat_mod_version,
-                "audioplayer_mod_version": project.audioplayer_mod_version
+                "audioplayer_api_version": project.audioplayer_api_version
     }
 }
 
@@ -113,16 +113,16 @@ static String readChangelog() {
 modrinth {
     token = getModrinthToken()
     projectId = project.mod_id
-    versionNumber = "${project.version}"
-    versionName = "${project.name} ${project.version}"
+    versionNumber = "${version}"
+    versionName = "${project.name} ${version}"
     changelog = readChangelog()
     versionType = project.mod_release_type
     uploadFile = remapJar
-    gameVersions = [project.minecraft_version]
+    gameVersions = project.minecraft_versions.split(',') as List<String>
     loaders = ["fabric"]
     dependencies {
         required.project "fabric-api"
-        optional.version "audioplayer", "fabric-${project.audioplayer_mod_version}"
+        optional.project "audioplayer"
     }
 }
 
