@@ -33,7 +33,7 @@ import java.util.UUID;
         }
 )
 @Mixin(PlayerManager.class)
-public class PlayerManagerMixin {
+public abstract class PlayerManagerMixin {
 
     @Redirect(
             method = "playType(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/server/network/ServerPlayerEntity;Lde/maxhenkel/audioplayer/audioloader/AudioData;Lde/maxhenkel/audioplayer/audioplayback/PlayerType;Lnet/fabricmc/fabric/api/event/Event;Lnet/fabricmc/fabric/api/event/Event;Lnet/minecraft/util/math/Vec3d;)Lde/maxhenkel/audioplayer/api/ChannelReference;",
@@ -58,7 +58,7 @@ public class PlayerManagerMixin {
         }
 
         UUID channelID = UUID.randomUUID();
-        MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(channelID, api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()));
+        MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(channelID, api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()), () -> SculkRadio.api().disconnect(level, blockPos));
         if (category != null) {
             mlChannel.setCategory(category);
         }

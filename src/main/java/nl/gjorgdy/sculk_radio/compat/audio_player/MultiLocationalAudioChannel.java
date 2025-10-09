@@ -24,10 +24,12 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     private Predicate<ServerPlayer> filter;
     private String category;
     private final Map<Position, LocationalAudioChannel> audioChannels = new HashMap<>();
+    private final Runnable onStopCallback;
 
-    public MultiLocationalAudioChannel(UUID id, Position sourcePosition) {
+    public MultiLocationalAudioChannel(UUID id, Position sourcePosition, Runnable onCloseCallback) {
         this.id = id;
         this.sourcePosition = sourcePosition;
+        this.onStopCallback = onCloseCallback;
     }
 
     @Override
@@ -53,6 +55,10 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
         var position = api.createPosition(pos.x, pos.y, pos.z);
         var channel = audioChannels.remove(position);
         channel.flush();
+    }
+
+    public void onStop() {
+        onStopCallback.run();
     }
 
     @Override
@@ -89,7 +95,6 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
 
     @Override
     public void flush() {
-        System.out.println("Flushing MultiLocationalAudioChannel");
         audioChannels.values().forEach(AudioChannel::flush);
     }
 

@@ -129,6 +129,7 @@ modrinth {
     token = getModrinthToken()
     projectId = project.mod_id
     versionNumber = "${project.version}"
+    versionName = "${project.mod_name} ${project.version}"
     changelog = readChangelog()
     versionType = project.mod_release_type
     uploadFile = remapJar

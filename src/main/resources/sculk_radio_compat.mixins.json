@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "audio_player_impl.JukeboxBlockEntityMixin",
-    "audio_player_impl.PlayerManagerMixin"
+    "audio_player_impl.PlayerManagerMixin",
+    "audio_player_impl.PlayerThreadMixin"
   ],
   "client": [
   ],
