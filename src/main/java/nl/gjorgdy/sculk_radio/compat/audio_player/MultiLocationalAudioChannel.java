@@ -11,10 +11,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class MultiLocationalAudioChannel implements LocationalAudioChannel {
 
@@ -29,6 +28,10 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
         this.id = id;
         this.sourcePosition = sourcePosition;
     }
+
+	private Stream<LocationalAudioChannel> getAudioChannels() {
+		return audioChannels.values().stream().filter(Objects::nonNull);
+	}
 
     @Override
     public void updateLocation(Position position) {
@@ -52,7 +55,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
         if (api == null) return;
         var position = api.createPosition(pos.x, pos.y, pos.z);
         var channel = audioChannels.remove(position);
-        channel.flush();
+        if (channel != null) channel.flush();
     }
 
     @Override
@@ -68,7 +71,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     @Override
     public void setDistance(float distance) {
         this.distance = distance;
-        audioChannels.values().forEach(channel -> channel.setDistance(distance));
+		getAudioChannels().forEach(channel -> channel.setDistance(distance));
     }
 
     @Override
@@ -78,23 +81,23 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
 
     @Override
     public void send(MicrophonePacket packet) {
-        audioChannels.values().forEach(channel -> channel.send(packet));
+		getAudioChannels().forEach(channel -> channel.send(packet));
     }
 
     @Override
     public void setFilter(Predicate<ServerPlayer> filter) {
         this.filter = filter;
-        audioChannels.values().forEach(channel -> channel.setFilter(filter));
+		getAudioChannels().forEach(channel -> channel.setFilter(filter));
     }
 
     @Override
     public void flush() {
-        audioChannels.values().forEach(AudioChannel::flush);
+		getAudioChannels().forEach(AudioChannel::flush);
     }
 
     @Override
     public boolean isClosed() {
-        return audioChannels.values().stream().allMatch(AudioChannel::isClosed);
+        return getAudioChannels().allMatch(AudioChannel::isClosed);
     }
 
     @Override
@@ -110,6 +113,6 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     @Override
     public void setCategory(@Nullable String category) {
         this.category = category;
-        audioChannels.values().forEach(channel -> channel.setCategory(category));
+		getAudioChannels().forEach(channel -> channel.setCategory(category));
     }
 }

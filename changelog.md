@@ -1,4 +1,4 @@
-﻿## 0.3.2
+﻿Critical bug fix
+---
 
-- Added support for 1.21.10
-- Fixed speakers not automatically disconnecting after playing custom discs
+- Fixed the server crash on a music disc ending playback.
