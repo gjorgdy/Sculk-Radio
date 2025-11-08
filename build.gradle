@@ -104,18 +104,14 @@ static String getModrinthToken() {
             .find { it[0] == 'MODRINTH_TOKEN' }[1]
 }
 
-static String readChangelog() {
-    return new File('changelog.md')
-            .readLines()
-            .join('\n')
-}
-
+tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 modrinth {
     token = getModrinthToken()
     projectId = project.mod_id
     versionNumber = "${version}"
     versionName = "${project.name} ${version}"
-    changelog = readChangelog()
+    changelog = rootProject.file("changelog.md").text
+    syncBodyFrom = rootProject.file("README.md").text
     versionType = project.mod_release_type
     uploadFile = remapJar
     gameVersions = project.minecraft_versions.split(',') as List<String>
