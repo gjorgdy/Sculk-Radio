@@ -27,7 +27,8 @@ public class BlockMixin {
     @Inject(method = "onBreak", at = @At("RETURN"))
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player, CallbackInfoReturnable<BlockState> cir) {
         if (world.getBlockEntity(pos.up()) instanceof INodeContainer nc) {
-            NodeRegistry.INSTANCE.removeNode(nc.sculkRadio$getNode());
+            var node = nc.sculkRadio$getNode();
+            if (node != null) NodeRegistry.INSTANCE.removeNode(node);
         }
     }
 

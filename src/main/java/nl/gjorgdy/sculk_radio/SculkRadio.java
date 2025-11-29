@@ -7,6 +7,7 @@ import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.interfaces.ISculkRadioApi;
 import nl.gjorgdy.sculk_radio.objects.Node;
 import nl.gjorgdy.sculk_radio.objects.SourceNode;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +67,7 @@ public class SculkRadio {
             return false;
         }
 
+        @Nullable
         private Node getNode(ServerWorld world, BlockPos pos) {
             var blockEntity = world.getBlockEntity(pos.up());
             if (blockEntity instanceof INodeContainer nc) {
