@@ -1,4 +1,4 @@
-﻿Critical bug fix
+﻿Some more safety fixes
 ---
 
-- Fixed the server crash on a music disc ending playback.
+- Added more safety checks to prevent crashes when loading chunks.
