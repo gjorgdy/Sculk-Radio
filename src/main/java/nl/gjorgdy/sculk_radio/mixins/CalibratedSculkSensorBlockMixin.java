@@ -20,6 +20,7 @@ public class CalibratedSculkSensorBlockMixin extends Block {
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
+        if (world.isClient()) return;
         if (world.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof CalibratedReceiverNode rn) {
             rn.updateFrequency();
         }

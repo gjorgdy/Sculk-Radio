@@ -24,7 +24,7 @@ public class SculkShriekerBlockMixin extends Block {
 
     @Override
     protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, @Nullable WireOrientation wireOrientation, boolean notify) {
-        if (world.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof SourceNode sn) {
+        if (!world.isClient() && world.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof SourceNode sn) {
             sn.updateFrequency();
         }
         super.neighborUpdate(state, world, pos, sourceBlock, wireOrientation, notify);

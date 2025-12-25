@@ -36,6 +36,7 @@ public abstract class WorldChunkMixin {
 
     @Inject(method = "setBlockEntity", at = @At("RETURN"))
     public void onLoadBlockEntity(BlockEntity blockEntity, CallbackInfo ci) {
+        if (getWorld().isClient()) return;
         if (!(blockEntity instanceof INodeContainer nc)) return;
         Node node = null;
         // calibrated receiver node
@@ -59,6 +60,7 @@ public abstract class WorldChunkMixin {
 
     @Inject(method = "removeBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/chunk/WorldChunk;removeGameEventListener(Lnet/minecraft/block/entity/BlockEntity;Lnet/minecraft/server/world/ServerWorld;)V"))
     public void onBreakBlockEntity(BlockPos pos, CallbackInfo ci, @Local BlockEntity blockEntity) {
+        if (getWorld().isClient()) return;
         if (blockEntity instanceof INodeContainer nc) {
             var node = nc.sculkRadio$getNode();
             if (node != null) {

@@ -17,6 +17,7 @@ public class JukeboxManagerMixin {
     @Inject(method = "spawnNoteParticles",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/world/ServerWorld;spawnParticles(Lnet/minecraft/particle/ParticleEffect;DDDIDDDD)I"), cancellable = true)
     private static void onSpawnNoteParticles(WorldAccess world, BlockPos pos, CallbackInfo ci, @Local ServerWorld serverWorld) {
+        if (world.isClient()) return;
         boolean executed = SculkRadio.api().tick(serverWorld, pos);
         if (executed) ci.cancel();
     }

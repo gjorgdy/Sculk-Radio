@@ -8,7 +8,7 @@
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/sculk_radio/logo.jpg",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {},
   "mixins": [
     "sculk_radio.mixins.json",
