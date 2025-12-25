@@ -1,4 +1,4 @@
-﻿Some more safety fixes
+﻿Singleplayer fix
 ---
 
-- Added more safety checks to prevent crashes when loading chunks.
+- Fixed the mod not working properly in singleplayer.
