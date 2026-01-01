@@ -1,4 +1,4 @@
-﻿Singleplayer fix
+﻿1.21.11 Update
 ---
 
-- Fixed the mod not working properly in singleplayer.
+- Updated the mod to 1.21.11
