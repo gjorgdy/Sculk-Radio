@@ -30,7 +30,7 @@ public class NodeRegistry {
     /**
      * Register a source node.
      *
-     * @param pos The position of the sculk shrieker.
+     * @param pos The position of the Sculk Shrieker.
      * @return The node that was registered.
      */
     public SourceNode registerSourceNode(ServerWorld world, BlockPos pos) {
@@ -39,18 +39,36 @@ public class NodeRegistry {
         return node;
     }
 
+    /**
+     * Register a receiver node.
+     *
+     * @param pos The position of the Sculk Sensor.
+     * @return The node that was registered.
+     */
     public ReceiverNode registerReceiverNode(ServerWorld world, BlockPos pos) {
         var node = new ReceiverNode(world, pos);
         receiverNodes.add(node);
         return node;
     }
 
+    /**
+     * Register a calibrated receiver node.
+     *
+     * @param pos The position of the Calibrated Sculk Sensor.
+     * @return The node that was registered.
+     */
     public CalibratedReceiverNode registerCalibratedReceiverNode(ServerWorld world, BlockPos pos) {
         var node = new CalibratedReceiverNode(world, pos);
         calibratedReceiverNodes.add(node);
         return node;
     }
 
+    /**
+     * Register a repeater node.
+     *
+     * @param pos The position of the Amethyst Block with Sculk Sensor.
+     * @return The node that was registered.
+     */
     public RepeaterNode registerRepeaterNode(ServerWorld world, BlockPos pos) {
         var node = new RepeaterNode(world, pos);
         repeaterNodes.add(node);
