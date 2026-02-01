@@ -1,10 +1,14 @@
 ﻿![A jukebox with a sculk shrieker and 2 noteblocks with sculk sensors overlayed with a 3D logo of the mod name](https://cdn.modrinth.com/data/cached_images/cf8b119a3adb67eccd127c24128d79a55c75d89a.png)
 
 <center>
-Turn jukeboxes into radios and note blocks into speakers to build the ultimate sound system.
+Use the magic of Sculk to connect Note Blocks to Jukeboxes as speakers.
 </center>
 
 <br>
+
+## Custom discs
+Sculk Radio has native support for [AudioPlayer](https://modrinth.com/mod/audioplayer) by [henkelmax](https://modrinth.com/user/henkelmax).
+Custom music discs from this mod can be used on a radio and will act the same as vanilla discs.
 
 ## How to use
 To start of, place a _shrieker_ on a _jukebox_, to turn it into a radio.
@@ -24,12 +28,46 @@ The maximum distance for receiving and repeating a signal is 16 blocks. Which me
 - Audio coming out of a speaker has the same distance and volume as if it came out of a jukebox.
 - Sculk blocks will not activate when they are part of a radio, speaker or repeater. Outside of these 'multiblocks' they have their vanilla behavior.
 
-## Mod compatibilities
-Sculk Radio has native support for [AudioPlayer](https://modrinth.com/mod/audioplayer) by [henkelmax](https://modrinth.com/user/henkelmax). Custom music discs can be used on a radio and will act the same as vanilla discs.
-
+## Other Mod compatibilities
 Mods that add new music discs and resource packs that change vanilla discs should also work natively. But be sure to create an issue on the Github if there are incompatibilities.
 
-If you're a mod developer and you want to use Sculk Radio for your own projects, the source code is available on Github and the mod has an API. I will try to make it available through maven soon. For the time being, hit me up on Discord if you need help using it.
+If you're a mod developer, and you want to use Sculk Radio for your own projects, you can use the API provided by the mod.
+
+Maven
+```xml
+<repository>
+  <id>modrinth-repo</id>
+  <url>https://api.modrinth.com/maven/</url>
+</repository>
+
+<dependency>
+  <groupId>maven.modrinth</groupId>
+  <artifactId>${mod_id}</artifactId>
+  <version>${mod_version}</version>
+  <scope>provided</scope>
+</dependency>
+```
+
+Gradle
+```gradle
+repositories {
+    exclusiveContent {
+        forRepository { maven { url = "https://api.modrinth.com/maven" } }
+        filter { includeGroup "maven.modrinth" }
+    }
+}
+
+dependencies {
+    compileOnly 'maven.modrinth:${mod_id}:${mod_version}'
+}
+```
+
+You can call the API like this:
+```java
+import nl.gjorgdy.sculk_radio.SculkRadio;
+
+SculkRadio.api();
+```
 
 ## Demo
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/SkuYxBhD4Fc" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="1439" height="1261" src="https://www.youtube.com/embed/6YeBJH30QTU" title="Sculk Radio Mod Showcase - Copper Golem Tavern" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

@@ -22,7 +22,6 @@ repositories {
     }
     maven { url = 'https://maven.parchmentmc.org/' }
     maven { url 'https://maven.fallenbreath.me/releases' }
-    mavenLocal()
 }
 
 dependencies {
@@ -37,7 +36,7 @@ dependencies {
     modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
     modCompileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
-    modImplementation "de.maxhenkel.audioplayer:audioplayer:${project.audioplayer_mod_version}" // no maven available, build to local maven to use
+    modImplementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
 }
 
 processResources {
@@ -82,13 +81,13 @@ jar {
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
+            artifactId = "${project.name}-${version}"
             from components.java
         }
     }
     repositories {
         maven {
-            url = uri('../local-maven')
+            url = 'https://api.modrinth.com/maven'
         }
     }
 }
@@ -101,6 +100,12 @@ static String getModrinthToken() {
             .find { it[0] == 'MODRINTH_TOKEN' }[1]
 }
 
+String getBody() {
+    return rootProject.file("README.md").text
+        .replace('${mod_id}', project.mod_id)
+        .replace('${mod_version}', String.valueOf(version))
+}
+
 tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
 modrinth {
     token = getModrinthToken()
@@ -108,7 +113,7 @@ modrinth {
     versionNumber = "${version}"
     versionName = "${project.name} ${version}"
     changelog = rootProject.file("changelog.md").text
-    syncBodyFrom = rootProject.file("README.md").text
+    syncBodyFrom = getBody()
     versionType = project.mod_release_type
     uploadFile = remapJar
     gameVersions = project.minecraft_versions.split(',') as List<String>
