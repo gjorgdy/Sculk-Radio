@@ -5,7 +5,11 @@ plugins {
 }
 
 var min_minecraft_version = project.minecraft_versions.split(',').first()
-version = "${project.version}+${min_minecraft_version}"
+var last_minecraft_version = project.minecraft_versions.split(',').last()
+var mc_version = min_minecraft_version == last_minecraft_version
+        ? min_minecraft_version
+        : "${min_minecraft_version}-${last_minecraft_version}"
+version = "${project.version}+${mc_version}"
 group = project.maven_group
 
 base {
@@ -33,6 +37,7 @@ dependencies {
     modImplementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     include 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     // Audio Player compatibility
+    modRuntimeOnly "maven.modrinth:admiral:${project.admiral_version}+fabric"
     modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
     modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
     modCompileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
