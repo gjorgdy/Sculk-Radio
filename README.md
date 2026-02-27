@@ -23,6 +23,7 @@ A single repeater is made by placing a _sculk sensor_ on top of a _block of amet
 The maximum distance for receiving and repeating a signal is 16 blocks. Which means a single repeater can already double the range of a speaker.
 
 ## Things to know
+- Speakers and repeaters give of a redstone signal when playing/repeating audio. This means you can use them in redstone contraptions to trigger other things.
 - The max signal 'depth' is 8, which means a signal can be repeated 8 times making for a total max range of 128 blocks.
 - Radios and repeaters can each send to 8 receivers (speakers and/or repeaters).
 - Audio coming out of a speaker has the same distance and volume as if it came out of a jukebox.
