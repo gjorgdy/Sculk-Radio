@@ -76,7 +76,6 @@ public class NodeRegistry {
     }
 
     public void removeNode(Node node) {
-        System.out.println("removed node at " + node.getPos());
         switch (node) {
             case SourceNode sourceNode -> sourceNodes.remove(sourceNode);
             case RepeaterNode repeaterNode -> repeaterNodes.remove(repeaterNode);
@@ -89,18 +88,17 @@ public class NodeRegistry {
         node.disconnect();
     }
 
-    public void connectNodes(SourceNode sn) {
-        internalConnectNodes(sn, 0);
-//  frequency-based connections disabled for the time being
-//        if (sn.getFrequency() > 0) {
-//            for (var rn : calibratedReceiverNodes) {
-//                if (rn.getFrequency() == sn.getFrequency() && !rn.isConnected()) {
-//                    sn.connect(rn);
-//                }
-//            }
-//        } else {
-//            internalConnectNodes(sn, 0);
-//        }
+    public void connectNodes(SourceNode sourceNode) {
+        if (sourceNode.getFrequency() > 0) {
+            for (var receiverNode : calibratedReceiverNodes) {
+                if (receiverNode.getFrequency() == sourceNode.getFrequency() && !receiverNode.isConnected()) {
+                    boolean connected = sourceNode.connect(receiverNode);
+                    if (connected) receiverNode.connect(sourceNode);
+                }
+            }
+        } else {
+            internalConnectNodes(sourceNode, 0);
+        }
     }
 
     private void internalConnectNodes(Node node, int depth) {
