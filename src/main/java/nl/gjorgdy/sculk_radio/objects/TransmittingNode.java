@@ -23,11 +23,15 @@ public abstract class TransmittingNode extends Node {
             return false;
         });
         // tick all connected receivers
-        receivers.forEach(n -> {
+        receivers.forEach(node -> {
             // vibration particles from this to the receiving node
-            ParticleUtils.spawnVibrationParticles(this, n);
+            if (node instanceof CalibratedReceiverNode) {
+                ParticleUtils.spawnVibrationParticles(node);
+            } else {
+                ParticleUtils.spawnVibrationParticles(this, node);
+            }
             // tick the receiving node self
-            n.tick();
+            node.tick();
         });
     }
 

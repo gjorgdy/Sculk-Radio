@@ -7,6 +7,8 @@ import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.particle.VibrationParticleEffect;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.BlockPositionSource;
 import nl.gjorgdy.sculk_radio.objects.Node;
@@ -44,14 +46,23 @@ public class ParticleUtils {
     }
 
     public static void spawnVibrationParticles(Node from, Node to) {
-        from.getWorld().spawnParticles(new VibrationParticleEffect(
-                        new BlockPositionSource(to.getPos()), 20),
-                from.getPos().getX() + 0.5, from.getPos().getY() + 0.5, from.getPos().getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
+        if (from.getWorld() != to.getWorld()) return;
+        spawnVibrationParticles(from.getWorld(), from.getPos(), to.getPos());
+    }
 
-        BlockState sensorBlockState = from.getWorld().getBlockState(to.getPos());
+    public static void spawnVibrationParticles(Node to) {
+        spawnVibrationParticles(to.getWorld(), to.getPos().up(8), to.getPos());
+    }
+
+    private static void spawnVibrationParticles(ServerWorld world, BlockPos from, BlockPos to) {
+        world.spawnParticles(new VibrationParticleEffect(
+                        new BlockPositionSource(to), 20),
+                from.getX() + 0.5, from.getY() + 0.5, from.getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
+
+        BlockState sensorBlockState = world.getBlockState(to);
         if (sensorBlockState.isOf(Blocks.SCULK_SENSOR) || sensorBlockState.isOf(Blocks.CALIBRATED_SCULK_SENSOR)) {
-            from.getWorld().setBlockState(to.getPos(), sensorBlockState.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), 3);
-            from.getWorld().scheduleBlockTick(to.getPos(), sensorBlockState.getBlock(), 20);
+            world.setBlockState(to, sensorBlockState.with(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), 3);
+            world.scheduleBlockTick(to, sensorBlockState.getBlock(), 20);
         }
     }
 
