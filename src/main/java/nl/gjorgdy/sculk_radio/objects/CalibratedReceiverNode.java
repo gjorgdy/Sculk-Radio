@@ -16,6 +16,7 @@ public class CalibratedReceiverNode extends ReceiverNode implements ICalibrated 
 
     @Override
     public int getFrequency() {
+        updateFrequency();
         return frequency;
     }
 
