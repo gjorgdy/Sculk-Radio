@@ -73,6 +73,10 @@ public class NodeRegistry {
     }
 
     public void removeNode(Node node) {
+        removeNode(node, true);
+    }
+
+    public void removeNode(Node node, boolean triggerDisconnect) {
         switch (node) {
             case SourceNode sourceNode -> sourceNodes.remove(sourceNode);
             case RepeaterNode repeaterNode -> repeaterNodes.remove(repeaterNode);
@@ -82,7 +86,7 @@ public class NodeRegistry {
             default -> {
             }
         }
-        node.disconnect();
+        if (triggerDisconnect) node.disconnect();
     }
 
     public void connectNodes(SourceNode sn) {
