@@ -1,4 +1,4 @@
-﻿The Redstone Age
+﻿Speakers duplicating on load
 ---
 
-- Speakers and repeaters now output a redstone signal if playing/repeating audio.
+- Speakers are not duplicated when a chunk is reloaded, this fixes performance and audio issues when a chunk is reloaded.
