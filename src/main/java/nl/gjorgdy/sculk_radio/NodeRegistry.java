@@ -5,26 +5,23 @@ import net.minecraft.util.math.BlockPos;
 import nl.gjorgdy.sculk_radio.objects.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class NodeRegistry {
 
     public static NodeRegistry INSTANCE = new NodeRegistry();
 
-    private final List<SourceNode> sourceNodes;
-    private final List<RepeaterNode> repeaterNodes;
-    private final List<ReceiverNode> receiverNodes;
-    private final List<CalibratedReceiverNode> calibratedReceiverNodes;
+    private final Set<SourceNode> sourceNodes;
+    private final Set<RepeaterNode> repeaterNodes;
+    private final Set<ReceiverNode> receiverNodes;
+    private final Set<CalibratedReceiverNode> calibratedReceiverNodes;
 
     private NodeRegistry() {
-        sourceNodes = new ArrayList<>();
-        repeaterNodes = new ArrayList<>();
-        receiverNodes = new ArrayList<>();
-        calibratedReceiverNodes = new ArrayList<>();
+        sourceNodes = new HashSet<>();
+        repeaterNodes = new HashSet<>();
+        receiverNodes = new HashSet<>();
+        calibratedReceiverNodes = new HashSet<>();
     }
 
     /**
@@ -76,7 +73,6 @@ public class NodeRegistry {
     }
 
     public void removeNode(Node node) {
-        System.out.println("removed node at " + node.getPos());
         switch (node) {
             case SourceNode sourceNode -> sourceNodes.remove(sourceNode);
             case RepeaterNode repeaterNode -> repeaterNodes.remove(repeaterNode);

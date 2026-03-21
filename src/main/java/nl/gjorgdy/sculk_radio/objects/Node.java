@@ -65,4 +65,17 @@ public abstract class Node {
 
     protected abstract void internalTick();
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof Node node) {
+            return world.equals(node.world) && pos.equals(node.pos);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return world.hashCode() + pos.hashCode();
+    }
 }
