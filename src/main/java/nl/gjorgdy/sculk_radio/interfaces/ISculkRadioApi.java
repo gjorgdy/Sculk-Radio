@@ -1,7 +1,7 @@
 package nl.gjorgdy.sculk_radio.interfaces;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.objects.Node;
 
 import java.util.function.Consumer;
@@ -16,7 +16,7 @@ public interface ISculkRadioApi {
      * @param pos   the Jukebox's position
      * @return true if the Jukebox is a radio, false if it is not
      */
-    boolean isRadio(ServerWorld world, BlockPos pos);
+    boolean isRadio(ServerLevel world, BlockPos pos);
 
     /**
      * Connect a Jukebox to Note Blocks and run a callback on it and the connected Note Blocks
@@ -27,7 +27,7 @@ public interface ISculkRadioApi {
      * @param disconnectCallback the callback to run on the Jukebox and Note Blocks when the sound stops playing
      * @return true if the callback was run, false if there is no Jukebox at the given position
      */
-    default boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
+    default boolean connect(ServerLevel world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback) {
         return connect(world, pos, connectCallback, disconnectCallback, n -> {
         });
     }
@@ -42,7 +42,7 @@ public interface ISculkRadioApi {
      * @param tickCallback       the callback to run on the Jukebox and Note Blocks every tick
      * @return true if the callback was run, false if there is no Jukebox at the given position
      */
-    boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback);
+    boolean connect(ServerLevel world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback);
 
     /**
      * Disconnected a Jukebox or Note Block and its connected Note Blocks
@@ -51,7 +51,7 @@ public interface ISculkRadioApi {
      * @param pos   the Jukebox's position
      * @return true if the Note Blocks were disconnected, false if there is no Jukebox or Note Block at the given position
      */
-    boolean disconnect(ServerWorld world, BlockPos pos);
+    boolean disconnect(ServerLevel world, BlockPos pos);
 
     /**
      * Execute a tick on a Jukebox and connected Note Blocks for visual effects
@@ -60,6 +60,6 @@ public interface ISculkRadioApi {
      * @param pos   the Jukebox's position
      * @return true if the tick was executed, false if the tick could not be executed
      */
-    boolean tick(ServerWorld world, BlockPos pos);
+    boolean tick(ServerLevel world, BlockPos pos);
 
 }

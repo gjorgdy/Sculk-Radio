@@ -1,8 +1,8 @@
 package nl.gjorgdy.sculk_radio.objects;
 
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.Set;
 import java.util.function.Consumer;
@@ -10,7 +10,7 @@ import java.util.function.Consumer;
 public abstract class Node {
 
     private final BlockPos pos;
-    private final ServerWorld world;
+    private final ServerLevel world;
 
     protected final Set<Node> receivers = new ObjectArraySet<>(8);
     protected Node transmitter = null;
@@ -18,7 +18,7 @@ public abstract class Node {
     private Consumer<Node> disconnectCallback;
     private Consumer<Node> tickCallback;
 
-    public Node(ServerWorld world, BlockPos pos) {
+    public Node(ServerLevel world, BlockPos pos) {
         this.world = world;
         this.pos = pos;
     }
@@ -27,7 +27,7 @@ public abstract class Node {
         return pos;
     }
 
-    public ServerWorld getWorld() {
+    public ServerLevel getWorld() {
         return world;
     }
 

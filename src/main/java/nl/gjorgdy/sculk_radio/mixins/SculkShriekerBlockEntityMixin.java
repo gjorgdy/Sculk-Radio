@@ -1,9 +1,8 @@
 package nl.gjorgdy.sculk_radio.mixins;
 
-import net.minecraft.block.entity.SculkShriekerBlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.Node;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,13 +27,13 @@ public class SculkShriekerBlockEntityMixin implements INodeContainer {
         return node;
     }
 
-    @Inject(at = @At("HEAD"), method = "shriek(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/server/network/ServerPlayerEntity;)V", cancellable = true)
-    public void shriekPlayer(ServerWorld world, ServerPlayerEntity player, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "shriek", cancellable = true)
+    public void shriekPlayer(ServerLevel level, Entity sourceEntity, CallbackInfo ci) {
         if (node != null) ci.cancel();
     }
 
-    @Inject(at = @At("HEAD"), method = "shriek(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/Entity;)V", cancellable = true)
-    public void shriekEntity(ServerWorld world, Entity entity, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "shriek", cancellable = true)
+    public void shriekEntity(ServerLevel level, Entity sourceEntity, CallbackInfo ci) {
         if (node != null) ci.cancel();
     }
 

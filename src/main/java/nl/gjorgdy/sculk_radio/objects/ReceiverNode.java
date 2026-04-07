@@ -1,13 +1,13 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 public class ReceiverNode extends Node {
 
-    public ReceiverNode(ServerWorld world, BlockPos pos) {
+    public ReceiverNode(ServerLevel world, BlockPos pos) {
         super(world, pos);
     }
 
@@ -21,7 +21,7 @@ public class ReceiverNode extends Node {
     public void disconnect() {
         ParticleUtils.deactivateSensor(this);
         super.disconnect();
-        getWorld().updateNeighbors(getPos().down(), Blocks.NOTE_BLOCK);
+        getWorld().updateNeighborsAt(getPos().below(), Blocks.NOTE_BLOCK);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ReceiverNode extends Node {
 
     @Override
     public boolean connect(Node toNode) {
-        getWorld().updateNeighbors(getPos().down(), Blocks.NOTE_BLOCK);
+        getWorld().updateNeighborsAt(getPos().below(), Blocks.NOTE_BLOCK);
         return false;
     }
 

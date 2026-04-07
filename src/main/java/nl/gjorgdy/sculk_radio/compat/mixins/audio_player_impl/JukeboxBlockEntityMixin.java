@@ -2,13 +2,13 @@ package nl.gjorgdy.sculk_radio.compat.mixins.audio_player_impl;
 
 import me.fallenbreath.conditionalmixin.api.annotation.Condition;
 import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.JukeboxBlockEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,10 +28,10 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
         super(type, pos, state);
     }
 
-    @Inject(method = "setStack", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/jukebox/JukeboxManager;stopPlaying(Lnet/minecraft/world/WorldAccess;Lnet/minecraft/block/BlockState;)V"))
-    public void onStop(ItemStack stack, CallbackInfo ci) {
-        if (this.world instanceof ServerWorld sw)
-            SculkRadio.api().disconnect(sw, this.pos);
+    @Inject(method = "setTheItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/JukeboxSongPlayer;stop(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/level/block/state/BlockState;)V"))
+    public void onStop(ItemStack itemStack, CallbackInfo ci) {
+        if (this.level instanceof ServerLevel sw)
+            SculkRadio.api().disconnect(sw, this.getBlockPos());
     }
 
 }

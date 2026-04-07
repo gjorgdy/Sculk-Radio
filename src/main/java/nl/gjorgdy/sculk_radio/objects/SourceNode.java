@@ -1,8 +1,8 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.NodeRegistry;
 import nl.gjorgdy.sculk_radio.interfaces.ICalibrated;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
@@ -13,7 +13,7 @@ public class SourceNode extends TransmittingNode implements ICalibrated {
 
     protected int frequency;
 
-    public SourceNode(ServerWorld world, BlockPos pos) {
+    public SourceNode(ServerLevel world, BlockPos pos) {
         super(world, pos);
         onInitialize();
     }
@@ -27,11 +27,11 @@ public class SourceNode extends TransmittingNode implements ICalibrated {
     public void updateFrequency() {
         this.frequency =
                 Math.max(
-                        getWorld().getEmittedRedstonePower(getPos().north(), Direction.NORTH),
-                        Math.max(getWorld().getEmittedRedstonePower(getPos().east(), Direction.EAST),
+                        getWorld().getDirectSignal(getPos().north(), Direction.NORTH),
+                        Math.max(getWorld().getDirectSignal(getPos().east(), Direction.EAST),
                                 Math.max(
-                                        getWorld().getEmittedRedstonePower(getPos().south(), Direction.SOUTH),
-                                        getWorld().getEmittedRedstonePower(getPos().west(), Direction.WEST)
+                                        getWorld().getDirectSignal(getPos().south(), Direction.SOUTH),
+                                        getWorld().getDirectSignal(getPos().west(), Direction.WEST)
                                 )
                         )
                 );

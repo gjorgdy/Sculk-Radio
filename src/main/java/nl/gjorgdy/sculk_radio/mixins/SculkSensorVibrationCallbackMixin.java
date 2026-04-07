@@ -1,11 +1,12 @@
 package nl.gjorgdy.sculk_radio.mixins;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -14,22 +15,24 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(targets = "net.minecraft.block.entity.SculkSensorBlockEntity$VibrationCallback")
+@Mixin(targets = "net.minecraft.world.level.block.entity.SculkSensorBlockEntity$VibrationUser")
 public abstract class SculkSensorVibrationCallbackMixin {
 
-    @Shadow @Final protected BlockPos pos;
+    @Shadow
+    @Final
+    protected BlockPos blockPos;
 
-    @Inject(method = "accepts", at = @At("RETURN"), cancellable = true)
-    public void accepts(ServerWorld world, BlockPos pos, RegistryEntry<GameEvent> event, GameEvent.Emitter emitter, CallbackInfoReturnable<Boolean> cir) {
-        BlockState blockBelow = world.getBlockState(this.pos.down());
-        if (blockBelow.isOf(Blocks.NOTE_BLOCK)
-                || blockBelow.isOf(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)) {
+    @Inject(method = "canReceiveVibration", at = @At("RETURN"), cancellable = true)
+    public void canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> event, GameEvent.@Nullable Context context, CallbackInfoReturnable<Boolean> cir) {
+        BlockState blockBelow = level.getBlockState(this.blockPos.below());
+        if (blockBelow.is(Blocks.NOTE_BLOCK)
+                || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)) {
             cir.setReturnValue(false);
         }
     }
 
     @Unique
-    private boolean isResonateEvent(RegistryEntry<GameEvent> holder) {
+    private boolean isResonateEvent(Holder<GameEvent> holder) {
         return holder == GameEvent.RESONATE_1
                 || holder == GameEvent.RESONATE_2
                 || holder == GameEvent.RESONATE_3

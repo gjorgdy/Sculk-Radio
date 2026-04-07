@@ -6,13 +6,13 @@
   "mixins": [
     "BlockMixin",
     "CalibratedSculkSensorBlockMixin",
-    "JukeboxManagerMixin",
+    "JukeboxSongPlayerMixin",
     "AbstractBlockStateMixin",
     "SculkSensorBlockEntityMixin",
     "SculkSensorVibrationCallbackMixin",
     "SculkShriekerBlockEntityMixin",
     "SculkShriekerBlockMixin",
-    "WorldChunkMixin",
+    "LevelChunkMixin",
     "vanilla_impl.JukeboxManagerMixin"
   ],
   "client": [

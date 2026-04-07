@@ -1,8 +1,8 @@
 package nl.gjorgdy.sculk_radio;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.interfaces.ISculkRadioApi;
 import nl.gjorgdy.sculk_radio.objects.Node;
@@ -33,12 +33,12 @@ public class SculkRadio {
     private static class API implements ISculkRadioApi {
 
         @Override
-        public boolean isRadio(ServerWorld world, BlockPos pos) {
+        public boolean isRadio(ServerLevel world, BlockPos pos) {
             return getNode(world, pos) != null;
         }
 
         @Override
-        public boolean connect(ServerWorld world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
+        public boolean connect(ServerLevel world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
             var node = getNode(world, pos);
             if (node instanceof SourceNode sn) {
                 sn.initialize(connectCallback, disconnectCallback, tickCallback);
@@ -48,7 +48,7 @@ public class SculkRadio {
         }
 
         @Override
-        public boolean disconnect(ServerWorld world, BlockPos pos) {
+        public boolean disconnect(ServerLevel world, BlockPos pos) {
             var node = getNode(world, pos);
             if (node != null) {
                 node.disconnect();
@@ -58,7 +58,7 @@ public class SculkRadio {
         }
 
         @Override
-        public boolean tick(ServerWorld world, BlockPos pos) {
+        public boolean tick(ServerLevel world, BlockPos pos) {
             var node = getNode(world, pos);
             if (node != null) {
                 node.tick();
@@ -68,8 +68,8 @@ public class SculkRadio {
         }
 
         @Nullable
-        private Node getNode(ServerWorld world, BlockPos pos) {
-            var blockEntity = world.getBlockEntity(pos.up());
+        private Node getNode(ServerLevel world, BlockPos pos) {
+            var blockEntity = world.getBlockEntity(pos.above());
             if (blockEntity instanceof INodeContainer nc) {
                 return nc.sculkRadio$getNode();
             }

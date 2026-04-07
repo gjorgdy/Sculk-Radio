@@ -1,14 +1,14 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 import java.util.function.Consumer;
 
 public abstract class TransmittingNode extends Node {
 
-    public TransmittingNode(ServerWorld world, BlockPos pos) {
+    public TransmittingNode(ServerLevel world, BlockPos pos) {
         super(world, pos);
     }
 

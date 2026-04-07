@@ -1,7 +1,7 @@
 package nl.gjorgdy.sculk_radio;
 
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.objects.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class NodeRegistry {
      * @param pos The position of the Sculk Shrieker.
      * @return The node that was registered.
      */
-    public SourceNode registerSourceNode(ServerWorld world, BlockPos pos) {
+    public SourceNode registerSourceNode(ServerLevel world, BlockPos pos) {
         var node = new SourceNode(world, pos);
         sourceNodes.add(node);
         return node;
@@ -42,7 +42,7 @@ public class NodeRegistry {
      * @param pos The position of the Sculk Sensor.
      * @return The node that was registered.
      */
-    public ReceiverNode registerReceiverNode(ServerWorld world, BlockPos pos) {
+    public ReceiverNode registerReceiverNode(ServerLevel world, BlockPos pos) {
         var node = new ReceiverNode(world, pos);
         receiverNodes.add(node);
         return node;
@@ -54,7 +54,7 @@ public class NodeRegistry {
      * @param pos The position of the Calibrated Sculk Sensor.
      * @return The node that was registered.
      */
-    public CalibratedReceiverNode registerCalibratedReceiverNode(ServerWorld world, BlockPos pos) {
+    public CalibratedReceiverNode registerCalibratedReceiverNode(ServerLevel world, BlockPos pos) {
         var node = new CalibratedReceiverNode(world, pos);
         calibratedReceiverNodes.add(node);
         return node;
@@ -66,7 +66,7 @@ public class NodeRegistry {
      * @param pos The position of the Amethyst Block with Sculk Sensor.
      * @return The node that was registered.
      */
-    public RepeaterNode registerRepeaterNode(ServerWorld world, BlockPos pos) {
+    public RepeaterNode registerRepeaterNode(ServerLevel world, BlockPos pos) {
         var node = new RepeaterNode(world, pos);
         repeaterNodes.add(node);
         return node;
@@ -121,8 +121,8 @@ public class NodeRegistry {
 
     public <T extends Node> Collection<T> getClosestNodes(Node node, Collection<T> nodes, int count) {
         return nodes.stream()
-                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16 && n != node)
-                .sorted(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(node.getPos())))
+                .filter(n -> !n.isConnected() && n.getPos().distChessboard(node.getPos()) < 16 && n != node)
+                .sorted(Comparator.comparingInt(a -> a.getPos().distManhattan(node.getPos())))
                 .limit(count)
                 .collect(Collectors.toSet());
     }
@@ -130,8 +130,8 @@ public class NodeRegistry {
     @Nullable
     public <T extends Node> T getClosestNode(Node node, Collection<T> nodes) {
         return nodes.stream()
-                .filter(n -> !n.isConnected() && n.getPos().getChebyshevDistance(node.getPos()) < 16 && n != node)
-                .min(Comparator.comparingInt(a -> a.getPos().getManhattanDistance(node.getPos())))
+                .filter(n -> !n.isConnected() && n.getPos().distChessboard(node.getPos()) < 16 && n != node)
+                .min(Comparator.comparingInt(a -> a.getPos().distManhattan(node.getPos())))
                 .orElse(null);
     }
 

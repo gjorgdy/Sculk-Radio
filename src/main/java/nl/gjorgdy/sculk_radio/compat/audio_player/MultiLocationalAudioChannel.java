@@ -7,8 +7,8 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.audiochannel.AudioChannel;
 import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -38,7 +38,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
         sourcePosition = position;
     }
 
-    public void addChannel(ServerWorld level, Vec3d pos) {
+    public void addChannel(ServerLevel level, Vec3 pos) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) return;
         var position = api.createPosition(pos.x, pos.y, pos.z);
@@ -50,7 +50,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
         audioChannels.put(position, channel);
     }
 
-    public void removeChannel(Vec3d pos) {
+    public void removeChannel(Vec3 pos) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) return;
         var position = api.createPosition(pos.x, pos.y, pos.z);

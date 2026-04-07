@@ -1,13 +1,13 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import net.minecraft.block.Blocks;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.Blocks;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 public class RepeaterNode extends TransmittingNode {
 
-    public RepeaterNode(ServerWorld world, BlockPos pos) {
+    public RepeaterNode(ServerLevel world, BlockPos pos) {
         super(world, pos);
     }
 
@@ -15,13 +15,13 @@ public class RepeaterNode extends TransmittingNode {
     public void internalTick() {
         ParticleUtils.activateSensor(this);
         super.internalTick();
-        getWorld().updateNeighbors(getPos().down(), Blocks.AMETHYST_BLOCK);
+        getWorld().updateNeighborsAt(getPos().below(), Blocks.AMETHYST_BLOCK);
     }
 
     @Override
     public void disconnect() {
         ParticleUtils.deactivateSensor(this);
         super.disconnect();
-        getWorld().updateNeighbors(getPos().down(), Blocks.AMETHYST_BLOCK);
+        getWorld().updateNeighborsAt(getPos().below(), Blocks.AMETHYST_BLOCK);
     }
 }

@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
     id "com.modrinth.minotaur" version "2.+"
 }
@@ -30,18 +30,17 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     // Plugin for conditional mixins
-    modImplementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
+    implementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     include 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
     // Audio Player compatibility
-    modRuntimeOnly "maven.modrinth:admiral:${project.admiral_version}+fabric"
-    modRuntimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
-    modRuntimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
-    modCompileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
-    modImplementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
+    runtimeOnly "maven.modrinth:admiral:${project.admiral_version}"
+    runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
+    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    implementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
 }
 
 processResources {
@@ -61,7 +60,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = 21
+def targetJavaVersion = 25
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
@@ -120,7 +119,7 @@ modrinth {
     changelog = rootProject.file("changelog.md").text
     syncBodyFrom = getBody()
     versionType = project.mod_release_type
-    uploadFile = remapJar
+    uploadFile = jar
     gameVersions = project.minecraft_versions.split(',') as List<String>
     loaders = ["fabric"]
     dependencies {
