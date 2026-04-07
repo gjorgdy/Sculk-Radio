@@ -9,7 +9,11 @@
   "license": "All-Rights-Reserved",
   "icon": "assets/sculk_radio/logo.jpg",
   "environment": "*",
-  "entrypoints": {},
+  "entrypoints": {
+    "main": [
+      "nl.gjorgdy.sculk_radio.SculkRadio"
+    ]
+  },
   "mixins": [
     "sculk_radio.mixins.json",
     "sculk_radio_compat.mixins.json"

@@ -1,6 +1,8 @@
 package nl.gjorgdy.sculk_radio;
 
+import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
@@ -13,13 +15,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
-public class SculkRadio {
+public class SculkRadio implements ModInitializer {
 
+    public static final String MOD_ID = "sculk_radio";
     public static Logger LOGGER = LoggerFactory.getLogger("Sculk Radio");
 
     public static void RunIfServerActive(Runnable runnable) {
         ServerLifecycleEvents.SERVER_STARTED.register(s -> runnable.run());
     }
+
+    public static boolean enableExperimentalFrequencies = false;
 
     private static API apiInstance = null;
 
@@ -28,6 +33,15 @@ public class SculkRadio {
             apiInstance = new API();
         }
         return apiInstance;
+    }
+
+    @Override
+    public void onInitialize() {
+        if (FabricLoader.getInstance().isModLoaded("fzzy_config")) {
+            FzzyConfig.load();
+        } else {
+            LOGGER.info("Fzzy Config not found, using default settings.");
+        }
     }
 
     private static class API implements ISculkRadioApi {

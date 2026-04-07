@@ -90,7 +90,7 @@ public class NodeRegistry {
     }
 
     public void connectNodes(SourceNode sourceNode) {
-        if (sourceNode.getFrequency() > 0) {
+        if (SculkRadio.enableExperimentalFrequencies && sourceNode.getFrequency() > 0) {
             for (var receiverNode : calibratedReceiverNodes) {
                 if (receiverNode.getFrequency() == sourceNode.getFrequency() && !receiverNode.isConnected()) {
                     boolean connected = sourceNode.connect(receiverNode);
