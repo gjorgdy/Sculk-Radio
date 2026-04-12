@@ -29,6 +29,26 @@ The maximum distance for receiving and repeating a signal is 16 blocks. Which me
 - Audio coming out of a speaker has the same distance and volume as if it came out of a jukebox.
 - Sculk blocks will not activate when they are part of a radio, speaker or repeater. Outside of these 'multiblocks' they have their vanilla behavior.
 
+## Experimental frequencies
+The mod has an experimental feature that allows radios to send audio globally using frequencies.
+This is disabled by default and can be enabled in the config file.
+- To set a radio's frequency, point a redstone signal into its Shrieker.
+- To set a speaker's frequency, it needs to have a Calibrated Sculk Sensor with a redstone signal pointed into its 'input'.
+- Only one radio can be on a frequency at a time, but multiple speakers can be on the same frequency.
+- If a radio is on a frequency, it will not connect to normal repeaters and speakers.
+
+## Configuration
+
+On its own, the mod will not create a config file.
+To change settings, you can install [Fzzy Config](https://modrinth.com/mod/fzzy-config).
+
+To load changes to the config file, you can use the vanilla ``/reload`` command.
+
+```toml
+# Whether to enable the experimental version of global frequencies.
+enableExperimentalFrequencies = true
+```
+
 ## Other Mod compatibilities
 Mods that add new music discs and resource packs that change vanilla discs should also work natively. But be sure to create an issue on the Github if there are incompatibilities.
 
