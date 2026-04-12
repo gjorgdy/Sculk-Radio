@@ -27,6 +27,7 @@
   },
   "suggests": {
     "voicechat": ">=${voicechat_api_version}",
-    "audioplayer": ">=${audioplayer_api_version}"
+    "audioplayer": ">=${audioplayer_api_version}",
+    "fzzy-config": ">=${fzzy_config_version}"
   }
 }

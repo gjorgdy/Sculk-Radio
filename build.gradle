@@ -66,7 +66,8 @@ processResources {
                 "loader_version": project.loader_version,
                 "fabric_version": project.fabric_api_version,
                 "voicechat_api_version": project.voicechat_api_version,
-                "audioplayer_api_version": project.audioplayer_api_version
+                "audioplayer_api_version": project.audioplayer_api_version,
+                "fzzy_config_version": project.fzzy_config_version
     }
 }
 
@@ -134,7 +135,7 @@ modrinth {
     loaders = ["fabric"]
     dependencies {
         required.project "fabric-api"
-        optional.project "audioplayer"
+        optional.version "audioplayer", project.audioplayer_mod_version
+        optional.version "fzzy-config", project.fzzy_config_version
     }
 }
-
