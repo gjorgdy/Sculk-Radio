@@ -4,7 +4,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.objects.Node;
+import nl.gjorgdy.sculk_radio.nodes.Node;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

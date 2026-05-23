@@ -7,6 +7,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,7 +36,10 @@ public abstract class JukeboxManagerMixin {
     @Inject(method = "tick", at = @At(value = "HEAD"), order = 1001)
     public void tick(LevelAccessor level, net.minecraft.world.level.block.state.BlockState blockState, CallbackInfo ci) {
         if (!isPlaying() && level instanceof ServerLevel serverWorld) {
-            SculkRadio.api().disconnect(serverWorld, blockPos);
+            var node = NodeUtils.getFromBlockEntity(serverWorld.getBlockEntity(this.blockPos.above()));
+            if (node instanceof RadioNode radio) {
+                radio.stop();
+            }
         }
     }
 

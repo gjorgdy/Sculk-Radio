@@ -10,6 +10,8 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,8 +32,10 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
 
     @Inject(method = "setTheItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/JukeboxSongPlayer;stop(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/level/block/state/BlockState;)V"))
     public void onStop(ItemStack itemStack, CallbackInfo ci) {
-        if (this.level instanceof ServerLevel sw)
-            SculkRadio.api().disconnect(sw, this.getBlockPos());
+        var node = NodeUtils.getFromBlockEntity(this);
+        if (node instanceof RadioNode radio) {
+            radio.stop();
+        }
     }
 
 }

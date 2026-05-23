@@ -1,6 +1,6 @@
 package nl.gjorgdy.sculk_radio.interfaces;
 
-import nl.gjorgdy.sculk_radio.objects.Node;
+import nl.gjorgdy.sculk_radio.nodes.Node;
 import org.jetbrains.annotations.Nullable;
 
 public interface INodeContainer {

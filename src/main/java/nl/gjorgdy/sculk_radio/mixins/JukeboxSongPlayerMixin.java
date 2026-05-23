@@ -5,6 +5,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,8 +19,11 @@ public class JukeboxSongPlayerMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;sendParticles(Lnet/minecraft/core/particles/ParticleOptions;DDDIDDDD)I"), cancellable = true)
     private static void onSpawnMusicParticles(LevelAccessor level, BlockPos blockPos, CallbackInfo ci) {
         if (level.isClientSide()) return;
-        boolean executed = SculkRadio.api().tick((ServerLevel) level, blockPos);
-        if (executed) ci.cancel();
+        var node = NodeUtils.getFromBlockEntity(level.getBlockEntity(blockPos.above()));
+        if (node instanceof RadioNode radio) {
+            radio.tick();
+            ci.cancel();
+        }
     }
 
 }

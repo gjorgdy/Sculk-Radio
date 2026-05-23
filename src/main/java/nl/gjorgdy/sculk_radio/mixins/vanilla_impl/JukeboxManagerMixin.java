@@ -10,6 +10,9 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.SpeakerNode;
+import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,24 +43,23 @@ public class JukeboxManagerMixin {
     @Inject(method = "play", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(LevelAccessor level, Holder<JukeboxSong> song, CallbackInfo ci) {
         if (level instanceof ServerLevel sw) {
-            boolean started = SculkRadio.api().connect(
-                    sw,
-                    this.blockPos,
-                    n -> play(level, song, n.getPos()),
-                    n -> stop(level, n.getPos())
-            );
-            if (started) ci.cancel();
+            var node = NodeUtils.getFromBlockEntity(sw.getBlockEntity(this.blockPos.above()));
+            if (node instanceof RadioNode radio) {
+                radio.play(
+                    speaker -> play(level, song, speaker.getPos().below()),
+                    speaker -> stop(level, speaker.getPos().below())
+                );
+                ci.cancel();
+            }
         }
     }
 
     @Inject(method = "stop", at = @At("HEAD"), cancellable = true)
     public void onStopPlaying(LevelAccessor level, BlockState blockState, CallbackInfo ci) {
         if (level instanceof ServerLevel sw) {
-            boolean stopped = SculkRadio.api().disconnect(
-                    sw,
-                    this.blockPos
-            );
-            if (stopped) {
+            var node = NodeUtils.getFromBlockEntity(sw.getBlockEntity(this.blockPos.above()));
+            if (node instanceof RadioNode radio) {
+                radio.stop();
                 if (this.song != null) {
                     this.song = null;
                     this.ticksSinceSongStarted = 0L;

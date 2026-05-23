@@ -24,10 +24,10 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "getDirectSignal")
     public int redstonePower(BlockGetter level, BlockPos pos, Direction direction, Operation<Integer> original) {
-        if ((is(Blocks.NOTE_BLOCK) || is(Blocks.AMETHYST_BLOCK)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
-            var node = nodeContainer.sculkRadio$getNode();
-            return node != null && node.isActive() ? 15 : original.call(level, pos, direction);
-        }
+//        if ((is(Blocks.NOTE_BLOCK) || is(Blocks.AMETHYST_BLOCK)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
+//            var node = nodeContainer.sculkRadio$getNode();
+//            return node != null && node.isActive() ? 15 : original.call(level, pos, direction);
+//        }
         return original.call(level, pos, direction);
     }
 

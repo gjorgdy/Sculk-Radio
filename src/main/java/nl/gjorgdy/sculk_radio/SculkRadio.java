@@ -3,17 +3,9 @@ package nl.gjorgdy.sculk_radio;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.interfaces.ISculkRadioApi;
-import nl.gjorgdy.sculk_radio.objects.Node;
-import nl.gjorgdy.sculk_radio.objects.SourceNode;
-import org.jetbrains.annotations.Nullable;
+import nl.gjorgdy.sculk_radio.registries.LevelRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Consumer;
 
 public class SculkRadio implements ModInitializer {
 
@@ -24,15 +16,18 @@ public class SculkRadio implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(s -> runnable.run());
     }
 
+    // start config
     public static boolean enableExperimentalFrequencies = false;
+    public static int innerClusterRange = 16;
+    public static int minAntennaHeight = 16;
+    // end config
 
-    private static API apiInstance = null;
-
-    public static ISculkRadioApi api() {
-        if (apiInstance == null) {
-            apiInstance = new API();
+    private static LevelRegistry levelRegistry;
+    public static LevelRegistry getLevelRegistry() {
+        if (levelRegistry == null) {
+            levelRegistry = new LevelRegistry();
         }
-        return apiInstance;
+        return levelRegistry;
     }
 
     @Override
@@ -41,53 +36,6 @@ public class SculkRadio implements ModInitializer {
             FzzyConfig.load();
         } else {
             LOGGER.info("Fzzy Config not found, using default settings.");
-        }
-    }
-
-    private static class API implements ISculkRadioApi {
-
-        @Override
-        public boolean isRadio(ServerLevel world, BlockPos pos) {
-            return getNode(world, pos) != null;
-        }
-
-        @Override
-        public boolean connect(ServerLevel world, BlockPos pos, Consumer<Node> connectCallback, Consumer<Node> disconnectCallback, Consumer<Node> tickCallback) {
-            var node = getNode(world, pos);
-            if (node instanceof SourceNode sn) {
-                sn.initialize(connectCallback, disconnectCallback, tickCallback);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean disconnect(ServerLevel world, BlockPos pos) {
-            var node = getNode(world, pos);
-            if (node != null) {
-                node.disconnect();
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean tick(ServerLevel world, BlockPos pos) {
-            var node = getNode(world, pos);
-            if (node != null) {
-                node.tick();
-                return true;
-            }
-            return false;
-        }
-
-        @Nullable
-        private Node getNode(ServerLevel world, BlockPos pos) {
-            var blockEntity = world.getBlockEntity(pos.above());
-            if (blockEntity instanceof INodeContainer nc) {
-                return nc.sculkRadio$getNode();
-            }
-            return null;
         }
     }
 }
