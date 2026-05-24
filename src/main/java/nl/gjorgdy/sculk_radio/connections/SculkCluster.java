@@ -2,16 +2,13 @@ package nl.gjorgdy.sculk_radio.connections;
 
 import kotlin.Pair;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.interfaces.IStreamTransmitter;
 import nl.gjorgdy.sculk_radio.nodes.Node;
 import nl.gjorgdy.sculk_radio.nodes.RelayNode;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class SculkCluster {
 
@@ -26,8 +23,25 @@ public class SculkCluster {
 		this.pathsCache = new HashMap<>();
 	}
 
-	public void forNodes(Consumer<? super ClusterNode> action) {
-		this.nodes.forEach(action);
+	public void announceStream(IStreamTransmitter sourceNode) {
+		var stream = sourceNode.getStream();
+		if (stream == null) return;
+		nodes.forEach(node -> {
+			if (node != sourceNode && node instanceof Node n) {
+				if (n.canReceive()) stream.listen(n);
+			}
+		});
+	}
+
+	public Set<SculkStream> getStreams() {
+		return nodes.stream().map(node -> {
+			if (node instanceof IStreamTransmitter transmitter) {
+				return transmitter.getStream();
+			}
+			return null;
+		})
+		.filter(Objects::nonNull)
+		.collect(Collectors.toSet());
 	}
 
 	public ServerLevel getLevel() {
@@ -46,8 +60,7 @@ public class SculkCluster {
 			return merge(b, a);
 		}
 		for (var node : b.nodes) {
-			a.nodes.add(node);
-			node.setCluster(a);
+			a.joinCluster(node);
 		}
 		b.nodes.clear();
 		// clear caches
@@ -59,35 +72,76 @@ public class SculkCluster {
 	public void joinCluster(ClusterNode node) {
 		node.cluster = this;
 		nodes.add(node);
+		// connect to streams
+		var streams = getStreams();
+		nodes.forEach(n -> streams.forEach(s -> s.listen(n)));
+		// clear cache
+		pathsCache.clear();
+	}
+
+	public void leaveCluster(ClusterNode node) {
+		node.cluster = null;
+		nodes.remove(node);
+		// leave streams
+		var streams = getStreams();
+		nodes.forEach(n -> streams.forEach(s -> s.stopListening(n)));
 		// clear cache
 		pathsCache.clear();
 	}
 
 	public void splitCluster() {
 		var oldNodes = nodes.stream().filter(n -> !n.isRemoved).toList();
-		// wipe cluster and nodes
-		nodes.clear();
-		oldNodes.forEach(node -> node.setCluster(null));
-		// rebuild cluster(s)
+		if (oldNodes.isEmpty()) return;
+		// Find connected components using BFS
+		var visited = new HashSet<ClusterNode>();
+		var components = new ArrayList<Set<ClusterNode>>();
 		for (var node : oldNodes) {
-			// give cluster if none
-			if (node.cluster == null) {
-				var cluster = nodes.isEmpty() ? this : new SculkCluster(level);
-				cluster.joinCluster(node);
+			if (!visited.contains(node)) {
+				var component = findConnectedComponent(node, oldNodes, visited);
+				components.add(component);
 			}
-			// try to connect
-			for (var otherNode : oldNodes) {
-				if (node != otherNode && node.canConnect(otherNode)) {
-					if (otherNode.cluster == null) {
-						node.getCluster().joinCluster(otherNode);
-					} else {
-						node.getCluster().merge(otherNode.getCluster());
-					}
-				}
+		}
+		// If only one component, no split needed
+		if (components.size() == 1) return;
+		// Keep first component in current cluster, create new clusters for others
+		var componentIter = components.iterator();
+		var mainComponent = componentIter.next();
+		// Remove nodes that are not in the main component
+		var disconnected = oldNodes.stream()
+			.filter(n -> !mainComponent.contains(n))
+			.collect(Collectors.toCollection(HashSet::new));
+		disconnected.forEach(this::leaveCluster);
+		// Assign other components to new clusters
+		while (componentIter.hasNext()) {
+			var component = componentIter.next();
+			var newCluster = new SculkCluster(level);
+			for (var node : component) {
+				newCluster.joinCluster(node);
 			}
 		}
 		// clear cache
 		pathsCache.clear();
+	}
+
+	private Set<ClusterNode> findConnectedComponent(ClusterNode start, java.util.List<ClusterNode> allNodes, Set<ClusterNode> visited) {
+		var component = new HashSet<ClusterNode>();
+		var queue = new ArrayDeque<ClusterNode>();
+		queue.add(start);
+		visited.add(start);
+		component.add(start);
+
+		while (!queue.isEmpty()) {
+			var current = queue.removeFirst();
+			for (var node : allNodes) {
+				if (!visited.contains(node) && current.canConnect(node)) {
+					visited.add(node);
+					component.add(node);
+					queue.addLast(node);
+				}
+			}
+		}
+
+		return component;
 	}
 
 	public void path(BiConsumer<Node, Node> edgeConsumer, Node from, Node to) {
@@ -180,9 +234,7 @@ public class SculkCluster {
 
 		public void onRemove() {
 			// leave cluster
-			this.cluster.nodes.remove(this);
 			this.cluster.splitCluster();
-			this.cluster = null;
 			// set removed
 			isRemoved = true;
 		}

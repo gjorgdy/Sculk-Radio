@@ -2,43 +2,62 @@ package nl.gjorgdy.sculk_radio.nodes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.connections.SculkStream;
+import nl.gjorgdy.sculk_radio.interfaces.IStreamTransmitter;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
+import org.jspecify.annotations.Nullable;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.function.Consumer;
 
-public class RadioNode extends Node {
+public class RadioNode extends Node implements IStreamTransmitter {
 
-	private boolean isPlaying;
-
-	private final Set<SpeakerNode> listeners = new HashSet<>();
-	private Consumer<SpeakerNode> stopConsumer;
+	private @Nullable SculkStream stream;
 
 	public RadioNode(ServerLevel world, BlockPos pos) {
 		super(world, pos);
 	}
 
 	public void play(Consumer<SpeakerNode> startConsumer, Consumer<SpeakerNode> stopConsumer) {
-		if (isPlaying) stop();
-		this.isPlaying = true;
-		this.stopConsumer = stopConsumer;
+		stream(startConsumer, stopConsumer, false);
+	}
 
-		getCluster().forNodes(n -> {
-			if (n instanceof SpeakerNode speaker) {
-				startConsumer.accept(speaker);
-				listeners.add(speaker);
-			}
-		});
+	public void stream(Consumer<SpeakerNode> connectConsumer, Consumer<SpeakerNode> disconnectConsumer, boolean persistent) {
+		stream(new SculkStream(
+			n -> {
+				if (n instanceof SpeakerNode speaker) {
+					connectConsumer.accept(speaker);
+					ParticleUtils.activateSensor(speaker);
+				}
+			},
+			n -> {
+				if (n instanceof SpeakerNode speaker) {
+					disconnectConsumer.accept(speaker);
+					ParticleUtils.deactivateSensor(speaker);
+				}
+			},
+			persistent
+		));
+	}
+
+	public void stream(SculkStream stream) {
+		if (this.stream != null) stop();
+		this.stream = stream;
+		getCluster().announceStream(this);
+		stream.start();
 	}
 
 	public void tick() {
-		if (isPlaying) {
-			listeners.forEach(speaker -> {
+		if (stream != null) {
+			stream.forListeners(node -> {
+				if (!(node instanceof SpeakerNode speaker)) return;
 				getCluster().path((from, to) -> {
 					ParticleUtils.spawnVibrationParticles(from, to);
 					if (to instanceof SpeakerNode || to instanceof RelayNode) {
-						ParticleUtils.activateSensor(to);
+						if (stream.isActive()) {
+							ParticleUtils.activateSensor(to);
+						} else {
+							ParticleUtils.deactivateSensor(to);
+						}
 					}
 				}, this, speaker);
 				ParticleUtils.spawnNoteParticles(speaker);
@@ -48,23 +67,16 @@ public class RadioNode extends Node {
 	}
 
 	public void stop() {
-		if (stopConsumer != null) listeners.forEach(stopConsumer);
-		listeners.forEach(speaker -> {
-			getCluster().path((_, to) -> {
-				if (to instanceof SpeakerNode || to instanceof RelayNode) {
-					ParticleUtils.deactivateSensor(to);
-				}
-			}, this, speaker);
-			ParticleUtils.spawnNoteParticles(speaker);
-		});
-		listeners.clear();
-
-		isPlaying = false;
-		this.stopConsumer = null;
+		if (stream == null) return;
+		stream.stop();
+		// tick to deactivate visual states
+		tick();
+		stream = null;
 	}
 
-	public boolean isPlaying() {
-		return isPlaying;
+	@Override
+	public @Nullable SculkStream getStream() {
+		return stream;
 	}
 
 	@Override

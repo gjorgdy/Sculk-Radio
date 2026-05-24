@@ -21,6 +21,14 @@ public class SculkChannel {
 		this.antennas = new HashSet<>();
 	}
 
+	public Set<SculkStream> getStreams() {
+		var streams = new HashSet<SculkStream>();
+		for (var antenna : antennas) {
+			streams.addAll(antenna.getCluster().getStreams());
+		}
+		return streams;
+	}
+
 	public void forNetworks(Consumer<? super SculkCluster> action) {
 		antennas.forEach(node -> action.accept(node.getCluster()));
 	}

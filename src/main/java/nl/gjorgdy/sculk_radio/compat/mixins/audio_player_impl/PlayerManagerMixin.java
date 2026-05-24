@@ -16,9 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
-import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.nodes.RadioNode;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
@@ -78,13 +76,12 @@ public abstract class PlayerManagerMixin {
         var blockEntity = level.getBlockEntity(blockPos.above());
         var node = NodeUtils.getFromBlockEntity(blockEntity);
         if (node instanceof RadioNode radio) {
-            radio.play(
-                    speaker -> mlChannel.addChannel(speaker.getLevel(), speaker.getPos().getCenter()),
-                    speaker -> mlChannel.removeChannel(speaker.getPos().getCenter())
+            radio.stream(
+                speaker -> mlChannel.addChannel(speaker.getLevel(), speaker.getPos().getCenter()),
+                speaker -> mlChannel.removeChannel(speaker.getPos().getCenter()),
+                true
             );
         }
-
-        System.out.println(mlChannel);
 
         return instance.playChannel(mlChannel, sound, p, maxLengthSeconds);
     }

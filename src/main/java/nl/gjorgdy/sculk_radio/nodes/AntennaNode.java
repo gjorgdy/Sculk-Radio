@@ -11,6 +11,9 @@ public class AntennaNode extends SculkChannel.ChannelNode {
 		super(world, pos);
 	}
 
+	private boolean isTransmitting;
+	private boolean isReceiving;
+
 	@Override
 	public void updateFrequency() {
 		setFrequency(null);
