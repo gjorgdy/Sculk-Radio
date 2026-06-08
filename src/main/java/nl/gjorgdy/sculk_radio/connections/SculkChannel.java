@@ -71,8 +71,8 @@ public class SculkChannel {
 		}
 
 		@Override
-		public void onRemove() {
-			super.onRemove();
+		public void afterRemove() {
+			super.afterRemove();
 			setFrequency(null);
 		}
 

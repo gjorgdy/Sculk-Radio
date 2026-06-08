@@ -2,8 +2,9 @@ package nl.gjorgdy.sculk_radio.nodes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.connections.SculkStream;
 
-public class SpeakerNode extends Node {
+public class SpeakerNode extends SculkStream.ListeningNode {
 
 	public SpeakerNode(ServerLevel level, BlockPos pos) {
 		super(level, pos);

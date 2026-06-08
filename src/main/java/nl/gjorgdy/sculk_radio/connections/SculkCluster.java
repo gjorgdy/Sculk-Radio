@@ -2,6 +2,7 @@ package nl.gjorgdy.sculk_radio.connections;
 
 import kotlin.Pair;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.IStreamTransmitter;
 import nl.gjorgdy.sculk_radio.nodes.Node;
 import nl.gjorgdy.sculk_radio.nodes.RelayNode;
@@ -27,8 +28,8 @@ public class SculkCluster {
 		var stream = sourceNode.getStream();
 		if (stream == null) return;
 		nodes.forEach(node -> {
-			if (node != sourceNode && node instanceof Node n) {
-				if (n.canReceive()) stream.listen(n);
+			if (node != sourceNode && node instanceof SculkStream.ListeningNode l) {
+				l.listenTo(stream);
 			}
 		});
 	}
@@ -54,18 +55,23 @@ public class SculkCluster {
 
 	public static SculkCluster merge(SculkCluster a, SculkCluster b) {
 		if (!a.getLevel().equals(b.getLevel())) {
-			throw new IllegalArgumentException("Cannot merge subnetworks from different dimensions");
+			throw new IllegalArgumentException("Cannot merge clusters from different dimensions");
 		}
+		// merge into biggest
 		if (a.nodes.size() < b.nodes.size()) {
 			return merge(b, a);
 		}
-		for (var node : b.nodes) {
-			a.joinCluster(node);
+
+		if (b.nodes.size() == 1) {
+			a.joinCluster(b.nodes.iterator().next());
+		} else {
+			for (var node : b.nodes) {
+				a.joinCluster(node);
+			}
 		}
+
 		b.nodes.clear();
-		// clear caches
 		a.pathsCache.clear();
-		b.pathsCache.clear();
 		return a;
 	}
 
@@ -73,75 +79,46 @@ public class SculkCluster {
 		node.cluster = this;
 		nodes.add(node);
 		// connect to streams
-		var streams = getStreams();
-		nodes.forEach(n -> streams.forEach(s -> s.listen(n)));
+		if (node instanceof SculkStream.ListeningNode l) {
+			l.stopListening();
+			getStreams().forEach(l::listenTo);
+		}
 		// clear cache
 		pathsCache.clear();
 	}
 
 	public void leaveCluster(ClusterNode node) {
+		leaveCluster(node, true);
+	}
+
+	public void leaveCluster(ClusterNode node, boolean updateCluster) {
+		if (node instanceof SculkStream.ListeningNode l) l.stopListening();
 		node.cluster = null;
 		nodes.remove(node);
-		// leave streams
-		var streams = getStreams();
-		nodes.forEach(n -> streams.forEach(s -> s.stopListening(n)));
-		// clear cache
-		pathsCache.clear();
+		// handle removal in cluster
+		if (!updateCluster) return;
+		var neighbors = nodes.stream().filter(n -> n.canConnect(node)).toList();
+		if (node.isEndpoint() || neighbors.size() == 1) {
+			// remove from cache
+			pathsCache.keySet().removeIf(pair -> pair.getFirst() == node || pair.getSecond() == node);
+		} else {
+			// check connections of neighbors
+			neighbors.stream()
+				.filter(neighbor -> nodes.stream().noneMatch(neighbor::canConnect))
+				.forEach(this::orphan);
+			// reset whole cache
+			pathsCache.clear();
+		}
 	}
 
-	public void splitCluster() {
-		var oldNodes = nodes.stream().filter(n -> !n.isRemoved).toList();
-		if (oldNodes.isEmpty()) return;
-		// Find connected components using BFS
-		var visited = new HashSet<ClusterNode>();
-		var components = new ArrayList<Set<ClusterNode>>();
-		for (var node : oldNodes) {
-			if (!visited.contains(node)) {
-				var component = findConnectedComponent(node, oldNodes, visited);
-				components.add(component);
-			}
-		}
-		// If only one component, no split needed
-		if (components.size() == 1) return;
-		// Keep first component in current cluster, create new clusters for others
-		var componentIter = components.iterator();
-		var mainComponent = componentIter.next();
-		// Remove nodes that are not in the main component
-		var disconnected = oldNodes.stream()
-			.filter(n -> !mainComponent.contains(n))
-			.collect(Collectors.toCollection(HashSet::new));
-		disconnected.forEach(this::leaveCluster);
-		// Assign other components to new clusters
-		while (componentIter.hasNext()) {
-			var component = componentIter.next();
-			var newCluster = new SculkCluster(level);
-			for (var node : component) {
-				newCluster.joinCluster(node);
-			}
-		}
-		// clear cache
-		pathsCache.clear();
-	}
-
-	private Set<ClusterNode> findConnectedComponent(ClusterNode start, java.util.List<ClusterNode> allNodes, Set<ClusterNode> visited) {
-		var component = new HashSet<ClusterNode>();
-		var queue = new ArrayDeque<ClusterNode>();
-		queue.add(start);
-		visited.add(start);
-		component.add(start);
-
-		while (!queue.isEmpty()) {
-			var current = queue.removeFirst();
-			for (var node : allNodes) {
-				if (!visited.contains(node) && current.canConnect(node)) {
-					visited.add(node);
-					component.add(node);
-					queue.addLast(node);
-				}
-			}
-		}
-
-		return component;
+	private void orphan(ClusterNode node) {
+		System.out.println("Node " + node + " orphaned after removing " + node);
+		if (node instanceof SculkStream.ListeningNode l) l.stopListening();
+		nodes.remove(node);
+		new SculkCluster(level).joinCluster(node);
+		SculkRadio.getLevelRegistry()
+				.getNodeRegistry(level)
+				.initNode((Node) node);
 	}
 
 	public void path(BiConsumer<Node, Node> edgeConsumer, Node from, Node to) {
@@ -214,6 +191,16 @@ public class SculkCluster {
 		return "Cluster[" +  String.join(",", nodes.stream().map(Objects::toString).toList()) + "]";
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		return this == obj || (obj instanceof SculkCluster cluster && cluster.nodes.equals(nodes));
+	}
+
+	@Override
+	public int hashCode() {
+		return nodes.hashCode();
+	}
+
 	public abstract static class ClusterNode {
 
 		protected boolean isRemoved = false;
@@ -228,13 +215,9 @@ public class SculkCluster {
 			return cluster;
 		}
 
-		private void setCluster(SculkCluster cluster) {
-			this.cluster = cluster;
-		}
-
-		public void onRemove() {
+		public void afterRemove() {
 			// leave cluster
-			this.cluster.splitCluster();
+			this.cluster.leaveCluster(this);
 			// set removed
 			isRemoved = true;
 		}
@@ -242,14 +225,19 @@ public class SculkCluster {
 		abstract public boolean canTransmit();
 		abstract public boolean canReceive();
 
+		public boolean isEndpoint() {
+			return canTransmit() != canReceive();
+		}
+
 		protected boolean innerCanConnect(ClusterNode otherNode) {
+			if (this == otherNode) return false;
 			var thisToOther = this.canTransmit() && otherNode.canReceive();
 			var otherToThis = this.canReceive() && otherNode.canTransmit();
-			return (thisToOther || otherToThis);// && !alreadyConnected;
+			return (thisToOther || otherToThis);
 		}
 
 		final public boolean canConnect(ClusterNode otherNode) {
-			return canConnect(otherNode, true);
+			return (innerCanConnect(otherNode) && otherNode.innerCanConnect(this));
 		}
 
 		final public boolean canConnect(ClusterNode otherNode, boolean checkIfAlreadyConnected) {

@@ -60,7 +60,7 @@ public class NodeRegistry {
 		return speaker;
 	}
 
-	private void initNode(Node node) {
+	public void initNode(Node node) {
 		// add to registry
 		switch (node) {
 			case AntennaNode antenna -> antennas.add(antenna);
@@ -75,14 +75,10 @@ public class NodeRegistry {
 				.filter(node::canConnect)
 				.map(Node::getCluster)
 				.collect(Collectors.toSet());
-		var cluster = node.getCluster();
 		for (var c : neighboringClusters) {
-			System.out.println("Connecting " + node + " to cluster with " + c.size() + " nodes");
-			cluster = cluster.merge(c);
+			node.getCluster().merge(c);
 		}
-
-//		System.out.println("Registered " + node.getCluster());
-		System.out.println("Registered " + cluster);
+		System.out.println("Registered new node " + node + " at " + node.getPos() + " in cluster of " + node.getCluster().size());
 	}
 
 	public void removeNode(BlockPos pos) {
@@ -101,7 +97,7 @@ public class NodeRegistry {
 			default -> {}
 		}
 		// handle removal
-		node.onRemove();
+		node.afterRemove();
 	}
 
 }
