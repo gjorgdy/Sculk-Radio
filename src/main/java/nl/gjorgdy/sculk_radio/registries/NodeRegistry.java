@@ -7,25 +7,15 @@ import nl.gjorgdy.sculk_radio.nodes.*;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class NodeRegistry {
 
 	private final ServerLevel level;
 	private final Set<Node> nodes;
 
-	private final Set<AntennaNode> antennas;
-	private final Set<RadioNode> radios;
-	private final Set<RelayNode> relays;
-	private final Set<SpeakerNode> speakers;
-
 	public NodeRegistry(ServerLevel level) {
 		this.level = level;
 		this.nodes = new HashSet<>();
-		this.antennas = new HashSet<>();
-		this.radios = new HashSet<>();
-		this.relays = new HashSet<>();
-		this.speakers = new HashSet<>();
 	}
 
 	public Optional<Node> getNode(BlockPos pos) {
@@ -62,40 +52,17 @@ public class NodeRegistry {
 
 	public void initNode(Node node) {
 		// add to registry
-		switch (node) {
-			case AntennaNode antenna -> antennas.add(antenna);
-			case RadioNode radio -> radios.add(radio);
-			case RelayNode relay -> relays.add(relay);
-			case SpeakerNode speaker -> speakers.add(speaker);
-			default -> {}
-		}
 		nodes.add(node);
 		// connect to neighboring clusters
-		var neighboringClusters = nodes.stream()
+		nodes.stream()
 				.filter(node::canConnect)
-				.map(Node::getCluster)
-				.collect(Collectors.toSet());
-		for (var c : neighboringClusters) {
-			node.getCluster().merge(c);
-		}
-		System.out.println("Registered new node " + node + " at " + node.getPos() + " in cluster of " + node.getCluster().size());
-	}
-
-	public void removeNode(BlockPos pos) {
-		getNode(pos).ifPresent(this::removeNode);
+				.forEach(node::connect);
 	}
 
 	public void removeNode(Node node) {
 		if (node == null) return;
 		// remove from registry
 		nodes.remove(node);
-		switch (node) {
-			case AntennaNode antenna -> antennas.remove(antenna);
-			case RadioNode radio -> radios.remove(radio);
-			case RelayNode relay -> relays.remove(relay);
-			case SpeakerNode speaker -> speakers.remove(speaker);
-			default -> {}
-		}
 		// handle removal
 		node.afterRemove();
 	}

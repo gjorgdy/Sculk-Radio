@@ -8,7 +8,6 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class SculkChannel {
 
@@ -21,17 +20,13 @@ public class SculkChannel {
 		this.antennas = new HashSet<>();
 	}
 
-	public Set<SculkStream> getStreams() {
-		var streams = new HashSet<SculkStream>();
-		for (var antenna : antennas) {
-			streams.addAll(antenna.getCluster().getStreams());
-		}
-		return streams;
-	}
-
-	public void forNetworks(Consumer<? super SculkCluster> action) {
-		antennas.forEach(node -> action.accept(node.getCluster()));
-	}
+//	public Set<SculkStream> getStreams() {
+//		var streams = new HashSet<SculkStream>();
+//		for (var antenna : antennas) {
+//			streams.addAll(antenna);
+//		}
+//		return streams;
+//	}
 
 	public void connect(ChannelNode antenna) {
 		if (!frequency.equals(antenna.frequency)) {

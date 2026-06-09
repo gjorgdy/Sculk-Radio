@@ -11,9 +11,6 @@ public class AntennaNode extends SculkChannel.ChannelNode {
 		super(world, pos);
 	}
 
-	private boolean isTransmitting;
-	private boolean isReceiving;
-
 	@Override
 	public void updateFrequency() {
 		setFrequency(null);
@@ -30,7 +27,7 @@ public class AntennaNode extends SculkChannel.ChannelNode {
 	}
 
 	@Override
-	protected boolean innerCanConnect(Node otherNode) {
+	public boolean canConnect(Node otherNode) {
 		if (!(otherNode instanceof RelayNode)) return false;
 		// if right under antenna
 		var sameX = otherNode.getPos().getX() == this.getPos().getX();

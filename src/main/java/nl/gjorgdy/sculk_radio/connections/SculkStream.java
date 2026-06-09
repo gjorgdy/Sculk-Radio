@@ -3,8 +3,6 @@ package nl.gjorgdy.sculk_radio.connections;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.nodes.Node;
-import nl.gjorgdy.sculk_radio.nodes.RelayNode;
-import nl.gjorgdy.sculk_radio.nodes.SpeakerNode;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,31 +13,30 @@ import java.util.function.Consumer;
 public class SculkStream {
 
 	private final Node sourceNode;
-	private final Consumer<ListeningNode> listenConsumer;
-	private final Consumer<ListeningNode> stopListeningConsumer;
-	private final boolean isPersistent;
+	private Consumer<StreamConsumerNode> listenConsumer;
+	private Consumer<StreamConsumerNode> stopListeningConsumer;
+	private boolean isPersistent;
 
-	private final Set<ListeningNode> listeners = new HashSet<>();
-	private boolean started = false;
-	private boolean stopped = false;
+	private final Set<StreamConsumerNode> listeners = new HashSet<>();
+	private boolean active = false;
 
-	public SculkStream(Node sourceNode, @NotNull Consumer<ListeningNode> listenConsumer, @NotNull Consumer<ListeningNode> stopListeningConsumer, boolean isPersistent) {
+	public SculkStream(Node sourceNode) {
 		this.sourceNode = sourceNode;
-		this.listenConsumer = listenConsumer;
-		this.stopListeningConsumer = stopListeningConsumer;
-		this.isPersistent = isPersistent;
-	}
-
-	public void forListeners(Consumer<ListeningNode> consumer) {
-		listeners.forEach(consumer);
 	}
 
 	/**
 	 * Start this stream
 	 */
-	public void start() {
-		started = true;
+	public void start(@NotNull Consumer<StreamConsumerNode> listenConsumer, @NotNull Consumer<StreamConsumerNode> stopListeningConsumer, boolean isPersistent) {
+		if (active) stop();
+		// configure stream
+		this.listenConsumer = listenConsumer;
+		this.stopListeningConsumer = stopListeningConsumer;
+		this.isPersistent = isPersistent;
+		// init listeners
+		active = true;
 		listeners.forEach(listenConsumer);
+		tick();
 	}
 
 	public void tick() {
@@ -50,7 +47,8 @@ public class SculkStream {
 	 * Stop this stream and stop all listeners
 	 */
 	public void stop() {
-		stopped = true;
+		active = false;
+		tick();
 		listeners.forEach(stopListeningConsumer);
 	}
 
@@ -58,84 +56,69 @@ public class SculkStream {
 	 * Start listening to this stream
 	 * <p>
 	 * If the stream has already started, can only join if persistent
+	 *
 	 * @param node the node to start listen
 	 */
-	private boolean listen(ListeningNode node) {
-		if (stopped || (started && !isPersistent)) return false;
+	private void listen(StreamConsumerNode node) {
+		if (active && !isPersistent) return;
 		boolean added = listeners.add(node);
-		if (started) {
+		if (active) {
 			listenConsumer.accept(node);
 			node.tick(this);
 		}
-		return added;
 	}
 
 	/**
 	 * Stop listening to this stream
 	 * @param node the node to stop listening
 	 */
-	private void stopListening(ListeningNode node) {
-		if (stopped) return;
+	private void stopListening(StreamConsumerNode node) {
+		if (!active) return;
 		stopListeningConsumer.accept(node);
 		listeners.remove(node);
 		node.tick(this);
 	}
 
 	public boolean isActive() {
-		return started && !stopped;
+		return active;
 	}
 
-	public static abstract class ListeningNode extends Node {
+	public static abstract class StreamConsumerNode extends Node {
 
-		private final Set<SculkStream> streams;
-
-		public ListeningNode(ServerLevel level, BlockPos pos) {
-			streams = new HashSet<>();
+		public StreamConsumerNode(ServerLevel level, BlockPos pos) {
 			super(level, pos);
 		}
 
-		public void listenTo(SculkStream stream) {
-			if (stream.listen(this)) {
-				this.streams.add(stream);
-			}
+		@Override
+		protected void onReceive(SculkStream receivedStream) {
+			super.onReceive(receivedStream);
+			receivedStream.listen(this);
 		}
 
 		@Override
-		public void afterRemove() {
-			stopListening();
-			super.afterRemove();
-		}
-
-		public void stopListening() {
-			streams.forEach(stream -> {
-				stream.stopListening(this);
-				// disable visual path
-				var cluster = getCluster();
-				if (cluster == null) return;
-				cluster.path((_, to) -> {
-					if (to instanceof SpeakerNode || to instanceof RelayNode) {
-						ParticleUtils.deactivateSensor(to);
-					}
-				}, stream.sourceNode, this);
-			});
-			streams.clear();
-		}
-
-		public boolean isListening() {
-			return streams.stream().anyMatch(stream -> stream != null && stream.isActive());
+		protected void onStopReceive(SculkStream receivedStream) {
+			super.onStopReceive(receivedStream);
+			receivedStream.stopListening(this);
 		}
 
 		public void tick(SculkStream stream) {
-			getCluster().path((from, to) -> {
-				ParticleUtils.spawnVibrationParticles(from, to);
-				if (to instanceof SpeakerNode || to instanceof RelayNode) {
+			Set<Node> visited = new HashSet<>();
+			Node to = this;
+			Node from;
+			do {
+				from = to.receivesStreamFrom(stream);
+				if (visited.contains(from)) break;
+				if (from != null) {
 					if (stream.isActive()) {
 						ParticleUtils.activateSensor(to);
 					} else {
 						ParticleUtils.deactivateSensor(to);
 					}
+					ParticleUtils.spawnVibrationParticles(from, to);
+					to = from;
 				}
-			}, stream.sourceNode, this);
+				visited.add(from);
+			} while (to != stream.sourceNode);
 			ParticleUtils.spawnNoteParticles(this);
 		}
 	}

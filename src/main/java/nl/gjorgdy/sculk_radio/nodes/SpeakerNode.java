@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.connections.SculkStream;
 
-public class SpeakerNode extends SculkStream.ListeningNode {
+public class SpeakerNode extends SculkStream.StreamConsumerNode {
 
 	public SpeakerNode(ServerLevel level, BlockPos pos) {
 		super(level, pos);
