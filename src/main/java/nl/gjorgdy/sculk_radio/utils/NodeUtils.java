@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.nodes.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import org.jspecify.annotations.Nullable;
 
 public abstract class NodeUtils {

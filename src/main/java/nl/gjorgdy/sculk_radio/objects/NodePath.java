@@ -1,6 +1,6 @@
 package nl.gjorgdy.sculk_radio.objects;
 
-import nl.gjorgdy.sculk_radio.nodes.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 
 import java.util.Arrays;
 import java.util.function.BiConsumer;

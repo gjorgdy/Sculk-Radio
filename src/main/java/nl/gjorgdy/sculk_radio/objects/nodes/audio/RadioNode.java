@@ -1,7 +1,7 @@
-package nl.gjorgdy.sculk_radio.nodes.audio;
+package nl.gjorgdy.sculk_radio.objects.nodes.audio;
 
 import net.minecraft.core.BlockPos;
-import nl.gjorgdy.sculk_radio.nodes.SourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 
 public class RadioNode extends SourceNode {
 

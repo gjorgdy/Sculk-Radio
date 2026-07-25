@@ -1,9 +1,9 @@
-package nl.gjorgdy.sculk_radio.streams;
+package nl.gjorgdy.sculk_radio.objects.streams;
 
 import kotlin.Pair;
 import net.minecraft.server.level.ServerLevel;
-import nl.gjorgdy.sculk_radio.nodes.Node;
-import nl.gjorgdy.sculk_radio.nodes.RelayNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.NodePath;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
@@ -65,9 +65,7 @@ public class Stream {
 	public void particleTick(ServerLevel level) {
 		if (state == StreamState.ACTIVE) {
 			ParticleUtils.spawnShriekerParticles(level, source.getPos());
-			forListeners((listener) -> {
-				listener.particleTick(level);
-			});
+			forListeners((listener) -> listener.particleTick(level));
 			forConnections((from, to) -> {
 				if (from instanceof RelayNode) from.particleTick(level);
 				ParticleUtils.spawnVibrationParticles(level, from.getPos(), to.getPos());

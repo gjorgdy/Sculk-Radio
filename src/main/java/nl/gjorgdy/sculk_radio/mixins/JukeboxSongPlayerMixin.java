@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
-import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

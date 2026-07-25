@@ -14,7 +14,7 @@ public class LevelRegistry {
 	}
 
 	public NodeRegistry getNodeRegistry(@NotNull ServerLevel level) {
-		return nodeRegistries.computeIfAbsent(level, NodeRegistry::new);
+		return nodeRegistries.computeIfAbsent(level, _ -> new NodeRegistry());
 	}
 
 }

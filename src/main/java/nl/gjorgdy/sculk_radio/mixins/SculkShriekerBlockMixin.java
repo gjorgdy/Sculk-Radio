@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.SculkShriekerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.nodes.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ public abstract class SculkShriekerBlockMixin extends BaseEntityBlock {
     }
 
     @Override
-    protected void updateIndirectNeighbourShapes(@NonNull BlockState state, LevelAccessor level, @NonNull BlockPos pos, @UpdateFlags int updateFlags, int updateLimit) {
+    protected void updateIndirectNeighbourShapes(@NonNull BlockState state, @NonNull LevelAccessor level, @NonNull BlockPos pos, @UpdateFlags int updateFlags, int updateLimit) {
 //        if (!level.isClientSide() && level.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof SculkChannel.ChannelNode channelNode) {
 //            channelNode.updateFrequency();
 //        }

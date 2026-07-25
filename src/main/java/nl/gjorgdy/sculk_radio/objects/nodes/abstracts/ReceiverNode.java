@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.nodes;
+package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 

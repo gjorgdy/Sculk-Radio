@@ -1,23 +1,15 @@
-package nl.gjorgdy.sculk_radio.nodes;
+package nl.gjorgdy.sculk_radio.objects.nodes;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 
-public class AntennaNode extends Node {
+public class AntennaNode extends ReceiverNode {
 
 	public AntennaNode(BlockPos pos) {
 		super(pos);
-	}
-
-	@Override
-	public boolean canTransmit() {
-		return true;
-	}
-
-	@Override
-	public boolean canReceive() {
-		return true;
 	}
 
 	@Override

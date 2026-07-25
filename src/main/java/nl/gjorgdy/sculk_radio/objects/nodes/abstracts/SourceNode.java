@@ -1,9 +1,9 @@
-package nl.gjorgdy.sculk_radio.nodes;
+package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import nl.gjorgdy.sculk_radio.streams.Stream;
-import nl.gjorgdy.sculk_radio.streams.StreamState;
+import nl.gjorgdy.sculk_radio.objects.streams.Stream;
+import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 
 import java.util.function.Function;
 

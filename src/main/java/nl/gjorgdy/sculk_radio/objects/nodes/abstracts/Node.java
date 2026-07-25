@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.nodes;
+package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -49,16 +49,6 @@ public abstract class Node {
     }
 
     /**
-     * Disconnect a node as neighbour
-     *
-     * @param otherNode another node
-     */
-    public final void disconnect(Node otherNode) {
-        this.neighbours.remove(otherNode);
-        otherNode.neighbours.remove(this);
-    }
-
-    /**
      * If this node was removed
      */
     public final boolean wasRemoved() {
@@ -69,9 +59,7 @@ public abstract class Node {
      * Called after this node gets removed from the world
      */
 	public void afterRemove() {
-        neighbours.forEach(otherNode -> {
-            otherNode.neighbours.remove(this);
-        });
+        neighbours.forEach(otherNode -> otherNode.neighbours.remove(this));
         neighbours.clear();
         removed = true;
 	}

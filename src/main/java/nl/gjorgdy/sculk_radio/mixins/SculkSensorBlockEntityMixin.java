@@ -2,7 +2,7 @@ package nl.gjorgdy.sculk_radio.mixins;
 
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.nodes.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

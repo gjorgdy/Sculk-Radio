@@ -9,8 +9,6 @@ import net.minecraft.world.level.LevelHeightAccessor;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.chunk.*;
 import net.minecraft.world.level.levelgen.blending.BlendingData;
-import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.nodes.Node;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

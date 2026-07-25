@@ -1,10 +1,10 @@
 package nl.gjorgdy.sculk_radio.registries;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import nl.gjorgdy.sculk_radio.nodes.*;
-import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
-import nl.gjorgdy.sculk_radio.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.*;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -12,11 +12,9 @@ import java.util.Set;
 
 public class NodeRegistry {
 
-	private final ServerLevel level;
 	private final Set<Node> nodes;
 
-	public NodeRegistry(ServerLevel level) {
-		this.level = level;
+	public NodeRegistry() {
 		this.nodes = new HashSet<>();
 	}
 

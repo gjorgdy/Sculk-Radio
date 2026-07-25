@@ -17,15 +17,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
-import nl.gjorgdy.sculk_radio.nodes.SourceNode;
-import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
-import nl.gjorgdy.sculk_radio.nodes.audio.SpeakerNode;
-import nl.gjorgdy.sculk_radio.streams.Stream;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -41,14 +39,11 @@ import java.util.UUID;
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
 
-    @Shadow
-    public static PlayerManager instance() {throw new UnsupportedOperationException("Implemented via mixin");}
-
     @Redirect(
             method = "playType(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Lde/maxhenkel/audioplayer/audioloader/AudioData;Lde/maxhenkel/audioplayer/audioplayback/PlayerType;Lnet/fabricmc/fabric/api/event/Event;Lnet/fabricmc/fabric/api/event/Event;Lnet/minecraft/world/phys/Vec3;)Lde/maxhenkel/audioplayer/api/ChannelReference;",
             at = @At(value = "INVOKE", target = "Lde/maxhenkel/audioplayer/audioplayback/PlayerManager;playLocational(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;Ljava/util/UUID;Lnet/minecraft/server/level/ServerPlayer;FLjava/lang/String;Ljava/lang/Float;)Lde/maxhenkel/audioplayer/apiimpl/ChannelReferenceImpl;")
     )
-    public ChannelReferenceImpl<LocationalAudioChannel> playType(PlayerManager instance, ServerLevel level, Vec3 pos, UUID sound, ServerPlayer p, float distance, String category, Float maxLengthSeconds, @Local PlayEventImpl event) {
+    public ChannelReferenceImpl<LocationalAudioChannel> playType(PlayerManager instance, ServerLevel level, Vec3 pos, UUID sound, ServerPlayer p, float distance, String category, Float maxLengthSeconds, @Local(name = "event") PlayEventImpl event) {
         VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
         if (api == null) return null;
         var blockPos = new BlockPos((int) Math.floor(pos.x), (int) Math.floor(pos.y), (int) Math.floor(pos.z));

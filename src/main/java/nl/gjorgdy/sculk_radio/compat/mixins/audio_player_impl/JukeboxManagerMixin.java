@@ -10,15 +10,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
-import nl.gjorgdy.sculk_radio.streams.StreamState;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Restriction(
         require = {
