@@ -17,44 +17,35 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class ParticleUtils {
 
-    public static void spawnShriekerParticles(Node node) {
+    public static void spawnShriekerParticles(ServerLevel serverLevel, BlockPos pos) {
         for (int ah = 0; ah < 5; ++ah) {
-            node.getLevel().sendParticles(
+            serverLevel.sendParticles(
                     new ShriekParticleOption(ah * 5),
-                    (double) node.getPos().getX() + 0.5,
-                    (double) node.getPos().getY() + 0.5,
-                    (double) node.getPos().getZ() + 0.5,
+                    (double) pos.getX() + 0.5,
+                    (double) pos.getY() + 0.5,
+                    (double) pos.getZ() + 0.5,
                     1, 0.0, 0.0, 0.0, 0.0
             );
         }
     }
 
-    public static void activateSensor(Node node) {
-        var blockstate = node.getLevel().getBlockState(node.getPos());
+    public static void activateSensor(ServerLevel serverLevel, BlockPos pos) {
+        var blockstate = serverLevel.getBlockState(pos);
         if (!blockstate.is(Blocks.SCULK_SENSOR) && !blockstate.is(Blocks.CALIBRATED_SCULK_SENSOR)) return;
-        node.getLevel().players().forEach(player ->
-                player.connection.send(new ClientboundBlockUpdatePacket(node.getPos(), blockstate.setValue(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)))
+        serverLevel.players().forEach(player ->
+                player.connection.send(new ClientboundBlockUpdatePacket(pos, blockstate.setValue(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE)))
         );
     }
 
-    public static void deactivateSensor(Node node) {
-        var blockstate = node.getLevel().getBlockState(node.getPos());
+    public static void deactivateSensor(ServerLevel serverLevel, BlockPos pos) {
+        var blockstate = serverLevel.getBlockState(pos);
         if (!blockstate.is(Blocks.SCULK_SENSOR) && !blockstate.is(Blocks.CALIBRATED_SCULK_SENSOR)) return;
-        node.getLevel().players().forEach(player ->
-                player.connection.send(new ClientboundBlockUpdatePacket(node.getPos(), blockstate.setValue(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE)))
+        serverLevel.players().forEach(player ->
+                player.connection.send(new ClientboundBlockUpdatePacket(pos, blockstate.setValue(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE)))
         );
     }
 
-    public static void spawnVibrationParticles(Node from, Node to) {
-        if (from.getLevel() != to.getLevel()) return;
-        spawnVibrationParticles(from.getLevel(), from.getPos(), to.getPos());
-    }
-
-    public static void spawnVibrationParticles(Node to) {
-        spawnVibrationParticles(to.getLevel(), to.getPos().above(8), to.getPos());
-    }
-
-    private static void spawnVibrationParticles(ServerLevel world, BlockPos from, BlockPos to) {
+    public static void spawnVibrationParticles(ServerLevel world, BlockPos from, BlockPos to) {
         world.sendParticles(new VibrationParticleOption(
 		                             new BlockPositionSource(to), 20),
                 from.getX() + 0.5, from.getY() + 0.5, from.getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
@@ -66,10 +57,10 @@ public class ParticleUtils {
         }
     }
 
-    public static void spawnNoteParticles(Node node) {
-        Vec3 vec3 = node.getPos().getBottomCenter().add(0.0F, 0.7F, 0.0F);
-        float f = (float) node.getLevel().getRandom().nextInt(4) / 24.0F;
-        node.getLevel().sendParticles(ParticleTypes.NOTE, vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
+    public static void spawnNoteParticles(ServerLevel serverLevel, BlockPos pos) {
+        Vec3 vec3 = pos.getBottomCenter().add(0.0F, 0.7F, 0.0F);
+        float f = (float) serverLevel.getRandom().nextInt(4) / 24.0F;
+        serverLevel.sendParticles(ParticleTypes.NOTE, vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
     }
 
 }

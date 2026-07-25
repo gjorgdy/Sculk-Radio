@@ -17,8 +17,12 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
-import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.SourceNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.streams.Stream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
+import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -62,28 +66,43 @@ public abstract class PlayerManagerMixin {
             return null;
         }
 
-        UUID channelID = UUID.randomUUID();
-        MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(channelID, api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()));
-        if (category != null) {
-            mlChannel.setCategory(category);
-        }
-        mlChannel.setDistance(distance);
-        api.getPlayersInRange(api.fromServerLevel(level), mlChannel.getLocation(), distance + 1F, serverPlayer -> {
-            VoicechatConnection connection = api.getConnectionOf(serverPlayer);
-            return !ChatUtils.isAbleToHearVoicechat(connection);
-        }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(ChatUtils::sendEnableVoicechatMessage);
-
         var blockEntity = level.getBlockEntity(blockPos.above());
         var node = NodeUtils.getFromBlockEntity(blockEntity);
         if (node instanceof RadioNode radio) {
-            radio.stream(
-                speaker -> mlChannel.addChannel(speaker.getLevel(), speaker.getPos().getCenter()),
-                speaker -> mlChannel.removeChannel(speaker.getPos().getCenter()),
-                true
+            UUID channelID = UUID.randomUUID();
+            MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(
+                channelID,
+                api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()),
+                () -> {
+                    radio.stop();
+                    radio.particleTick(level);
+                }
             );
-        }
+            if (category != null) {
+                mlChannel.setCategory(category);
+            }
+            mlChannel.setDistance(distance);
+            api.getPlayersInRange(api.fromServerLevel(level), mlChannel.getLocation(), distance + 1F, serverPlayer -> {
+                VoicechatConnection connection = api.getConnectionOf(serverPlayer);
+                return !ChatUtils.isAbleToHearVoicechat(connection);
+            }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(ChatUtils::sendEnableVoicechatMessage);
 
-        return instance.playChannel(mlChannel, sound, p, maxLengthSeconds);
+            radio.start(sn -> createStream(mlChannel, level, sn));
+
+            return instance.playChannel(mlChannel, sound, p, maxLengthSeconds);
+        }
+        return null;
+    }
+
+    @Unique
+    private Stream createStream(MultiLocationalAudioChannel channel, ServerLevel level, SourceNode source) {
+        return new Stream(
+            n -> n instanceof SpeakerNode,
+            n -> channel.addChannel(level, n.getPos().getCenter()),  // on connect
+            n -> channel.removeChannel(n.getPos().getCenter()),      // on disconnect
+            source,
+            true
+        );
     }
 
 }

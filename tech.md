@@ -1,18 +1,16 @@
 ﻿# Nodes
 
-## Radio
+## Radio / SourceNode
 _Jukebox with a Sculk Shrieker on top of it._
 
-## Speaker
+## Speaker / ReceiverNode
 _Note Block with a Sculk Sensor on top of it._
 
-## Relay
+## Relay / RelayNode
 _Block of Amethyst with a Sculk Sensor on top of it._
 
-## Antenna
+## Antenna / AntennaNode
 _Block of Amethyst with a Calibrated Sculk Sensor on top of it._
-
-Should be placed above a relay (at least 16 blocks above) and can only connect to the relay below it.
 
 Frequency modes;
 - Vanilla: Frequency is determined by the redstone signal strength. 0-15.
@@ -24,16 +22,13 @@ Frequency modes;
 
 A registry per world that stores all nodes, networks, and their connections.
 
-# Sculk Cluster
+# 3 Layers Model
 
-A node always has to be part of a cluster.
+## 1. Physical Layer
+The actual blocks in the world as described in [Nodes](#nodes).
 
-When a node is placed it starts of with a singular cluster. When it connects to another node, 
-the two clusters merge into one. 
+## 2. Nodes Layer
+A network of nodes with neighbours connected to each others representing the multiblocks.
 
-When a node is removed, the cluster it was part may split into multiple clusters.
-
-# Frequencies
-
-If an antenna is part of a cluster and has a frequency, its cluster will be assigned to the channel with that frequency.
-
+## 3. Stream Layer
+Streams from source nodes to receiver nodes over relay and antenna nodes.

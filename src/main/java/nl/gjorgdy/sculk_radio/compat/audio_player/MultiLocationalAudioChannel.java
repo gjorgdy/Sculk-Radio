@@ -23,10 +23,12 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     private Predicate<ServerPlayer> filter;
     private String category;
     private final Map<Position, LocationalAudioChannel> audioChannels = new HashMap<>();
+    private final Runnable onFlushRunnable;
 
-    public MultiLocationalAudioChannel(UUID id, Position sourcePosition) {
+    public MultiLocationalAudioChannel(UUID id, Position sourcePosition, Runnable onFlushRunnable) {
         this.id = id;
         this.sourcePosition = sourcePosition;
+        this.onFlushRunnable = onFlushRunnable;
     }
 
 	private Stream<LocationalAudioChannel> getAudioChannels() {
@@ -93,6 +95,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     @Override
     public void flush() {
 		getAudioChannels().forEach(AudioChannel::flush);
+        onFlushRunnable.run();
     }
 
     @Override

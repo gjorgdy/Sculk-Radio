@@ -3,6 +3,8 @@ package nl.gjorgdy.sculk_radio.registries;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.nodes.*;
+import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.SpeakerNode;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -24,39 +26,39 @@ public class NodeRegistry {
 
 	public AntennaNode registerAntenna(BlockPos pos) {
 		if (pos == null) throw new IllegalStateException("Cannot register a node at a null position");
-		var antenna = new AntennaNode(level, pos);
+		var antenna = new AntennaNode(pos);
 		initNode(antenna);
 		return antenna;
 	}
 
 	public RadioNode registerRadio(BlockPos pos) {
 		if (pos == null) throw new IllegalStateException("Cannot register a node at a null position");
-		var radio = new RadioNode(level, pos);
+		var radio = new RadioNode(pos);
 		initNode(radio);
 		return radio;
 	}
 
 	public RelayNode registerRelay(BlockPos pos) {
 		if (pos == null) throw new IllegalStateException("Cannot register a node at a null position");
-		var relay = new RelayNode(level, pos);
+		var relay = new RelayNode(pos);
 		initNode(relay);
 		return relay;
 	}
 
 	public SpeakerNode registerSpeaker(BlockPos pos) {
 		if (pos == null) throw new IllegalStateException("Cannot register a node at a null position");
-		var speaker = new SpeakerNode(level, pos);
+		var speaker = new SpeakerNode(pos);
 		initNode(speaker);
 		return speaker;
 	}
 
 	public void initNode(Node node) {
-		// add to registry
-		nodes.add(node);
 		// connect to neighboring clusters
 		nodes.stream()
 				.filter(node::canConnect)
 				.forEach(node::connect);
+		// add to registry
+		nodes.add(node);
 	}
 
 	public void removeNode(Node node) {

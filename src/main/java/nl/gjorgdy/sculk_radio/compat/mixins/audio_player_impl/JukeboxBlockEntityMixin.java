@@ -9,8 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.SculkRadio;
-import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,6 +34,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
         var node = NodeUtils.getFromBlockEntity(this);
         if (node instanceof RadioNode radio) {
             radio.stop();
+            radio.particleTick((ServerLevel) this.getLevel());
         }
     }
 

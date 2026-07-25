@@ -4,8 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
-import nl.gjorgdy.sculk_radio.SculkRadio;
-import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +20,8 @@ public class JukeboxSongPlayerMixin {
         if (level.isClientSide()) return;
         var node = NodeUtils.getFromBlockEntity(level.getBlockEntity(blockPos.above()));
         if (node instanceof RadioNode radio) {
-            radio.tick();
+            if (level instanceof ServerLevel serverLevel) radio.particleTick(serverLevel);
+            radio.connectionTick();
             ci.cancel();
         }
     }

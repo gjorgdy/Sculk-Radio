@@ -3,17 +3,11 @@ package nl.gjorgdy.sculk_radio.nodes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
-import nl.gjorgdy.sculk_radio.connections.SculkChannel;
 
-public class AntennaNode extends SculkChannel.ChannelNode {
+public class AntennaNode extends Node {
 
-	public AntennaNode(ServerLevel world, BlockPos pos) {
-		super(world, pos);
-	}
-
-	@Override
-	public void updateFrequency() {
-		setFrequency(null);
+	public AntennaNode(BlockPos pos) {
+		super(pos);
 	}
 
 	@Override
@@ -24,6 +18,11 @@ public class AntennaNode extends SculkChannel.ChannelNode {
 	@Override
 	public boolean canReceive() {
 		return true;
+	}
+
+	@Override
+	public void particleTick(ServerLevel level) {
+		// ignore
 	}
 
 	@Override

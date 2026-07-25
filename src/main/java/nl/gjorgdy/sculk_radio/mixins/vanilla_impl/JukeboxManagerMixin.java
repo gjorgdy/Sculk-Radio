@@ -8,9 +8,12 @@ import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
-import nl.gjorgdy.sculk_radio.nodes.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.Node;
+import nl.gjorgdy.sculk_radio.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.streams.Stream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
+import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,13 +43,13 @@ public class JukeboxManagerMixin {
 
     @Inject(method = "play", at = @At("HEAD"), cancellable = true)
     public void onStartPlaying(LevelAccessor level, Holder<JukeboxSong> song, CallbackInfo ci) {
-        if (level instanceof ServerLevel sw) {
-            var node = NodeUtils.getFromBlockEntity(sw.getBlockEntity(this.blockPos.above()));
+        if (level instanceof ServerLevel serverLevel) {
+            var node = NodeUtils.getFromBlockEntity(serverLevel.getBlockEntity(this.blockPos.above()));
             if (node instanceof RadioNode radio) {
-                radio.play(
-                    speaker -> play(level, song, speaker.getPos().below()),
-                    speaker -> stop(level, speaker.getPos().below())
-                );
+                this.song = song;
+                this.ticksSinceSongStarted = 0L;
+                radio.start(sn -> createStream(level, song, sn));
+                this.onSongChanged.notifyChange();
                 ci.cancel();
             }
         }
@@ -54,10 +57,12 @@ public class JukeboxManagerMixin {
 
     @Inject(method = "stop", at = @At("HEAD"), cancellable = true)
     public void onStopPlaying(LevelAccessor level, BlockState blockState, CallbackInfo ci) {
-        if (level instanceof ServerLevel sw) {
-            var node = NodeUtils.getFromBlockEntity(sw.getBlockEntity(this.blockPos.above()));
+        if (level instanceof ServerLevel serverLevel) {
+            var node = NodeUtils.getFromBlockEntity(serverLevel.getBlockEntity(this.blockPos.above()));
             if (node instanceof RadioNode radio) {
                 radio.stop();
+                radio.particleTick(serverLevel);
+                this.onSongChanged.notifyChange();
                 if (this.song != null) {
                     this.song = null;
                     this.ticksSinceSongStarted = 0L;
@@ -68,19 +73,15 @@ public class JukeboxManagerMixin {
     }
 
     @Unique
-    public void play(LevelAccessor level, Holder<JukeboxSong> song, BlockPos pos) {
-        this.song = song;
-        this.ticksSinceSongStarted = 0L;
+    private Stream createStream(LevelAccessor level, Holder<JukeboxSong> song, Node source) {
         int songId = level.registryAccess().lookupOrThrow(Registries.JUKEBOX_SONG).getId(song.value());
-        level.levelEvent(1010, pos, songId);
-        this.onSongChanged.notifyChange();
-    }
-
-    @Unique
-    public void stop(LevelAccessor level, BlockPos pos) {
-        level.gameEvent(GameEvent.JUKEBOX_STOP_PLAY, pos, GameEvent.Context.of(level.getBlockState(pos)));
-        level.levelEvent(1011, pos, 0);
-        this.onSongChanged.notifyChange();
+        return new Stream(
+            n -> n instanceof SpeakerNode,
+            n -> level.levelEvent(1010, n.getPos(), songId), // connect
+            n -> level.levelEvent(1011, n.getPos(), 0), // disconnect
+            source,
+            false
+        );
     }
 
 }
