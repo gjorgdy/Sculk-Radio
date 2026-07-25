@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SculkSensorPhase;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec3;
-import nl.gjorgdy.sculk_radio.nodes.Node;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SCULK_SENSOR_PHASE;
 
@@ -58,7 +57,7 @@ public class ParticleUtils {
     }
 
     public static void spawnNoteParticles(ServerLevel serverLevel, BlockPos pos) {
-        Vec3 vec3 = pos.getBottomCenter().add(0.0F, 0.7F, 0.0F);
+        Vec3 vec3 = new Vec3(pos).add(0.5F, 0.7F, 0.5F);
         float f = (float) serverLevel.getRandom().nextInt(4) / 24.0F;
         serverLevel.sendParticles(ParticleTypes.NOTE, vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
     }

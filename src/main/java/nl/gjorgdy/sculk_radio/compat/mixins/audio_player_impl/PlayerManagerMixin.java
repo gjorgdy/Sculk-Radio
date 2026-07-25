@@ -98,8 +98,8 @@ public abstract class PlayerManagerMixin {
     private Stream createStream(MultiLocationalAudioChannel channel, ServerLevel level, SourceNode source) {
         return new Stream(
             n -> n instanceof SpeakerNode,
-            n -> channel.addChannel(level, n.getPos().getCenter()),  // on connect
-            n -> channel.removeChannel(n.getPos().getCenter()),      // on disconnect
+            n -> channel.addChannel(level, new Vec3(n.getPos()).add(0.5)),  // on connect
+            n -> channel.removeChannel(new Vec3(n.getPos()).add(0.5)),      // on disconnect
             source,
             true
         );
