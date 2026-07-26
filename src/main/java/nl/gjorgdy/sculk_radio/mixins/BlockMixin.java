@@ -8,8 +8,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
+import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,9 +24,10 @@ public class BlockMixin {
         if (level.isClientSide()) return;
         if (level.getBlockEntity(pos.above()) instanceof INodeContainer nc && level instanceof ServerLevel serverLevel) {
             var node = nc.sculkRadio$getNode();
-            if (node != null) SculkRadio.getLevelRegistry()
-                    .getNodeRegistry(serverLevel)
-                    .removeNode(node);
+            if (node != null) {
+                NodeRegistry.of(serverLevel).remove(node);
+                nc.sculkRadio$setNode(null);
+            }
         }
     }
 
@@ -34,10 +35,9 @@ public class BlockMixin {
     public void onPlace(Level level, BlockPos pos, BlockState state, LivingEntity by, ItemStack itemStack, CallbackInfo ci) {
         if (level.isClientSide()) return;
         var topBlockEntity = level.getBlockEntity(pos.above());
-        if (!(topBlockEntity instanceof INodeContainer nc)) return;
-
-        var node = NodeUtils.register((ServerLevel) level, state, topBlockEntity);
-        if (node != null) nc.sculkRadio$setNode(node);
+        if (topBlockEntity instanceof INodeContainer) {
+            NodeUtils.register((ServerLevel) level, state, topBlockEntity);
+        }
     }
 
 }

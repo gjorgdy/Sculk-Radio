@@ -7,31 +7,41 @@ import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
+import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.jspecify.annotations.Nullable;
 
 public abstract class NodeUtils {
 
-	@Nullable
-	public static Node register(ServerLevel level, BlockState state, BlockEntity blockEntity) {
-		var registry = SculkRadio.getLevelRegistry().getNodeRegistry(level);
-		var node = switch (blockEntity) {
-			// speaker
-			case SculkSensorBlockEntity be when state.is(Blocks.NOTE_BLOCK) -> registry.registerSpeaker(be.getBlockPos());
-			// radio
-			case SculkShriekerBlockEntity be when state.is(Blocks.JUKEBOX) -> registry.registerRadio(be.getBlockPos());
-			// relay
-			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> registry.registerRelay(be.getBlockPos());
-			// antenna
-			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> registry.registerAntenna(be.getBlockPos());
+	public static void register(ServerLevel level, BlockState state, BlockEntity blockEntity) {
+		// check if exists
+		var registry = NodeRegistry.of(level);
+		var node = registry.getNode(blockEntity.getBlockPos()).orElse(null);
+		if (node != null) {
+			if (blockEntity instanceof INodeContainer nodeContainer) {
+				nodeContainer.sculkRadio$setNode(node);
+			}
+			return;
+		}
+		// create new one
+		node = switch (blockEntity) {
+			case SculkSensorBlockEntity be when state.is(Blocks.NOTE_BLOCK) -> new SpeakerNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be when state.is(Blocks.JUKEBOX) -> new RadioNode(be.getBlockPos());
+			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
+			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new AntennaNode(be.getBlockPos());
 			default -> null;
 		};
-		if (node != null && blockEntity instanceof INodeContainer nodeContainer) {
-			nodeContainer.sculkRadio$setNode(node);
+		if (node != null) {
+			if (blockEntity instanceof INodeContainer nodeContainer) {
+				nodeContainer.sculkRadio$setNode(node);
+			}
+			NodeRegistry.of(level).register(node);
 		}
-		return node;
 	}
 
 	@Nullable
@@ -45,8 +55,8 @@ public abstract class NodeUtils {
 	public static void removeFromBlockEntity(@Nullable BlockEntity blockEntity) {
 		if (!(blockEntity instanceof INodeContainer nodeContainer)) return;
 		var node = nodeContainer.sculkRadio$getNode();
-		var registry = SculkRadio.getLevelRegistry().getNodeRegistry((ServerLevel) blockEntity.getLevel());
-		registry.removeNode(node);
+		if (node == null) return;
+		NodeRegistry.of((ServerLevel) blockEntity.getLevel()).remove(node);
 		nodeContainer.sculkRadio$setNode(null);
 	}
 

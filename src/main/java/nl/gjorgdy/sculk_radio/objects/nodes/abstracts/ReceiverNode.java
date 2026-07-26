@@ -2,6 +2,8 @@ package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 
+import java.util.Optional;
+
 public abstract class ReceiverNode extends Node {
 
 	private int weakRedstonePower = 0;
@@ -10,6 +12,12 @@ public abstract class ReceiverNode extends Node {
 	public ReceiverNode(BlockPos pos) {
         super(pos);
     }
+
+	protected ReceiverNode(BlockPos pos, int weakRedstonePower, int strongRedstonePower) {
+		super(pos);
+		this.weakRedstonePower = weakRedstonePower;
+		this.strongRedstonePower = strongRedstonePower;
+	}
 
     @Override
     public boolean canReceive() {
@@ -29,11 +37,11 @@ public abstract class ReceiverNode extends Node {
 		this.strongRedstonePower = strongRedstonePower;
 	}
 
-	public final int getWeakRedstonePower() {
-		return weakRedstonePower;
+	public final Optional<Integer> getWeakRedstonePower() {
+		return weakRedstonePower == 0 ? Optional.empty() : Optional.of(weakRedstonePower);
 	}
 
-	public int getStrongRedstonePower() {
-		return strongRedstonePower;
+	public Optional<Integer> getStrongRedstonePower() {
+		return strongRedstonePower == 0 ? Optional.empty() : Optional.of(strongRedstonePower);
 	}
 }

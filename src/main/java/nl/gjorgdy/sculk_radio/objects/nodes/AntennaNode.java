@@ -1,5 +1,7 @@
 package nl.gjorgdy.sculk_radio.objects.nodes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
@@ -8,8 +10,21 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 
 public class AntennaNode extends ReceiverNode {
 
+	public static final Codec<AntennaNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+             BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos),
+             Codec.INT.fieldOf("frequency").forGetter(node -> node.frequency)
+         ).apply(instance, AntennaNode::new)
+	);
+
+	private int frequency = 0;
+
 	public AntennaNode(BlockPos pos) {
 		super(pos);
+	}
+
+	private AntennaNode(BlockPos pos, int frequency) {
+		super(pos);
+		this.frequency = frequency;
 	}
 
 	@Override

@@ -37,14 +37,6 @@ public abstract class LevelChunkMixin extends ChunkAccess {
         );
     }
 
-    @Inject(method = "clearAllBlockEntities", at = @At(value = "INVOKE", target = "Ljava/util/Map;clear()V", ordinal = 0))
-    public void onUnloadBlockEntity(CallbackInfo ci) {
-        for (var blockEntity : this.blockEntities.values()) {
-            if (getLevel().isClientSide()) return;
-            NodeUtils.removeFromBlockEntity(blockEntity);
-        }
-    }
-
     @Inject(method = "removeBlockEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/chunk/LevelChunk;removeGameEventListener(Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/server/level/ServerLevel;)V"))
     public void onBreakBlockEntity(BlockPos pos, CallbackInfo ci, @Local(name = "removeThis") BlockEntity removeThis) {
         if (getLevel().isClientSide()) return;
