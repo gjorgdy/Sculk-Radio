@@ -45,7 +45,7 @@ public abstract class Node {
 
     public boolean canConnect(Node otherNode) {
         return ((this.canTransmit() && otherNode.canReceive()) || (otherNode.canTransmit() && this.canReceive()))
-            && otherNode.pos.distChessboard(this.pos) <= SculkRadio.innerClusterRange;
+            && otherNode.pos.distChessboard(this.pos) <= SculkRadio.maxNodeRange;
     }
 
     /**

@@ -32,7 +32,7 @@ public class SculkRadio implements ModInitializer {
     }
 
     // start config
-    public static int innerClusterRange = 16;
+    public static int maxNodeRange = 16;
     public static int minAntennaHeight = 16;
 
     public static int visualsTick = 20;
