@@ -8,7 +8,7 @@ import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
@@ -72,7 +72,7 @@ public class JukeboxManagerMixin {
     }
 
     @Unique
-    private Stream createStream(LevelAccessor level, Holder<JukeboxSong> song, Node source) {
+    private Stream createStream(LevelAccessor level, Holder<JukeboxSong> song, SourceNode source) {
         int songId = level.registryAccess().lookupOrThrow(Registries.JUKEBOX_SONG).getId(song.value());
         return new Stream(
             n -> n instanceof SpeakerNode,

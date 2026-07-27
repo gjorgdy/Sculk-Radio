@@ -1,23 +1,16 @@
 package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
-
-import java.util.Optional;
+import net.minecraft.server.level.ServerLevel;
 
 public abstract class ReceiverNode extends Node {
 
-	private int weakRedstonePower = 0;
-	private int strongRedstonePower = 0;
+	private int analogRedstoneSignal = 0;
+	private int redstoneSignal = 0;
 
 	public ReceiverNode(BlockPos pos) {
         super(pos);
     }
-
-	protected ReceiverNode(BlockPos pos, int weakRedstonePower, int strongRedstonePower) {
-		super(pos);
-		this.weakRedstonePower = weakRedstonePower;
-		this.strongRedstonePower = strongRedstonePower;
-	}
 
     @Override
     public boolean canReceive() {
@@ -29,19 +22,36 @@ public abstract class ReceiverNode extends Node {
 		return false;
 	}
 
-	public void setWeakRedstonePower(int weakRedstonePower) {
-		this.weakRedstonePower = weakRedstonePower;
+	public void setAnalogRedstoneSignal(int analogRedstoneSignal) {
+		if (this.analogRedstoneSignal != analogRedstoneSignal) {
+			this.analogRedstoneSignal = analogRedstoneSignal;
+			updateNeighbours();
+		}
 	}
 
-	public void setStrongRedstonePower(int strongRedstonePower) {
-		this.strongRedstonePower = strongRedstonePower;
+	@Override
+	public void init(ServerLevel level) {
+		super.init(level);
+		updateNeighbours();
 	}
 
-	public final Optional<Integer> getWeakRedstonePower() {
-		return weakRedstonePower == 0 ? Optional.empty() : Optional.of(weakRedstonePower);
+	public void setRedstoneSignal(int redstoneSignal) {
+		if (this.redstoneSignal != redstoneSignal) {
+			this.redstoneSignal = redstoneSignal;
+			updateNeighbours();
+		}
 	}
 
-	public Optional<Integer> getStrongRedstonePower() {
-		return strongRedstonePower == 0 ? Optional.empty() : Optional.of(strongRedstonePower);
+	public void updateNeighbours() {
+		if (!isLoaded()) return;
+		level.updateNeighborsAt(pos.below(), level.getBlockState(pos).getBlock());
+	}
+
+	public final int getAnalogSignal() {
+		return analogRedstoneSignal;
+	}
+
+	public int getOwnSignal() {
+		return redstoneSignal;
 	}
 }

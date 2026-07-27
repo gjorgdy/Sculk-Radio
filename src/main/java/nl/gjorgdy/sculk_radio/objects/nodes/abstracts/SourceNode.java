@@ -1,6 +1,7 @@
 package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
@@ -39,6 +40,16 @@ public abstract class SourceNode extends Node {
 	public StreamState getState() {
 		if (stream == null) return StreamState.IDLE;
 		return stream.getState();
+	}
+
+	public final int getRedstoneSignal() {
+		if (level == null) return 0;
+		return level.getBlockState(pos.below()).getOwnSignal(level, pos.below());
+	}
+
+	public final int getAnalogRedstoneSignal() {
+		if (level == null) return 0;
+		return level.getBlockState(pos.below()).getAnalogOutputSignal(level, pos.below(), Direction.NORTH);
 	}
 
 	@Override

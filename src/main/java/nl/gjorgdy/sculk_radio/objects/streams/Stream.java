@@ -6,6 +6,8 @@ import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.NodePath;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
 import java.util.*;
@@ -20,10 +22,10 @@ public class Stream {
 	private final Consumer<? super Node> disconnectConsumer;
 	// If nodes can 'connect' after playing has started
 	private final boolean isLive;
-	private final Node source;
+	private final SourceNode source;
 
 	private final Set<Pair<Node, Node>> connections = new HashSet<>();
-	private final Set<Node> listeners;
+	private final Set<ReceiverNode> listeners;
 	private final Queue<Node> disconnectedNodes;
 	private StreamState state = StreamState.IDLE;
 
@@ -31,7 +33,7 @@ public class Stream {
 		Predicate<? super Node> isReceiver,
 		Consumer<? super Node> connectConsumer,
 		Consumer<? super Node> disconnectConsumer,
-		Node source,
+		SourceNode source,
 		boolean isLive
 	) {
 		this.isReceiver = isReceiver;
@@ -106,7 +108,7 @@ public class Stream {
 
 	public void connectionTick() {
 		if (state == StreamState.STOPPED) return;
-		Set<Node> newListeners = new HashSet<>();
+		Set<ReceiverNode> newListeners = new HashSet<>();
 		Set<Pair<Node, Node>> newConnections = new HashSet<>();
 		Set<Node> visited = new HashSet<>();
 		visited.add(source);
@@ -137,16 +139,21 @@ public class Stream {
 			}
 			return disconnect;
 		});
+		// parse redstone
+		int redstone = source.getRedstoneSignal();
+		listeners.forEach(listener -> listener.setRedstoneSignal(redstone));
+		int analogRedstone = source.getAnalogRedstoneSignal();
+		listeners.forEach(listener -> listener.setAnalogRedstoneSignal(analogRedstone));
 	}
 
-	private void connectNeighbours(Set<Node> visited, NodePath path, Set<Node> newListeners, Set<Pair<Node, Node>> newConnections, Node node) {
+	private void connectNeighbours(Set<Node> visited, NodePath path, Set<ReceiverNode> newListeners, Set<Pair<Node, Node>> newConnections, Node node) {
 		var unvisitedNeighbours = node.getNeighbours().stream()
 			.filter(neighbour -> !visited.contains(neighbour))
 			.toList();
 		visited.addAll(unvisitedNeighbours);
 		unvisitedNeighbours.forEach(neighbour -> {
-			if (!neighbour.wasRemoved() && isReceiver.test(neighbour)) {
-				newListeners.add(neighbour);
+			if (!neighbour.wasRemoved() && isReceiver.test(neighbour) && neighbour instanceof ReceiverNode receiver) {
+				newListeners.add(receiver);
 				path.append(neighbour).forEach((from, to) -> newConnections.add(new Pair<>(from, to)));
 			} else {
 				connectNeighbours(visited, path.append(neighbour), newListeners, newConnections, neighbour);
@@ -158,7 +165,7 @@ public class Stream {
 		return state;
 	}
 
-	public void forListeners(Consumer<? super Node> consumer) {
+	public void forListeners(Consumer<? super ReceiverNode> consumer) {
 		listeners.forEach(consumer);
 	}
 
@@ -166,14 +173,16 @@ public class Stream {
 		connections.forEach(pair -> consumer.accept(pair.getFirst(), pair.getSecond()));
 	}
 
-	private void connect(Node listener, NodePath path) {
+	private void connect(ReceiverNode listener, NodePath path) {
 		listeners.add(listener);
 		path.forEach((from, to) -> connections.add(new Pair<>(from, to)));
 		// Only execute consumer if not playing or is live
 		if (state == StreamState.IDLE || isLive) connectConsumer.accept(listener);
 	}
 
-	private void onDisconnect(Node listener) {
+	private void onDisconnect(ReceiverNode listener) {
 		disconnectConsumer.accept(listener);
+		listener.setAnalogRedstoneSignal(0);
+		listener.setRedstoneSignal(0);
 	}
 }
