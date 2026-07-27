@@ -2,7 +2,6 @@ package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 
@@ -27,9 +26,9 @@ public abstract class SourceNode extends Node {
 		stream.connectionTick();
 	}
 
-	public void particleTick(ServerLevel level) {
+	public void visualsTick() {
 		if (stream == null) return;
-		stream.particleTick(level);
+		stream.visualsTick(level);
 	}
 
 	public void stop() {

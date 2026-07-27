@@ -14,7 +14,7 @@ import net.minecraft.world.phys.Vec3;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SCULK_SENSOR_PHASE;
 
-public class ParticleUtils {
+public class VisualUtils {
 
     public static void spawnShriekerParticles(ServerLevel serverLevel, BlockPos pos) {
         for (int ah = 0; ah < 5; ++ah) {

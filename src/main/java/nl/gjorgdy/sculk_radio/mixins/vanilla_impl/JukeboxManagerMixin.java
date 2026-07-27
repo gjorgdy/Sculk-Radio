@@ -60,7 +60,6 @@ public class JukeboxManagerMixin {
             var node = NodeUtils.getFromBlockEntity(serverLevel.getBlockEntity(this.blockPos.above()));
             if (node instanceof RadioNode radio) {
                 radio.stop();
-                radio.particleTick(serverLevel);
                 this.onSongChanged.notifyChange();
                 if (this.song != null) {
                     this.song = null;

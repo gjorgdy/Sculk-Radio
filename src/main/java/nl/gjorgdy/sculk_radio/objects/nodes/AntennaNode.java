@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -62,8 +62,8 @@ public class AntennaNode extends RelayNode {
 	}
 
 	@Override
-	public void particleTick(ServerLevel level) {
-		ParticleUtils.activateSensor(level, this.getPos());
+	public void visualsTick() {
+		if (isLoaded()) VisualUtils.activateSensor(level, this.getPos());
 	}
 
 	@Override

@@ -6,7 +6,6 @@
   "mixins": [
     "BlockMixin",
     "CalibratedSculkSensorBlockMixin",
-    "JukeboxSongPlayerMixin",
     "AbstractBlockStateMixin",
     "node_containers.SculkSensorBlockEntityMixin",
     "SculkSensorVibrationCallbackMixin",

@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.listeners.OnUseListener;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,11 @@ public class SculkRadio implements ModInitializer {
     }
 
     // start config
-    public static boolean enableExperimentalFrequencies = false;
     public static int innerClusterRange = 16;
     public static int minAntennaHeight = 16;
+
+    public static int visualsTick = 20;
+    public static int connectionTick = 20;
     // end config
 
     @Override
@@ -46,12 +49,18 @@ public class SculkRadio implements ModInitializer {
             });
         });
 
-        ServerTickEvents.START_SERVER_TICK.register(_ -> {
+        ServerTickEvents.START_SERVER_TICK.register(s -> {
             while (!serverTasks.isEmpty()) {
                 var task = serverTasks.poll();
                 if (task != null) {
                     task.run();
                 }
+            }
+            if (s.getTickCount() % connectionTick == 0) {
+                s.getAllLevels().forEach(level -> NodeRegistry.of(level).getRadios().forEach(RadioNode::connectionTick));
+            }
+            if (s.getTickCount() % visualsTick == 0) {
+                s.getAllLevels().forEach(level -> NodeRegistry.of(level).getRadios().forEach(RadioNode::visualsTick));
             }
         });
 

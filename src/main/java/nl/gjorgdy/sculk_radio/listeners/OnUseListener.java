@@ -9,7 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -24,9 +24,9 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback {
 				node.getNeighbours().forEach(
 					neighbour -> {
 						if (node.canTransmit() && neighbour.canReceive()) {
-							ParticleUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), neighbour.getPos());
+							VisualUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), neighbour.getPos());
 						} else if (node.canReceive() && neighbour.canTransmit()) {
-							ParticleUtils.spawnVibrationParticles((ServerLevel) level, neighbour.getPos(), node.getPos());
+							VisualUtils.spawnVibrationParticles((ServerLevel) level, neighbour.getPos(), node.getPos());
 						}
 					}
 				);

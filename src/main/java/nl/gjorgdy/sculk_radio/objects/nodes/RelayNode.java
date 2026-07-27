@@ -3,9 +3,8 @@ package nl.gjorgdy.sculk_radio.objects.nodes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
 public class RelayNode extends Node {
 
@@ -29,8 +28,8 @@ public class RelayNode extends Node {
 	}
 
 	@Override
-	public void particleTick(ServerLevel level) {
-		ParticleUtils.activateSensor(level, pos);
+	public void visualsTick() {
+		if (isLoaded()) VisualUtils.activateSensor(level, pos);
 	}
 
 }

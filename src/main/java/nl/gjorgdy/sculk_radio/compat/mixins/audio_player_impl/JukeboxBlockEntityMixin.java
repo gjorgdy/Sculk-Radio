@@ -3,7 +3,6 @@ package nl.gjorgdy.sculk_radio.compat.mixins.audio_player_impl;
 import me.fallenbreath.conditionalmixin.api.annotation.Condition;
 import me.fallenbreath.conditionalmixin.api.annotation.Restriction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -32,10 +31,7 @@ public abstract class JukeboxBlockEntityMixin extends BlockEntity {
     @Inject(method = "setTheItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/item/JukeboxSongPlayer;stop(Lnet/minecraft/world/level/LevelAccessor;Lnet/minecraft/world/level/block/state/BlockState;)V"))
     public void onStop(ItemStack itemStack, CallbackInfo ci) {
         var node = NodeUtils.getFromBlockEntity(this);
-        if (node instanceof RadioNode radio) {
-            radio.stop();
-            radio.particleTick((ServerLevel) this.getLevel());
-        }
+        if (node instanceof RadioNode radio) radio.stop();
     }
 
 }

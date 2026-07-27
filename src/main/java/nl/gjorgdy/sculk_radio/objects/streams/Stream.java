@@ -8,7 +8,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.NodePath;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
-import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -63,47 +63,49 @@ public class Stream {
 			disconnectedNodes.add(to);
 		});
 		connections.clear();
+		// to reset visual state
+		visualsTick(source.getLevel());
 	}
 
-	public void particleTick(ServerLevel level) {
+	public void visualsTick(ServerLevel level) {
 		if (state == StreamState.ACTIVE) {
-			ParticleUtils.spawnShriekerParticles(level, source.getPos());
-			forListeners((listener) -> listener.particleTick(level));
+			VisualUtils.spawnShriekerParticles(level, source.getPos());
+			forListeners(Node::visualsTick);
 			forConnections((from, to) -> {
 				// Between antennas
 				if (from instanceof AntennaNode && to instanceof AntennaNode) {
 					if (from.isLoaded()) {
-						from.particleTick(level);
-						ParticleUtils.spawnVibrationParticles(level, from.getPos(), from.getPos().above(16));
-						ParticleUtils.spawnAntennaParticles(level, from.getPos());
+						from.visualsTick();
+						VisualUtils.spawnVibrationParticles(level, from.getPos(), from.getPos().above(16));
+						VisualUtils.spawnAntennaParticles(level, from.getPos());
 					}
 					if (to.isLoaded()) {
-						to.particleTick(level);
-						ParticleUtils.spawnVibrationParticles(level, to.getPos().above(16), to.getPos());
-						ParticleUtils.spawnAntennaParticles(level, to.getPos());
+						to.visualsTick();
+						VisualUtils.spawnVibrationParticles(level, to.getPos().above(16), to.getPos());
+						VisualUtils.spawnAntennaParticles(level, to.getPos());
 					}
 					return;
 				}
 				// Between relays and/or an antenna
 				else if (from instanceof RelayNode && from.isLoaded()) {
 					if (to instanceof AntennaNode) {
-						ParticleUtils.spawnAntennaParticles(level, from.getPos());
+						VisualUtils.spawnAntennaParticles(level, from.getPos());
 					}
-					from.particleTick(level);
+					from.visualsTick();
 				}
 				// Between anything else
 				if (from.isLoaded() && to.isLoaded()) {
 					if (from instanceof AntennaNode) {
-						ParticleUtils.spawnAntennaParticles(level, to.getPos());
+						VisualUtils.spawnAntennaParticles(level, to.getPos());
 					}
-					ParticleUtils.spawnVibrationParticles(level, from.getPos(), to.getPos());
+					VisualUtils.spawnVibrationParticles(level, from.getPos(), to.getPos());
 				}
 			});
 		}
 		while (!disconnectedNodes.isEmpty()) {
 			Node node = disconnectedNodes.poll();
 			if (node == null) continue;
-			ParticleUtils.deactivateSensor(level, node.getPos());
+			VisualUtils.deactivateSensor(level, node.getPos());
 		}
 	}
 

@@ -37,11 +37,7 @@ public abstract class JukeboxManagerMixin implements CustomJukeboxSongPlayer {
     public void tick(LevelAccessor level, BlockState blockState, Operation<Void> original) {
         if (!isPlaying() && level instanceof ServerLevel serverWorld) {
             var node = NodeUtils.getFromBlockEntity(serverWorld.getBlockEntity(this.blockPos.above()));
-            if (node instanceof RadioNode radio && radio.getState() == StreamState.ACTIVE) {
-                radio.stop();
-                radio.particleTick(serverWorld);
-                System.out.println("Stopping radio stream for jukebox at " + this.blockPos);
-            }
+            if (node instanceof RadioNode radio && radio.getState() == StreamState.ACTIVE) radio.stop();
         }
         original.call(level, blockState);
     }

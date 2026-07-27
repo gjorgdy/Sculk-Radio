@@ -22,7 +22,7 @@ public abstract class Node {
 
     abstract public boolean canTransmit();
     abstract public boolean canReceive();
-    abstract public void particleTick(ServerLevel level);
+    abstract public void visualsTick();
 
     public void init(ServerLevel level) {
         this.level = level;
@@ -77,5 +77,9 @@ public abstract class Node {
     @Override
     public String toString() {
         return "Node{x: " + pos.getX() + ", y: " + pos.getY() + ", z: " + pos.getZ() + "}";
+    }
+
+    public ServerLevel getLevel() {
+        return level;
     }
 }

@@ -68,10 +68,7 @@ public abstract class PlayerManagerMixin {
             MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(
                 channelID,
                 api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()),
-                () -> {
-                    radio.stop();
-                    radio.particleTick(level);
-                }
+                radio::stop
             );
             if (category != null) {
                 mlChannel.setCategory(category);

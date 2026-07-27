@@ -45,6 +45,10 @@ public class NodeRegistry extends SavedData {
 		this.level = level;
 	}
 
+	public Set<? extends RadioNode> getRadios() {
+		return Collections.unmodifiableSet(radioNodes);
+	}
+
 	public Set<? extends Node> getAntennas(int frequency) {
 		return antennaNodes.stream().filter(n -> n.getFrequency() == frequency).collect(Collectors.toSet());
 	}
