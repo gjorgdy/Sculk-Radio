@@ -2,6 +2,7 @@ package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 
 public abstract class ReceiverNode extends Node {
 
@@ -32,7 +33,7 @@ public abstract class ReceiverNode extends Node {
 	@Override
 	public void init(ServerLevel level) {
 		super.init(level);
-		updateNeighbours();
+		SculkRadio.scheduleNextTick(this::updateNeighbours);
 	}
 
 	public void setRedstoneSignal(int redstoneSignal) {

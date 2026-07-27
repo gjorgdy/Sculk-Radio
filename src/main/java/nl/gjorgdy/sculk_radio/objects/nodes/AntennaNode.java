@@ -3,7 +3,9 @@ package nl.gjorgdy.sculk_radio.objects.nodes;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
@@ -16,7 +18,7 @@ public class AntennaNode extends RelayNode {
 
 	public static final Codec<AntennaNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
              BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos),
-             Codec.INT.fieldOf("frequency").forGetter(node -> node.frequency)
+             Codec.INT.fieldOf("frequency").forGetter(AntennaNode::getFrequency)
          ).apply(instance, AntennaNode::new)
 	);
 
@@ -26,8 +28,24 @@ public class AntennaNode extends RelayNode {
 		super(pos);
 	}
 
+	@Override
+	public void init(ServerLevel level) {
+		super.init(level);
+		SculkRadio.scheduleNextTick(this::updateFrequency);
+	}
+
 	public int getFrequency() {
 		return frequency;
+	}
+
+	public void updateFrequency() {
+		if (!isLoaded()) return;
+		var direction = level.getBlockState(getPos()).getValueOrElse(CalibratedSculkSensorBlock.FACING, Direction.UP);
+		this.frequency = level.getDirectSignal(
+			getPos().relative(direction.getOpposite()),
+			direction.getOpposite()
+		);
+		NodeRegistry.of(level).setDirty();
 	}
 
 	private AntennaNode(BlockPos pos, int frequency) {

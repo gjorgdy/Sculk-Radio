@@ -6,6 +6,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.redstone.Orientation;
+import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
+import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -19,9 +21,9 @@ public class CalibratedSculkSensorBlockMixin extends Block {
     @Override
     protected void neighborChanged(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Block block, @org.jspecify.annotations.Nullable Orientation orientation, boolean movedByPiston) {
         if (level.isClientSide()) return;
-//        if (level.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof SculkChannel.ChannelNode cn) {
-//            cn.updateFrequency();
-//        }
+        if (level.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof AntennaNode antennaNode) {
+            antennaNode.updateFrequency();
+        }
         super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
     }
 

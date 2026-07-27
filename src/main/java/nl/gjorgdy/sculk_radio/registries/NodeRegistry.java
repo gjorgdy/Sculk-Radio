@@ -71,9 +71,10 @@ public class NodeRegistry extends SavedData {
 	}
 
 	public <T extends Node> void register(@NonNull T node) {
+		System.out.println("Registering node " + node.getClass().getSimpleName() + " at " + node.getPos());
 		registerInternal(node);
 		setDirty();
-		System.out.println("Registering node " + node.getClass().getSimpleName() + " at " + node.getPos() + " with " + node.getNeighbours().size() + " neighbours");
+		System.out.println(" with " + node.getNeighbours().size() + " neighbours");
 	}
 
 	private <T extends Node> void registerInternal(@NonNull T node) {

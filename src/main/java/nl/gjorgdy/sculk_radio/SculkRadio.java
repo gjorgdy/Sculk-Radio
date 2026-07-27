@@ -2,6 +2,7 @@ package nl.gjorgdy.sculk_radio;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
@@ -12,10 +13,18 @@ import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 public class SculkRadio implements ModInitializer {
 
     public static final String MOD_ID = "sculk_radio";
     public static Logger LOGGER = LoggerFactory.getLogger("Sculk Radio");
+
+    private static final ConcurrentLinkedQueue<Runnable> serverTasks = new ConcurrentLinkedQueue<>();
+
+    public static void scheduleNextTick(Runnable task) {
+        serverTasks.add(task);
+    }
 
     public static Node getNode(ServerLevel serverLevel, BlockPos blockPos) {
         return NodeRegistry.of(serverLevel).getNode(blockPos).orElse(null);
@@ -35,6 +44,15 @@ public class SculkRadio implements ModInitializer {
                 var registry = NodeRegistry.of(level);
                 LOGGER.info("Loaded {} nodes in level {}", registry.size(), level.dimension().identifier());
             });
+        });
+
+        ServerTickEvents.START_SERVER_TICK.register(_ -> {
+            while (!serverTasks.isEmpty()) {
+                var task = serverTasks.poll();
+                if (task != null) {
+                    task.run();
+                }
+            }
         });
 
         BlockEvents.USE_WITHOUT_ITEM.register(new OnUseListener());
