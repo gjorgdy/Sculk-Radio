@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
+import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -17,13 +18,18 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback {
 
 	@Override
 	public @Nullable InteractionResult useWithoutItem(@NonNull BlockState blockState, Level level, @NonNull BlockPos blockPos, @NonNull Player player, @NonNull BlockHitResult blockHitResult) {
+		if (level.isClientSide()) return null;
 		var blockEntity = level.getBlockEntity(blockPos);
 		if (blockEntity instanceof INodeContainer nodeContainer) {
 			var node = nodeContainer.sculkRadio$getNode();
 			if (node != null) {
 				node.getNeighbours().forEach(
 					neighbour -> {
-						if (node.canTransmit() && neighbour.canReceive()) {
+						if (node instanceof AntennaNode && neighbour instanceof AntennaNode) {
+							VisualUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), node.getPos().above(16));
+							VisualUtils.spawnAntennaParticles((ServerLevel) level, node.getPos());
+						}
+						else if (node.canTransmit() && neighbour.canReceive()) {
 							VisualUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), neighbour.getPos());
 						} else if (node.canReceive() && neighbour.canTransmit()) {
 							VisualUtils.spawnVibrationParticles((ServerLevel) level, neighbour.getPos(), node.getPos());

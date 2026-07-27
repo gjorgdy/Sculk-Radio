@@ -11,10 +11,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SculkSensorPhase;
 import net.minecraft.world.level.gameevent.BlockPositionSource;
 import net.minecraft.world.phys.Vec3;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.SCULK_SENSOR_PHASE;
 
-public class VisualUtils {
+public abstract class VisualUtils {
 
     public static void spawnShriekerParticles(ServerLevel serverLevel, BlockPos pos) {
         for (int ah = 0; ah < 5; ++ah) {
@@ -46,13 +47,13 @@ public class VisualUtils {
 
     public static void spawnVibrationParticles(ServerLevel world, BlockPos from, BlockPos to) {
         world.sendParticles(new VibrationParticleOption(
-		                             new BlockPositionSource(to), 20),
+                                    new BlockPositionSource(to), SculkRadio.visualsTick),
                 from.getX() + 0.5, from.getY() + 0.5, from.getZ() + 0.5, 1, 0.0, 0.0, 0.0, 0.0);
 
         BlockState sensorBlockState = world.getBlockState(to);
         if (sensorBlockState.is(Blocks.SCULK_SENSOR) || sensorBlockState.is(Blocks.CALIBRATED_SCULK_SENSOR)) {
             world.setBlock(to, sensorBlockState.setValue(SCULK_SENSOR_PHASE, SculkSensorPhase.INACTIVE), 3);
-            world.scheduleTick(to, sensorBlockState.getBlock(), 20);
+            world.scheduleTick(to, sensorBlockState.getBlock(), SculkRadio.visualsTick);
         }
     }
 
