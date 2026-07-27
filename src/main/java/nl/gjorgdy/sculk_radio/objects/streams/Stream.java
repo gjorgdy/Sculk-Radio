@@ -82,6 +82,7 @@ public class Stream {
 						ParticleUtils.spawnVibrationParticles(level, to.getPos().above(16), to.getPos());
 						ParticleUtils.spawnAntennaParticles(level, to.getPos());
 					}
+					return;
 				}
 				// Between relays and/or an antenna
 				else if (from instanceof RelayNode && from.isLoaded()) {
