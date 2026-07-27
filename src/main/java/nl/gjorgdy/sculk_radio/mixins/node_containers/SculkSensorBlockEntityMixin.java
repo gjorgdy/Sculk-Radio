@@ -1,9 +1,10 @@
-package nl.gjorgdy.sculk_radio.mixins;
+package nl.gjorgdy.sculk_radio.mixins.node_containers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.SculkRadio;
@@ -12,7 +13,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(SculkSensorBlockEntity.class)
+@Mixin({ SculkSensorBlockEntity.class, CalibratedSculkSensorBlockEntity.class })
 public abstract class SculkSensorBlockEntityMixin extends BlockEntity implements INodeContainer {
 
     @Unique

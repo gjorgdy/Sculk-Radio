@@ -8,9 +8,9 @@
     "CalibratedSculkSensorBlockMixin",
     "JukeboxSongPlayerMixin",
     "AbstractBlockStateMixin",
-    "SculkSensorBlockEntityMixin",
+    "node_containers.SculkSensorBlockEntityMixin",
     "SculkSensorVibrationCallbackMixin",
-    "SculkShriekerBlockEntityMixin",
+    "node_containers.SculkShriekerBlockEntityMixin",
     "SculkShriekerBlockMixin",
     "LevelChunkMixin",
     "vanilla_impl.JukeboxManagerMixin"

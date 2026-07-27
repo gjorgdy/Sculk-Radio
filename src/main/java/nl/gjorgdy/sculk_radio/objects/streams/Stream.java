@@ -2,6 +2,7 @@ package nl.gjorgdy.sculk_radio.objects.streams;
 
 import kotlin.Pair;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.NodePath;
@@ -67,8 +68,33 @@ public class Stream {
 			ParticleUtils.spawnShriekerParticles(level, source.getPos());
 			forListeners((listener) -> listener.particleTick(level));
 			forConnections((from, to) -> {
-				if (from instanceof RelayNode) from.particleTick(level);
-				ParticleUtils.spawnVibrationParticles(level, from.getPos(), to.getPos());
+				// Between antennas
+				if (from instanceof AntennaNode && to instanceof AntennaNode) {
+					if (from.isLoaded()) {
+						from.particleTick(level);
+						ParticleUtils.spawnVibrationParticles(level, from.getPos(), from.getPos().above(16));
+						ParticleUtils.spawnAntennaParticles(level, from.getPos());
+					}
+					if (to.isLoaded()) {
+						to.particleTick(level);
+						ParticleUtils.spawnVibrationParticles(level, to.getPos().above(16), to.getPos());
+						ParticleUtils.spawnAntennaParticles(level, to.getPos());
+					}
+				}
+				// Between relays and/or an antenna
+				else if (from instanceof RelayNode && from.isLoaded()) {
+					if (to instanceof AntennaNode) {
+						ParticleUtils.spawnAntennaParticles(level, from.getPos());
+					}
+					from.particleTick(level);
+				}
+				// Between anything else
+				if (from.isLoaded() && to.isLoaded()) {
+					if (from instanceof AntennaNode) {
+						ParticleUtils.spawnAntennaParticles(level, to.getPos());
+					}
+					ParticleUtils.spawnVibrationParticles(level, from.getPos(), to.getPos());
+				}
 			});
 		}
 		while (!disconnectedNodes.isEmpty()) {

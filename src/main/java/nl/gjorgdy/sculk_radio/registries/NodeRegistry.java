@@ -17,10 +17,14 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static nl.gjorgdy.sculk_radio.utils.SetUtils.toList;
 
 public class NodeRegistry extends SavedData {
+
+	private static final Map<ServerLevel, NodeRegistry> registryMap = new HashMap<>();
+	private final ServerLevel level;
 
 	// audio
 	private final Set<RadioNode> radioNodes = new HashSet<>();
@@ -37,7 +41,13 @@ public class NodeRegistry extends SavedData {
 		antennas.forEach(this::registerInternal);
 	}
 
-	private NodeRegistry(ServerLevel level) {}
+	private NodeRegistry(ServerLevel level) {
+		this.level = level;
+	}
+
+	public Set<? extends Node> getAntennas(int frequency) {
+		return antennaNodes.stream().filter(n -> n.getFrequency() == frequency).collect(Collectors.toSet());
+	}
 
 	public Optional<? extends Node> getNode(BlockPos pos) {
 		Optional<? extends Node> node = radioNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
@@ -63,6 +73,7 @@ public class NodeRegistry extends SavedData {
 	public <T extends Node> void register(@NonNull T node) {
 		registerInternal(node);
 		setDirty();
+		System.out.println("Registering node " + node.getClass().getSimpleName() + " at " + node.getPos() + " with " + node.getNeighbours().size() + " neighbours");
 	}
 
 	private <T extends Node> void registerInternal(@NonNull T node) {
@@ -71,22 +82,22 @@ public class NodeRegistry extends SavedData {
 				node.connect(otherNode);
 			}
 		});
-		System.out.println("Registering node: " + node.getClass().getSimpleName() + " at " + node.getPos() + " with " + node.getNeighbours().size() + " neighbours");
 		switch (node) {
 			case RadioNode radioNode -> radioNodes.add(radioNode);
 			case SpeakerNode speakerNode -> speakerNodes.add(speakerNode);
-			case RelayNode relayNode -> relayNodes.add(relayNode);
 			case AntennaNode antennaNode -> antennaNodes.add(antennaNode);
+			case RelayNode relayNode -> relayNodes.add(relayNode);
 			default -> {}
 		}
+		node.init(this.level);
 	}
 
 	public void remove(@NonNull Node node) {
 		switch (node) {
 			case RadioNode radioNode -> radioNodes.remove(radioNode);
 			case SpeakerNode speakerNode -> speakerNodes.remove(speakerNode);
-			case RelayNode relayNode -> relayNodes.remove(relayNode);
 			case AntennaNode antennaNode -> antennaNodes.remove(antennaNode);
+			case RelayNode relayNode -> relayNodes.remove(relayNode);
 			default -> {}
 		}
 		node.afterRemove();
@@ -94,6 +105,10 @@ public class NodeRegistry extends SavedData {
 	}
 
 	public static NodeRegistry of(ServerLevel level) {
+		return registryMap.computeIfAbsent(level, NodeRegistry::load);
+	}
+
+	private static NodeRegistry load(ServerLevel level) {
 		Codec<NodeRegistry> codec = RecordCodecBuilder.create(instance -> instance.group(
                RadioNode.CODEC.listOf().fieldOf("radios").forGetter(i -> toList(i.radioNodes)),
                SpeakerNode.CODEC.listOf().fieldOf("speakers").forGetter(i -> toList(i.speakerNodes)),

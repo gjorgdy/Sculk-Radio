@@ -56,6 +56,10 @@ public class ParticleUtils {
         }
     }
 
+    public static void spawnAntennaParticles(ServerLevel world, BlockPos from) {
+        world.sendParticles(ParticleTypes.END_ROD, from.getX() + 0.5, from.getY() + 1.0, from.getZ() + 0.5, 5, 0.3, 0.3, 0.3, 0.05);
+    }
+
     public static void spawnNoteParticles(ServerLevel serverLevel, BlockPos pos) {
         Vec3 vec3 = new Vec3(pos).add(0.5F, 0.7F, 0.5F);
         float f = (float) serverLevel.getRandom().nextInt(4) / 24.0F;

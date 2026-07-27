@@ -6,9 +6,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
-import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
+import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
+import nl.gjorgdy.sculk_radio.utils.ParticleUtils;
 
-public class AntennaNode extends ReceiverNode {
+import java.util.HashSet;
+import java.util.Set;
+
+public class AntennaNode extends RelayNode {
 
 	public static final Codec<AntennaNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
              BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos),
@@ -22,14 +26,26 @@ public class AntennaNode extends ReceiverNode {
 		super(pos);
 	}
 
+	public int getFrequency() {
+		return frequency;
+	}
+
 	private AntennaNode(BlockPos pos, int frequency) {
 		super(pos);
 		this.frequency = frequency;
 	}
 
 	@Override
+	public Set<Node> getNeighbours() {
+		Set<Node> neighbours = new HashSet<>();
+		neighbours.addAll(this.neighbours);
+		neighbours.addAll(NodeRegistry.of(level).getAntennas(frequency));
+		return neighbours;
+	}
+
+	@Override
 	public void particleTick(ServerLevel level) {
-		// ignore
+		ParticleUtils.activateSensor(level, this.getPos());
 	}
 
 	@Override

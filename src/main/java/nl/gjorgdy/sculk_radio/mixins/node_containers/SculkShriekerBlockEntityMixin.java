@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.mixins;
+package nl.gjorgdy.sculk_radio.mixins.node_containers;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

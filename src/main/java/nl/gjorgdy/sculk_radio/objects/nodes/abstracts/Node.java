@@ -10,6 +10,8 @@ import java.util.Set;
 
 public abstract class Node {
 
+    protected ServerLevel level;
+
     private boolean removed = false;
     protected final BlockPos pos;
     protected final Set<Node> neighbours = new HashSet<>();
@@ -21,6 +23,14 @@ public abstract class Node {
     abstract public boolean canTransmit();
     abstract public boolean canReceive();
     abstract public void particleTick(ServerLevel level);
+
+    public void init(ServerLevel level) {
+        this.level = level;
+    }
+
+    public boolean isLoaded() {
+        return level != null && level.isLoaded(pos);
+    }
 
     /**
      * @return All connected nodes

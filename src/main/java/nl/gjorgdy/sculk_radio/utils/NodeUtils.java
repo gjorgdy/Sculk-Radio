@@ -32,8 +32,8 @@ public abstract class NodeUtils {
 		node = switch (blockEntity) {
 			case SculkSensorBlockEntity be when state.is(Blocks.NOTE_BLOCK) -> new SpeakerNode(be.getBlockPos());
 			case SculkShriekerBlockEntity be when state.is(Blocks.JUKEBOX) -> new RadioNode(be.getBlockPos());
-			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
 			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new AntennaNode(be.getBlockPos());
+			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
 			default -> null;
 		};
 		if (node != null) {
