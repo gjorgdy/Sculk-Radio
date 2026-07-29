@@ -11,7 +11,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.streams.AudioStream;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
+import nl.gjorgdy.sculk_radio.objects.streams.VanillaDiscStream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -47,7 +49,7 @@ public class JukeboxManagerMixin {
             if (node instanceof RadioNode radio) {
                 this.song = song;
                 this.ticksSinceSongStarted = 0L;
-                radio.start(sn -> createStream(level, song, sn));
+                radio.start(sn -> new VanillaDiscStream(level, song, sn));
                 this.onSongChanged.notifyChange();
                 ci.cancel();
             }
@@ -68,18 +70,6 @@ public class JukeboxManagerMixin {
                 ci.cancel();
             }
         }
-    }
-
-    @Unique
-    private Stream createStream(LevelAccessor level, Holder<JukeboxSong> song, SourceNode source) {
-        int songId = level.registryAccess().lookupOrThrow(Registries.JUKEBOX_SONG).getId(song.value());
-        return new Stream(
-            n -> n instanceof SpeakerNode,
-            n -> level.levelEvent(1010, n.getPos(), songId), // connect
-            n -> level.levelEvent(1011, n.getPos(), 0), // disconnect
-            source,
-            false
-        );
     }
 
 }

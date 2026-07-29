@@ -8,11 +8,10 @@ import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 
 import java.util.UUID;
 
-public class MicrophoneStream extends Stream {
+public class MicrophoneStream extends AudioStream {
 
 	private boolean sentPacket = false;
 	private final MultiLocationalAudioChannel channel;
@@ -32,7 +31,6 @@ public class MicrophoneStream extends Stream {
 		channel.setCategory("microphones");
 		channel.setFilter(null);
 		super(
-			n -> n instanceof SpeakerNode,
 			n -> channel.addChannel(level, new Vec3(n.getPos()).add(0.5)),  // on connect
 			n -> channel.removeChannel(new Vec3(n.getPos()).add(0.5)),      // on disconnect
 			source,

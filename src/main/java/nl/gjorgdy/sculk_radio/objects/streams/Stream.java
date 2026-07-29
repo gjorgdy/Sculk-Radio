@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class Stream {
+public abstract class Stream {
 
 	private final Predicate<? super Node> isReceiver;
 	private final Consumer<? super Node> connectConsumer;

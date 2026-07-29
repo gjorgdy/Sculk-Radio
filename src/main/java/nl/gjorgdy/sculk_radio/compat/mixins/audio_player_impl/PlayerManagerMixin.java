@@ -20,6 +20,8 @@ import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.streams.AudioPlayerDiscStream;
+import nl.gjorgdy.sculk_radio.objects.streams.AudioStream;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
@@ -79,22 +81,11 @@ public abstract class PlayerManagerMixin {
                 return !ChatUtils.isAbleToHearVoicechat(connection);
             }).stream().map(Player::getPlayer).map(ServerPlayer.class::cast).forEach(ChatUtils::sendEnableVoicechatMessage);
 
-            radio.start(sn -> createStream(mlChannel, level, sn));
+            radio.start(sn -> new AudioPlayerDiscStream(mlChannel, level, sn));
 
             return instance.playChannel(mlChannel, sound, p, maxLengthSeconds);
         }
         return null;
-    }
-
-    @Unique
-    private Stream createStream(MultiLocationalAudioChannel channel, ServerLevel level, SourceNode source) {
-        return new Stream(
-            n -> n instanceof SpeakerNode,
-            n -> channel.addChannel(level, new Vec3(n.getPos()).add(0.5)),  // on connect
-            n -> channel.removeChannel(new Vec3(n.getPos()).add(0.5)),      // on disconnect
-            source,
-            true
-        );
     }
 
 }
