@@ -1,11 +1,13 @@
 package nl.gjorgdy.sculk_radio.utils;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.ShriekParticleOption;
 import net.minecraft.core.particles.VibrationParticleOption;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.CommonColors;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SculkSensorPhase;
@@ -67,4 +69,9 @@ public abstract class VisualUtils {
         serverLevel.sendParticles(ParticleTypes.NOTE, vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
     }
 
+	public static void spawnRedstoneParticles(ServerLevel level, BlockPos pos) {
+        Vec3 vec3 = new Vec3(pos).add(0.5F, 0.7F, 0.5F);
+        float f = (float) level.getRandom().nextInt(4) / 24.0F;
+        level.sendParticles(new DustParticleOptions(CommonColors.RED, 1f), vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
+	}
 }

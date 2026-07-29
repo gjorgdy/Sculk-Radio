@@ -14,6 +14,8 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.jspecify.annotations.Nullable;
 
@@ -36,6 +38,8 @@ public abstract class NodeUtils {
 			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new AntennaNode(be.getBlockPos());
 			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
 			case SculkShriekerBlockEntity be when state.is(Blocks.SCULK_CATALYST) -> new MicrophoneNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be when state.is(Blocks.TARGET) -> new RedstoneSourceNode(be.getBlockPos());
+			case SculkSensorBlockEntity be when state.is(Blocks.TARGET) -> new RedstoneReceiverNode(be.getBlockPos());
 			default -> null;
 		};
 		if (node != null) {

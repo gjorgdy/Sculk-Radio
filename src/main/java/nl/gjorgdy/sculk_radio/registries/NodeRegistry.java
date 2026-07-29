@@ -15,6 +15,8 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -31,28 +33,34 @@ public class NodeRegistry extends SavedData {
 	// audio
 	private final Set<RadioNode> radioNodes = new HashSet<>();
 	private final Set<SpeakerNode> speakerNodes = new HashSet<>();
+	// microphone
+	private final Set<MicrophoneNode> microphoneNodes = new HashSet<>();
+	// redstone
+	private final Set<RedstoneSourceNode> redstoneSourceNodes = new HashSet<>();
+	private final Set<RedstoneReceiverNode> redstoneReceiverNodes = new HashSet<>();
 	// communication
 	private final Set<AntennaNode> antennaNodes = new HashSet<>();
 	private final Set<RelayNode> relayNodes = new HashSet<>();
-	// microphone
-	private final Set<MicrophoneNode> microphoneNodes = new HashSet<>();
 
-	private NodeRegistry(ServerLevel level, List<RadioNode> radios, List<SpeakerNode> speakers, List<RelayNode> relays, List<AntennaNode> antennas, List<MicrophoneNode> microphones) {
+	private NodeRegistry(ServerLevel level, List<RadioNode> radios, List<SpeakerNode> speakers, List<RelayNode> relays, List<AntennaNode> antennas, List<MicrophoneNode> microphones, List<RedstoneReceiverNode> redstoneReceivers, List<RedstoneSourceNode> redstoneSources) {
 		this(level);
 		radios.forEach(this::registerInternal);
 		speakers.forEach(this::registerInternal);
 		relays.forEach(this::registerInternal);
 		antennas.forEach(this::registerInternal);
 		microphones.forEach(this::registerInternal);
+		redstoneReceivers.forEach(this::registerInternal);
+		redstoneSources.forEach(this::registerInternal);
 	}
 
 	private NodeRegistry(ServerLevel level) {
 		this.level = level;
 	}
 
-	public void forSources(Consumer<SourceNode> consumer) {
+	public void forSources(Consumer<SourceNode<?>> consumer) {
 		radioNodes.forEach(consumer);
 		microphoneNodes.forEach(consumer);
+		redstoneSourceNodes.forEach(consumer);
 	}
 
 	public Set<MicrophoneNode> getMicrophonesInRange(BlockPos pos) {
@@ -74,11 +82,22 @@ public class NodeRegistry extends SavedData {
 		if (node.isPresent()) return node;
 		node = microphoneNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
 		if (node.isPresent()) return node;
-		return relayNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
+		node = relayNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
+		if (node.isPresent()) return node;
+		node = redstoneReceiverNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
+		if (node.isPresent()) return node;
+		node = redstoneSourceNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
+		return node;
 	}
 
 	public int size() {
-		return radioNodes.size() + speakerNodes.size() + antennaNodes.size() + relayNodes.size() + microphoneNodes.size();
+		return radioNodes.size()
+			+ speakerNodes.size()
+			+ antennaNodes.size()
+			+ relayNodes.size()
+			+ microphoneNodes.size()
+			+ redstoneReceiverNodes.size()
+			+ redstoneSourceNodes.size();
 	}
 
 	private void forEach(Consumer<Node> nodeConsumer) {
@@ -87,6 +106,8 @@ public class NodeRegistry extends SavedData {
 		this.antennaNodes.forEach(nodeConsumer);
 		this.relayNodes.forEach(nodeConsumer);
 		this.microphoneNodes.forEach(nodeConsumer);
+		this.redstoneReceiverNodes.forEach(nodeConsumer);
+		this.redstoneSourceNodes.forEach(nodeConsumer);
 	}
 
 	public <T extends Node> void register(@NonNull T node) {
@@ -108,6 +129,8 @@ public class NodeRegistry extends SavedData {
 			case AntennaNode antennaNode -> antennaNodes.add(antennaNode);
 			case RelayNode relayNode -> relayNodes.add(relayNode);
 			case MicrophoneNode microphoneNode -> microphoneNodes.add(microphoneNode);
+			case RedstoneReceiverNode redstoneReceiverNode -> redstoneReceiverNodes.add(redstoneReceiverNode);
+			case RedstoneSourceNode redstoneSourceNode -> redstoneSourceNodes.add(redstoneSourceNode);
 			default -> {}
 		}
 		node.init(this.level);
@@ -120,6 +143,8 @@ public class NodeRegistry extends SavedData {
 			case AntennaNode antennaNode -> antennaNodes.remove(antennaNode);
 			case RelayNode relayNode -> relayNodes.remove(relayNode);
 			case MicrophoneNode microphoneNode -> microphoneNodes.remove(microphoneNode);
+			case RedstoneReceiverNode redstoneReceiverNode -> redstoneReceiverNodes.remove(redstoneReceiverNode);
+			case RedstoneSourceNode redstoneSourceNode -> redstoneSourceNodes.remove(redstoneSourceNode);
 			default -> {}
 		}
 		node.afterRemove();
@@ -136,8 +161,10 @@ public class NodeRegistry extends SavedData {
                SpeakerNode.CODEC.listOf().fieldOf("speakers").forGetter(i -> toList(i.speakerNodes)),
                RelayNode.CODEC.listOf().fieldOf("relays").forGetter(i -> toList(i.relayNodes)),
                AntennaNode.CODEC.listOf().fieldOf("antennas").forGetter(i -> toList(i.antennaNodes)),
-               MicrophoneNode.CODEC.listOf().fieldOf("microphones").forGetter(i -> toList(i.microphoneNodes))
-	       ).apply(instance, (ra, sp, re, an, mi) -> new NodeRegistry(level, ra, sp, re, an, mi))
+               MicrophoneNode.CODEC.listOf().fieldOf("microphones").forGetter(i -> toList(i.microphoneNodes)),
+               RedstoneReceiverNode.CODEC.listOf().fieldOf("redstone_receivers").forGetter(i -> toList(i.redstoneReceiverNodes)),
+               RedstoneSourceNode.CODEC.listOf().fieldOf("redstone_sources").forGetter(i -> toList(i.redstoneSourceNodes))
+	       ).apply(instance, (ra, sp, re, an, mi, rr, rs) -> new NodeRegistry(level, ra, sp, re, an, mi, rr, rs))
 		);
 		//noinspection DataFlowIssue
 		var type = new SavedDataType<>(

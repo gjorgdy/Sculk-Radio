@@ -42,7 +42,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "getSignal")
     public int redstonePower(BlockGetter level, BlockPos pos, Direction direction, Operation<Integer> original) {
-        if (is(Blocks.NOTE_BLOCK) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
+        if ((is(Blocks.NOTE_BLOCK) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
 	            ? receiverNode.getOwnSignal()

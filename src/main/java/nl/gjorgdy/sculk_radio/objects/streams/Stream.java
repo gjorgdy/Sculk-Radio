@@ -18,11 +18,11 @@ import java.util.function.Predicate;
 public abstract class Stream {
 
 	private final Predicate<? super Node> isReceiver;
-	private final Consumer<? super Node> connectConsumer;
-	private final Consumer<? super Node> disconnectConsumer;
+	private final Consumer<? super ReceiverNode> connectConsumer;
+	private final Consumer<? super ReceiverNode> disconnectConsumer;
 	// If nodes can 'connect' after playing has started
 	private final boolean isLive;
-	protected final SourceNode source;
+	protected final SourceNode<? extends Stream> source;
 
 	private final Set<Pair<Node, Node>> connections = new HashSet<>();
 	private final Set<ReceiverNode> listeners;
@@ -31,9 +31,9 @@ public abstract class Stream {
 
 	public Stream(
 		Predicate<? super Node> isReceiver,
-		Consumer<? super Node> connectConsumer,
-		Consumer<? super Node> disconnectConsumer,
-		SourceNode source,
+		Consumer<? super ReceiverNode> connectConsumer,
+		Consumer<? super ReceiverNode> disconnectConsumer,
+		SourceNode<? extends Stream> source,
 		boolean isLive
 	) {
 		this.isReceiver = isReceiver;

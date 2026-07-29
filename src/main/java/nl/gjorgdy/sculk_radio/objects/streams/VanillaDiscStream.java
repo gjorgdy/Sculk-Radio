@@ -1,4 +1,4 @@
-﻿package nl.gjorgdy.sculk_radio.objects.streams;
+package nl.gjorgdy.sculk_radio.objects.streams;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -8,7 +8,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 
 public class VanillaDiscStream extends AudioStream {
 	
-	public VanillaDiscStream(LevelAccessor level, Holder<JukeboxSong> song, SourceNode source) {
+	public VanillaDiscStream(LevelAccessor level, Holder<JukeboxSong> song, SourceNode<AudioStream> source) {
 		int songId = level.registryAccess().lookupOrThrow(Registries.JUKEBOX_SONG).getId(song.value());
 		super(
 			n -> level.levelEvent(1010, n.getPos(), songId), // connect

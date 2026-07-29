@@ -11,6 +11,7 @@ import net.minecraft.world.level.redstone.Orientation;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,8 +28,13 @@ public abstract class SculkShriekerBlockMixin extends BaseEntityBlock {
     @Override
     protected void neighborChanged(@NonNull BlockState state, Level level, @NonNull BlockPos pos, @NonNull Block block, @org.jspecify.annotations.Nullable Orientation orientation, boolean movedByPiston) {
         if (level.isClientSide()) return;
-        if (level.getBlockEntity(pos) instanceof INodeContainer nc && nc.sculkRadio$getNode() instanceof MicrophoneNode microphoneNode) {
-            microphoneNode.updateState();
+        if (level.getBlockEntity(pos) instanceof INodeContainer nc) {
+            if (nc.sculkRadio$getNode() instanceof MicrophoneNode microphoneNode) {
+                microphoneNode.updateState();
+            }
+            else if (nc.sculkRadio$getNode() instanceof RedstoneSourceNode redstoneSourceNode) {
+                redstoneSourceNode.updateRedstone();
+            }
         }
         super.neighborChanged(state, level, pos, block, orientation, movedByPiston);
     }

@@ -7,15 +7,15 @@ import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 
 import java.util.function.Function;
 
-public abstract class SourceNode extends Node {
+public abstract class SourceNode<T extends Stream> extends Node {
 
-	protected Stream stream;
+	protected T stream;
 
 	public SourceNode(BlockPos pos) {
 		super(pos);
 	}
 
-	public void start(Function<SourceNode, Stream> streamFactory) {
+	public void start(Function<SourceNode<T>, T> streamFactory) {
 		stream = streamFactory.apply(this);
 		stream.start();
 	}
@@ -45,12 +45,12 @@ public abstract class SourceNode extends Node {
 		return stream.getState();
 	}
 
-	public final int getRedstoneSignal() {
+	public int getRedstoneSignal() {
 		if (level == null) return 0;
 		return level.getBlockState(pos.below()).getOwnSignal(level, pos.below());
 	}
 
-	public final int getAnalogRedstoneSignal() {
+	public int getAnalogRedstoneSignal() {
 		if (level == null) return 0;
 		return level.getBlockState(pos.below()).getAnalogOutputSignal(level, pos.below(), Direction.NORTH);
 	}
@@ -63,5 +63,13 @@ public abstract class SourceNode extends Node {
 	@Override
 	public boolean canReceive() {
 		return false;
+	}
+
+	@Override
+	public void afterRemove() {
+		super.afterRemove();
+		if (stream != null) {
+			stream.stop();
+		}
 	}
 }

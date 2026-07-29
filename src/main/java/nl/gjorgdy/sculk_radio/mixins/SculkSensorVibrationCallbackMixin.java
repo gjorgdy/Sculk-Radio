@@ -26,7 +26,9 @@ public abstract class SculkSensorVibrationCallbackMixin {
     public void canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> event, GameEvent.@Nullable Context context, CallbackInfoReturnable<Boolean> cir) {
         BlockState blockBelow = level.getBlockState(this.blockPos.below());
         if (blockBelow.is(Blocks.NOTE_BLOCK)
-                || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)) {
+                || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)
+                || blockBelow.is(Blocks.TARGET)
+        ) {
             cir.setReturnValue(false);
         }
     }

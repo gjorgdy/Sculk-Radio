@@ -26,12 +26,18 @@ public abstract class SculkSensorBlockEntityMixin extends BlockEntity implements
     @Override
     public void sculkRadio$setNode(Node node) {
         this.node = node;
+        if (this.node != null && level != null) {
+            SculkRadio.scheduleNextTick(() -> level.updateNeighborsAt(
+                this.getBlockPos().below(),
+                level.getBlockState(this.getBlockPos().below()).getBlock()
+            ));
+        }
     }
 
     @Override
     public Node sculkRadio$getNode() {
         if (node == null) {
-            this.node = SculkRadio.getNode((ServerLevel) this.getLevel(), this.getBlockPos());
+            sculkRadio$setNode(SculkRadio.getNode((ServerLevel) this.getLevel(), this.getBlockPos()));
         }
         return node;
     }

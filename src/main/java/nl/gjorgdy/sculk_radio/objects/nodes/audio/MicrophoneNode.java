@@ -9,7 +9,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.streams.MicrophoneStream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 
-public class MicrophoneNode extends SourceNode {
+public class MicrophoneNode extends SourceNode<MicrophoneStream> {
 
 	public static final Codec<MicrophoneNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
            BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos),

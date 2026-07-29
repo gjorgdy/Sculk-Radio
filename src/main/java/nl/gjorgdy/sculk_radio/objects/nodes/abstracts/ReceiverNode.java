@@ -1,13 +1,12 @@
 package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 
 public abstract class ReceiverNode extends Node {
 
-	private int analogRedstoneSignal = 0;
-	private int redstoneSignal = 0;
+	protected int analogRedstoneSignal = 0;
+	protected int redstoneSignal = 0;
 
 	public ReceiverNode(BlockPos pos) {
         super(pos);
