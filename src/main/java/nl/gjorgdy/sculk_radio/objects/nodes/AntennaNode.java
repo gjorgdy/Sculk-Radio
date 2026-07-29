@@ -28,10 +28,8 @@ public class AntennaNode extends RelayNode {
 		super(pos);
 	}
 
-	@Override
-	public void init(ServerLevel level) {
-		super.init(level);
-		SculkRadio.scheduleNextTick(this::updateFrequency);
+	protected void internalInit() {
+		updateFrequency();
 	}
 
 	public int getFrequency() {

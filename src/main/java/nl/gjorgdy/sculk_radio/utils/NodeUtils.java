@@ -11,6 +11,7 @@ import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
@@ -34,6 +35,7 @@ public abstract class NodeUtils {
 			case SculkShriekerBlockEntity be when state.is(Blocks.JUKEBOX) -> new RadioNode(be.getBlockPos());
 			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new AntennaNode(be.getBlockPos());
 			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be when state.is(Blocks.SCULK_CATALYST) -> new MicrophoneNode(be.getBlockPos());
 			default -> null;
 		};
 		if (node != null) {

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public abstract class SourceNode extends Node {
 
-	private Stream stream;
+	protected Stream stream;
 
 	public SourceNode(BlockPos pos) {
 		super(pos);
@@ -17,8 +17,12 @@ public abstract class SourceNode extends Node {
 
 	public void start(Function<SourceNode, Stream> streamFactory) {
 		stream = streamFactory.apply(this);
-		stream.connectionTick();
 		stream.start();
+	}
+
+	public void redstoneTick() {
+		if (stream == null) return;
+		stream.redstoneTick();
 	}
 
 	public void connectionTick() {

@@ -11,6 +11,8 @@ import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import org.jspecify.annotations.NonNull;
@@ -32,24 +34,34 @@ public class NodeRegistry extends SavedData {
 	// communication
 	private final Set<AntennaNode> antennaNodes = new HashSet<>();
 	private final Set<RelayNode> relayNodes = new HashSet<>();
+	// microphone
+	private final Set<MicrophoneNode> microphoneNodes = new HashSet<>();
 
-	private NodeRegistry(ServerLevel level, List<RadioNode> radios, List<SpeakerNode> speakers, List<RelayNode> relays, List<AntennaNode> antennas) {
+	private NodeRegistry(ServerLevel level, List<RadioNode> radios, List<SpeakerNode> speakers, List<RelayNode> relays, List<AntennaNode> antennas, List<MicrophoneNode> microphones) {
 		this(level);
 		radios.forEach(this::registerInternal);
 		speakers.forEach(this::registerInternal);
 		relays.forEach(this::registerInternal);
 		antennas.forEach(this::registerInternal);
+		microphones.forEach(this::registerInternal);
 	}
 
 	private NodeRegistry(ServerLevel level) {
 		this.level = level;
 	}
 
-	public Set<? extends RadioNode> getRadios() {
-		return Collections.unmodifiableSet(radioNodes);
+	public void forSources(Consumer<SourceNode> consumer) {
+		radioNodes.forEach(consumer);
+		microphoneNodes.forEach(consumer);
 	}
 
-	public Set<? extends Node> getAntennas(int frequency) {
+	public Set<MicrophoneNode> getMicrophonesInRange(BlockPos pos) {
+		return microphoneNodes.stream()
+			.filter(n -> n.getPos().distChessboard(pos) < SculkRadio.microphoneRange)
+			.collect(Collectors.toSet());
+	}
+
+	public Set<AntennaNode> getAntennas(int frequency) {
 		return antennaNodes.stream().filter(n -> n.getFrequency() == frequency).collect(Collectors.toSet());
 	}
 
@@ -60,11 +72,13 @@ public class NodeRegistry extends SavedData {
 		if (node.isPresent()) return node;
 		node = antennaNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
 		if (node.isPresent()) return node;
+		node = microphoneNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
+		if (node.isPresent()) return node;
 		return relayNodes.stream().filter(n -> n.getPos().equals(pos)).findFirst();
 	}
 
 	public int size() {
-		return radioNodes.size() + speakerNodes.size() + antennaNodes.size() + relayNodes.size();
+		return radioNodes.size() + speakerNodes.size() + antennaNodes.size() + relayNodes.size() + microphoneNodes.size();
 	}
 
 	private void forEach(Consumer<Node> nodeConsumer) {
@@ -72,6 +86,7 @@ public class NodeRegistry extends SavedData {
 		this.speakerNodes.forEach(nodeConsumer);
 		this.antennaNodes.forEach(nodeConsumer);
 		this.relayNodes.forEach(nodeConsumer);
+		this.microphoneNodes.forEach(nodeConsumer);
 	}
 
 	public <T extends Node> void register(@NonNull T node) {
@@ -92,6 +107,7 @@ public class NodeRegistry extends SavedData {
 			case SpeakerNode speakerNode -> speakerNodes.add(speakerNode);
 			case AntennaNode antennaNode -> antennaNodes.add(antennaNode);
 			case RelayNode relayNode -> relayNodes.add(relayNode);
+			case MicrophoneNode microphoneNode -> microphoneNodes.add(microphoneNode);
 			default -> {}
 		}
 		node.init(this.level);
@@ -103,6 +119,7 @@ public class NodeRegistry extends SavedData {
 			case SpeakerNode speakerNode -> speakerNodes.remove(speakerNode);
 			case AntennaNode antennaNode -> antennaNodes.remove(antennaNode);
 			case RelayNode relayNode -> relayNodes.remove(relayNode);
+			case MicrophoneNode microphoneNode -> microphoneNodes.remove(microphoneNode);
 			default -> {}
 		}
 		node.afterRemove();
@@ -118,8 +135,9 @@ public class NodeRegistry extends SavedData {
                RadioNode.CODEC.listOf().fieldOf("radios").forGetter(i -> toList(i.radioNodes)),
                SpeakerNode.CODEC.listOf().fieldOf("speakers").forGetter(i -> toList(i.speakerNodes)),
                RelayNode.CODEC.listOf().fieldOf("relays").forGetter(i -> toList(i.relayNodes)),
-               AntennaNode.CODEC.listOf().fieldOf("antennas").forGetter(i -> toList(i.antennaNodes))
-	       ).apply(instance, (ra, sp, re, an) -> new NodeRegistry(level, ra, sp, re, an))
+               AntennaNode.CODEC.listOf().fieldOf("antennas").forGetter(i -> toList(i.antennaNodes)),
+               MicrophoneNode.CODEC.listOf().fieldOf("microphones").forGetter(i -> toList(i.microphoneNodes))
+	       ).apply(instance, (ra, sp, re, an, mi) -> new NodeRegistry(level, ra, sp, re, an, mi))
 		);
 		//noinspection DataFlowIssue
 		var type = new SavedDataType<>(

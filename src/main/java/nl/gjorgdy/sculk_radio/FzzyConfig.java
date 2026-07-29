@@ -38,6 +38,8 @@ public class FzzyConfig extends Config {
 
     @Comment("The amount of ticks between a visual tick. This controls particles and Sculk activation. (20 ticks equals a second)")
     public ValidatedInt visualsTick = new ValidatedInt(SculkRadio.visualsTick, 200, 1);
+    @Comment("The amount of ticks between a redstone tick. This controls the redstone signal updates. (20 ticks equals a second)")
+    public ValidatedInt redstoneTick = new ValidatedInt(SculkRadio.redstoneTick, 200, 1);
     @Comment("The amount of ticks between a connection tick. This controls the connection between nodes. (20 ticks equals a second)")
     public ValidatedInt connectionTick = new ValidatedInt(SculkRadio.connectionTick, 200, 1);
 }

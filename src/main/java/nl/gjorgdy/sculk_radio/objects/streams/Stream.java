@@ -22,7 +22,7 @@ public class Stream {
 	private final Consumer<? super Node> disconnectConsumer;
 	// If nodes can 'connect' after playing has started
 	private final boolean isLive;
-	private final SourceNode source;
+	protected final SourceNode source;
 
 	private final Set<Pair<Node, Node>> connections = new HashSet<>();
 	private final Set<ReceiverNode> listeners;
@@ -49,6 +49,9 @@ public class Stream {
 		if (state == StreamState.IDLE) {
 			state = StreamState.ACTIVE;
 		}
+		connectionTick();
+		visualsTick(source.getLevel());
+		redstoneTick();
 	}
 
 	public void stop() {
@@ -65,6 +68,7 @@ public class Stream {
 		connections.clear();
 		// to reset visual state
 		visualsTick(source.getLevel());
+		redstoneTick();
 	}
 
 	public void visualsTick(ServerLevel level) {
@@ -109,6 +113,13 @@ public class Stream {
 		}
 	}
 
+	public void redstoneTick() {
+		int redstone = source.getRedstoneSignal();
+		listeners.forEach(listener -> listener.setRedstoneSignal(redstone));
+		int analogRedstone = source.getAnalogRedstoneSignal();
+		listeners.forEach(listener -> listener.setAnalogRedstoneSignal(analogRedstone));
+	}
+
 	public void connectionTick() {
 		if (state == StreamState.STOPPED) return;
 		Set<ReceiverNode> newListeners = new HashSet<>();
@@ -142,11 +153,7 @@ public class Stream {
 			}
 			return disconnect;
 		});
-		// parse redstone
-		int redstone = source.getRedstoneSignal();
-		listeners.forEach(listener -> listener.setRedstoneSignal(redstone));
-		int analogRedstone = source.getAnalogRedstoneSignal();
-		listeners.forEach(listener -> listener.setAnalogRedstoneSignal(analogRedstone));
+		redstoneTick();
 	}
 
 	private void connectNeighbours(Set<Node> visited, NodePath path, Set<ReceiverNode> newListeners, Set<Pair<Node, Node>> newConnections, Node node) {

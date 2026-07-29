@@ -30,9 +30,7 @@ public abstract class ReceiverNode extends Node {
 		}
 	}
 
-	@Override
-	public void init(ServerLevel level) {
-		super.init(level);
+	protected void internalInit() {
 		SculkRadio.scheduleNextTick(this::updateNeighbours);
 	}
 

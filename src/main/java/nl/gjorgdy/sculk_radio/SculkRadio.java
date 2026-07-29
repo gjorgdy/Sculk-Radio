@@ -9,6 +9,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.listeners.OnUseListener;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.slf4j.Logger;
@@ -32,12 +33,18 @@ public class SculkRadio implements ModInitializer {
     }
 
     // start config
+    public static float speakerRange = 48f;
     public static int maxNodeRange = 16;
     public static int minAntennaHeight = 16;
 
     public static int visualsTick = 20;
+    public static int redstoneTick = 4;
     public static int connectionTick = 20;
+
+    public static int microphoneRange = 8;
     // end config
+
+    public static boolean microphonesEnabled = false;
 
     @Override
     public void onInitialize() {
@@ -57,14 +64,21 @@ public class SculkRadio implements ModInitializer {
                 }
             }
             if (s.getTickCount() % connectionTick == 0) {
-                s.getAllLevels().forEach(level -> NodeRegistry.of(level).getRadios().forEach(RadioNode::connectionTick));
+                s.getAllLevels().forEach(level -> NodeRegistry.of(level).forSources(SourceNode::connectionTick));
+            }
+            if (s.getTickCount() % redstoneTick == 0) {
+                s.getAllLevels().forEach(level -> NodeRegistry.of(level).forSources(SourceNode::redstoneTick));
             }
             if (s.getTickCount() % visualsTick == 0) {
-                s.getAllLevels().forEach(level -> NodeRegistry.of(level).getRadios().forEach(RadioNode::visualsTick));
+                s.getAllLevels().forEach(level -> NodeRegistry.of(level).forSources(SourceNode::visualsTick));
             }
         });
 
         BlockEvents.USE_WITHOUT_ITEM.register(new OnUseListener());
+
+        if (FabricLoader.getInstance().isModLoaded("simple-voice-chat")) {
+            microphonesEnabled = true;
+        }
 
         if (FabricLoader.getInstance().isModLoaded("fzzy_config")) {
             FzzyConfig.load();

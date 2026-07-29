@@ -3,6 +3,7 @@ package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,9 +24,15 @@ public abstract class Node {
     abstract public boolean canTransmit();
     abstract public boolean canReceive();
     abstract public void visualsTick();
+    protected void internalInit() {}
 
-    public void init(ServerLevel level) {
+    public final void init(ServerLevel level) {
         this.level = level;
+        SculkRadio.scheduleNextTick(this::internalInit);
+    }
+
+    public void setDirty() {
+        NodeRegistry.of(level).setDirty();
     }
 
     public boolean isLoaded() {
