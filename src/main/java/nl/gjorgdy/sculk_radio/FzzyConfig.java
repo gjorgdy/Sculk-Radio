@@ -53,7 +53,7 @@ public class FzzyConfig extends Config {
 
     @Comment("The maximum distance between nodes.")
     public ValidatedInt maxNodeRange = new ValidatedInt(SculkRadio.maxNodeRange, 128, 8);
-    @Comment("The minimum height an antennas needs to be above a relay.")
+    @Comment("The minimum height there needs to be between an antenna and a relay.")
     public ValidatedInt minAntennaHeight = new ValidatedInt(SculkRadio.minAntennaHeight, 256, 0);
     @Comment("The radius around a speaker in which it can be heard. (AudioPlayer discs and microphones only)")
     public ValidatedInt speakerRange = new ValidatedInt((int) SculkRadio.speakerRange, 64, 1);
