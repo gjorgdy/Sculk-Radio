@@ -39,7 +39,7 @@ public abstract class SculkShriekerBlockEntityMixin extends BlockEntity implemen
 
     @Override
     public Node sculkRadio$getNode() {
-        if (node == null) {
+        if (node == null || node.wasRemoved()) {
             sculkRadio$setNode(SculkRadio.getNode((ServerLevel) this.getLevel(), this.getBlockPos()));
         }
         return node;

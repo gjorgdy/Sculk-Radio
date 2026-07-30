@@ -9,6 +9,7 @@ import de.maxhenkel.voicechat.api.audiochannel.LocationalAudioChannel;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -25,10 +26,13 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     private final Map<Position, LocationalAudioChannel> audioChannels = new HashMap<>();
     private final Runnable onFlushRunnable;
 
-    public MultiLocationalAudioChannel(UUID id, Position sourcePosition, Runnable onFlushRunnable) {
+    public MultiLocationalAudioChannel(UUID id, String category, Position sourcePosition, Runnable onFlushRunnable) {
         this.id = id;
+        this.category = category;
         this.sourcePosition = sourcePosition;
         this.onFlushRunnable = onFlushRunnable;
+        this.distance = SculkRadio.speakerRange;
+        this.filter = null;
     }
 
 	private Stream<LocationalAudioChannel> getAudioChannels() {

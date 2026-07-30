@@ -5,7 +5,6 @@ import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
-import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 
@@ -24,12 +23,10 @@ public class MicrophoneStream extends AudioStream {
 		var channelID = UUID.randomUUID();
 		var channel = new MultiLocationalAudioChannel(
 			channelID,
+			"sculkradiomic",
 			api.createPosition(source.getPos().getX(), source.getPos().getY(), source.getPos().getZ()),
 			() -> {}
 		);
-		channel.setDistance(SculkRadio.speakerRange);
-		channel.setCategory("microphones");
-		channel.setFilter(null);
 		super(
 			n -> channel.addChannel(level, new Vec3(n.getPos()).add(0.5)),  // on connect
 			n -> channel.removeChannel(new Vec3(n.getPos()).add(0.5)),      // on disconnect

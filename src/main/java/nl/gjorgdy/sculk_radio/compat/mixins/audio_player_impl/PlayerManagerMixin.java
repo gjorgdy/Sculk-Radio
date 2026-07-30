@@ -66,13 +66,10 @@ public abstract class PlayerManagerMixin {
             UUID channelID = UUID.randomUUID();
             MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(
                 channelID,
+                SculkRadio.speakerCategory ? "sculkradiodisc" : category,
                 api.createPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
                 radio::stop
             );
-            if (category != null) {
-                mlChannel.setCategory(category);
-            }
-            mlChannel.setDistance(SculkRadio.speakerRange);
             api.getPlayersInRange(api.fromServerLevel(level), mlChannel.getLocation(), distance + 1F, serverPlayer -> {
                 VoicechatConnection connection = api.getConnectionOf(serverPlayer);
                 return !ChatUtils.isAbleToHearVoicechat(connection);

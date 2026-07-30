@@ -22,6 +22,7 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class NodeRegistry extends SavedData {
@@ -34,7 +35,7 @@ public class NodeRegistry extends SavedData {
 	private final TypedNodeRegistry<SpeakerNode> speakerNodes = new TypedNodeRegistry<>(n -> n instanceof SpeakerNode);
 	// microphone
 	private final TypedSourceNodeRegistry<MicrophoneNode> microphoneNodes = new TypedSourceNodeRegistry<>(
-			n -> n instanceof MicrophoneNode);
+			n -> n instanceof MicrophoneNode, SculkRadio::microphonesEnabled);
 	// redstone
 	private final TypedSourceNodeRegistry<RedstoneSourceNode> redstoneSourceNodes = new TypedSourceNodeRegistry<>(
 			n -> n instanceof RedstoneSourceNode);
@@ -108,24 +109,32 @@ public class NodeRegistry extends SavedData {
 		}
 	}
 
-	public <T extends Node> void register(@NonNull T node) {
-		registerInternal(node);
-		setDirty();
+	public <T extends Node> boolean register(@NonNull T node) {
+		if (registerInternal(node)) {
+			setDirty();
+			return true;
+		}
+		return false;
 	}
 
-	private <T extends Node> void registerInternal(@NonNull T node) {
-		forEach(otherNode -> {
-			if (canConnect(node, otherNode)) {
-				node.connect(otherNode);
-			}
-		});
+	private <T extends Node> boolean registerInternal(@NonNull T node) {
 		for (var reg : nodeRegistries) {
+			// Find repo for this node type
 			if (reg.typePredicate.test(node)) {
+				if (!reg.isEnabled()) return false;
+				// Connect node to neighbours
+				forEach(otherNode -> {
+					if (canConnect(node, otherNode)) {
+						node.connect(otherNode);
+					}
+				});
 				reg.add(node);
-				break;
+				node.init(this.level);
+				System.out.println("Registered node " + node.getClass().getSimpleName() + " at " + node.getPos());
+				return true;
 			}
 		}
-		node.init(this.level);
+		return false;
 	}
 
 	private boolean canConnect(Node nodeA, Node nodeB) {
@@ -168,13 +177,18 @@ public class NodeRegistry extends SavedData {
 		return level.getDataStorage().computeIfAbsent(type);
 	}
 
-	private static class TypedSourceNodeRegistry<T extends SourceNode<?>> extends TypedNodeRegistry<T> {
+	private class TypedSourceNodeRegistry<T extends SourceNode<?>> extends TypedNodeRegistry<T> {
 
 		private TypedSourceNodeRegistry(Predicate<Node> typePredicate) {
 			super(typePredicate);
 		}
 
+		private TypedSourceNodeRegistry(Predicate<Node> typePredicate, Supplier<Boolean> enabledSupplier) {
+			super(typePredicate, enabledSupplier);
+		}
+
 		private void forEachNode(Consumer<SourceNode<?>> consumer) {
+			if (!enabled.get()) return;
 			nodes.forEach(consumer);
 		}
 
@@ -183,10 +197,20 @@ public class NodeRegistry extends SavedData {
 	private static class TypedNodeRegistry<T extends Node> {
 
 		public final Predicate<Node> typePredicate;
+		protected final Supplier<Boolean> enabled;
 		protected final Set<T> nodes = new HashSet<>();
 
 		private TypedNodeRegistry(Predicate<Node> typePredicate) {
+			this(typePredicate, () -> true);
+		}
+
+		private TypedNodeRegistry(Predicate<Node> typePredicate, Supplier<Boolean> enabled) {
 			this.typePredicate = typePredicate;
+			this.enabled = enabled;
+		}
+
+		public boolean isEnabled() {
+			return enabled.get();
 		}
 
 		List<T> toList() {

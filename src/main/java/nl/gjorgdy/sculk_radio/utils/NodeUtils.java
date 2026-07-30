@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.entity.CalibratedSculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 import net.minecraft.world.level.block.entity.SculkShriekerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
@@ -33,20 +34,35 @@ public abstract class NodeUtils {
 		}
 		// create new one
 		node = switch (blockEntity) {
-			case SculkSensorBlockEntity be when state.is(Blocks.NOTE_BLOCK) -> new SpeakerNode(be.getBlockPos());
-			case SculkShriekerBlockEntity be when state.is(Blocks.JUKEBOX) -> new RadioNode(be.getBlockPos());
-			case CalibratedSculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new AntennaNode(be.getBlockPos());
-			case SculkSensorBlockEntity be when state.is(Blocks.AMETHYST_BLOCK) -> new RelayNode(be.getBlockPos());
-			case SculkShriekerBlockEntity be when state.is(Blocks.SCULK_CATALYST) -> new MicrophoneNode(be.getBlockPos());
-			case SculkShriekerBlockEntity be when state.is(Blocks.TARGET) -> new RedstoneSourceNode(be.getBlockPos());
-			case SculkSensorBlockEntity be when state.is(Blocks.TARGET) -> new RedstoneReceiverNode(be.getBlockPos());
+			case SculkSensorBlockEntity be
+				when state.is(Blocks.NOTE_BLOCK)
+					-> new SpeakerNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be
+				when state.is(Blocks.JUKEBOX)
+					-> new RadioNode(be.getBlockPos());
+			case CalibratedSculkSensorBlockEntity be
+				when state.is(Blocks.AMETHYST_BLOCK)
+					-> new AntennaNode(be.getBlockPos());
+			case SculkSensorBlockEntity be
+				when state.is(Blocks.AMETHYST_BLOCK)
+					-> new RelayNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be
+				when state.is(Blocks.SCULK_CATALYST)
+				&& SculkRadio.microphonesEnabled()
+					-> new MicrophoneNode(be.getBlockPos());
+			case SculkShriekerBlockEntity be
+				when state.is(Blocks.TARGET)
+					-> new RedstoneSourceNode(be.getBlockPos());
+			case SculkSensorBlockEntity be
+				when state.is(Blocks.TARGET)
+					-> new RedstoneReceiverNode(be.getBlockPos());
 			default -> null;
 		};
 		if (node != null) {
-			if (blockEntity instanceof INodeContainer nodeContainer) {
+			boolean added = NodeRegistry.of(level).register(node);
+			if (added && blockEntity instanceof INodeContainer nodeContainer) {
 				nodeContainer.sculkRadio$setNode(node);
 			}
-			NodeRegistry.of(level).register(node);
 		}
 	}
 

@@ -1,13 +1,14 @@
 package nl.gjorgdy.sculk_radio;
 
-import me.fzzyhmstrs.fzzy_config.annotations.Comment;
-import me.fzzyhmstrs.fzzy_config.annotations.IgnoreVisibility;
+import me.fzzyhmstrs.fzzy_config.annotations.*;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApiJava;
 import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.event.api.v2.OnUpdateServerListener;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.resources.Identifier;
+import nl.gjorgdy.sculk_radio.events.ConfigCallback;
 
 @IgnoreVisibility
 public class FzzyConfig extends Config {
@@ -31,7 +32,11 @@ public class FzzyConfig extends Config {
         SculkRadio.redstoneTick = config.redstoneTick.get();
         SculkRadio.connectionTick = config.connectionTick.get();
         // options
-        SculkRadio.forceSync = config.forceSync;
+        SculkRadio.forceSyncSpeakers = config.forceSync.get();
+        SculkRadio.speakerCategory = config.speakerCategory.get();
+        SculkRadio.microphonesEnabledConfig = config.microphonesEnabled.get();
+
+        ConfigCallback.RELOAD_CONFIG.invoker().onReload();
     }
 
     private FzzyConfig() {
@@ -42,9 +47,9 @@ public class FzzyConfig extends Config {
     public ValidatedInt maxNodeRange = new ValidatedInt(SculkRadio.maxNodeRange, 128, 8);
     @Comment("The minimum height an antennas needs to be above a relay.")
     public ValidatedInt minAntennaHeight = new ValidatedInt(SculkRadio.minAntennaHeight, 256, 0);
-    @Comment("The radius around a speaker in which it can be heard. (AudioPlayer only)")
+    @Comment("The radius around a speaker in which it can be heard. (AudioPlayer discs and microphones only)")
     public ValidatedInt speakerRange = new ValidatedInt((int) SculkRadio.speakerRange, 64, 1);
-    @Comment("The radius around a microphone in which it picks up player audio. (VoiceChat only)")
+    @Comment("The radius around a microphone in which it picks up player audio. (Simple Voice Chat only)")
     public ValidatedInt microphoneRange = new ValidatedInt(SculkRadio.microphoneRange, 64, 1);
 
     @Comment("The amount of ticks between a visual tick. This controls particles and Sculk activation. (20 ticks equals a second)")
@@ -54,6 +59,11 @@ public class FzzyConfig extends Config {
     @Comment("The amount of ticks between a connection tick. This controls the connection between nodes. (20 ticks equals a second)")
     public ValidatedInt connectionTick = new ValidatedInt(SculkRadio.connectionTick, 200, 1);
 
-    @Comment("Force sync all speakers every connection tick. This can be used to fix desync, but may cause slight pops in the audio.")
-    public boolean forceSync = SculkRadio.forceSync;
+    @Comment("Should speakers be synced every connection tick. This can be used to fix desync, but may cause slight pops in the audio.")
+    public ValidatedBoolean forceSync = new ValidatedBoolean(SculkRadio.forceSyncSpeakers);
+    @Comment("Should speakers use their own volume category instead of AudioPlayers' music disc channel.")
+    public ValidatedBoolean speakerCategory = new ValidatedBoolean(SculkRadio.speakerCategory);
+    @Comment("Should microphones be enabled. This requires Simple Voice Chat to be installed. [Requires restart]")
+    @RequiresAction(action = Action.RESTART)
+    public ValidatedBoolean microphonesEnabled = new ValidatedBoolean(SculkRadio.microphonesEnabledConfig);
 }

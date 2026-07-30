@@ -23,6 +23,6 @@ public class AudioPlayerDiscStream extends AudioStream {
 	@Override
 	public void connectionTick() {
 		super.connectionTick();
-		if (SculkRadio.forceSync) channel.sync();
+		if (SculkRadio.forceSyncSpeakers) channel.sync();
 	}
 }

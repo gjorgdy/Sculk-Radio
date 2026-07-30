@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import nl.gjorgdy.sculk_radio.events.ConfigCallback;
 import nl.gjorgdy.sculk_radio.listeners.OnUseListener;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
@@ -41,10 +42,15 @@ public class SculkRadio implements ModInitializer {
     public static int redstoneTick = 4;
     public static int connectionTick = 20;
 
-    public static boolean forceSync = false;
+    public static boolean forceSyncSpeakers = false;
+    public static boolean speakerCategory = false;
+    public static boolean microphonesEnabledConfig = true;
     // end config
 
-    public static boolean microphonesEnabled = false;
+    public static boolean voiceChatInstalled = false;
+    public static boolean microphonesEnabled() {
+        return voiceChatInstalled && microphonesEnabledConfig;
+    }
 
     @Override
     public void onInitialize() {
@@ -78,14 +84,14 @@ public class SculkRadio implements ModInitializer {
         BlockEvents.USE_WITHOUT_ITEM.register(useListener);
         BlockEvents.USE_ITEM_ON.register(useListener);
 
-        if (FabricLoader.getInstance().isModLoaded("simple-voice-chat")) {
-            microphonesEnabled = true;
+        if (FabricLoader.getInstance().isModLoaded("voicechat")) {
+            voiceChatInstalled = true;
         }
-
         if (FabricLoader.getInstance().isModLoaded("fzzy_config")) {
             FzzyConfig.load();
         } else {
             LOGGER.info("Fzzy Config not found, using default settings.");
+            ConfigCallback.RELOAD_CONFIG.invoker().onReload();
         }
     }
 }

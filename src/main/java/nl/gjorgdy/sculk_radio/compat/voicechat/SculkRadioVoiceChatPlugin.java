@@ -5,13 +5,14 @@ import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.MicrophonePacketEvent;
-import de.maxhenkel.voicechat.api.events.VoicechatServerStartedEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionResult;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.events.ConfigCallback;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 
-public class MicrophonePlugin implements VoicechatPlugin {
+public class SculkRadioVoiceChatPlugin implements VoicechatPlugin {
 
 	public static volatile VoicechatServerApi serverApi;
 
@@ -25,25 +26,43 @@ public class MicrophonePlugin implements VoicechatPlugin {
 		if (api instanceof VoicechatServerApi) {
 			serverApi = (VoicechatServerApi) api;
 		}
+		ConfigCallback.RELOAD_CONFIG.register(() -> {
+			// speaker
+			if (SculkRadio.speakerCategory) {
+				serverApi.registerVolumeCategory(
+					serverApi.volumeCategoryBuilder()
+						.setId("sculkradiodisc")
+						.setName("Speakers")
+						.setDescription("The volume of speakers playing a music disc stream")
+						.build()
+				);
+			} else {
+				serverApi.unregisterVolumeCategory("sculkradiodisc");
+			}
+			// mic
+			if (SculkRadio.microphonesEnabled()) {
+				serverApi.registerVolumeCategory(
+					serverApi.volumeCategoryBuilder()
+						.setId("sculkradiomic")
+						.setName("Microphones")
+						.setDescription("The volume of microphone")
+						.build()
+				);
+			} else {
+				serverApi.unregisterVolumeCategory("sculkradiomic");
+			}
+			return InteractionResult.PASS;
+		});
+
 	}
 
 	@Override
 	public void registerEvents(EventRegistration registration) {
-		registration.registerEvent(VoicechatServerStartedEvent.class, e -> {
-			serverApi = e.getVoicechat();
-			serverApi.registerVolumeCategory(
-				serverApi.volumeCategoryBuilder()
-					.setId("microphones")
-					.setName("Microphones")
-					.setDescription("Audio from microphone blocks")
-					.build()
-			);
-		});
 		registration.registerEvent(MicrophonePacketEvent.class, this::onMicrophonePacket);
 	}
 
 	private void onMicrophonePacket(MicrophonePacketEvent event) {
-		if (serverApi == null || event.getSenderConnection() == null) return;
+		if (serverApi == null || event.getSenderConnection() == null || !SculkRadio.microphonesEnabled()) return;
 
 		ServerPlayer player = (ServerPlayer) event.getSenderConnection().getPlayer().getEntity();
 

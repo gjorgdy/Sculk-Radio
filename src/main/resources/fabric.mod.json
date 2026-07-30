@@ -14,7 +14,7 @@
       "nl.gjorgdy.sculk_radio.SculkRadio"
     ],
     "voicechat": [
-      "nl.gjorgdy.sculk_radio.compat.voicechat.MicrophonePlugin"
+      "nl.gjorgdy.sculk_radio.compat.voicechat.SculkRadioVoiceChatPlugin"
     ]
   },
   "mixins": [
