@@ -83,19 +83,23 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
 
     @Override
     public void send(MicrophonePacket packet) {
-		getAudioChannels().parallel().forEach(channel -> channel.send(packet));
+		getAudioChannels().forEach(channel -> channel.send(packet));
     }
 
     @Override
     public void setFilter(Predicate<ServerPlayer> filter) {
         this.filter = filter;
-		getAudioChannels().parallel().forEach(channel -> channel.setFilter(filter));
+		getAudioChannels().forEach(channel -> channel.setFilter(filter));
     }
 
     @Override
     public void flush() {
-		getAudioChannels().parallel().forEach(AudioChannel::flush);
+		getAudioChannels().forEach(AudioChannel::flush);
         onFlushRunnable.run();
+    }
+
+    public void sync() {
+        getAudioChannels().forEach(AudioChannel::flush);
     }
 
     @Override

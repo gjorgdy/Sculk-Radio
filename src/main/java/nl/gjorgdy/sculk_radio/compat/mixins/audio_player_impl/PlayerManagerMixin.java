@@ -16,13 +16,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
-import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.objects.streams.AudioPlayerDiscStream;
-import nl.gjorgdy.sculk_radio.objects.streams.AudioStream;
-import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,13 +66,13 @@ public abstract class PlayerManagerMixin {
             UUID channelID = UUID.randomUUID();
             MultiLocationalAudioChannel mlChannel = new MultiLocationalAudioChannel(
                 channelID,
-                api.createPosition(blockPos.getX(), blockPos.getX(), blockPos.getX()),
+                api.createPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ()),
                 radio::stop
             );
             if (category != null) {
                 mlChannel.setCategory(category);
             }
-            mlChannel.setDistance(distance);
+            mlChannel.setDistance(SculkRadio.speakerRange);
             api.getPlayersInRange(api.fromServerLevel(level), mlChannel.getLocation(), distance + 1F, serverPlayer -> {
                 VoicechatConnection connection = api.getConnectionOf(serverPlayer);
                 return !ChatUtils.isAbleToHearVoicechat(connection);

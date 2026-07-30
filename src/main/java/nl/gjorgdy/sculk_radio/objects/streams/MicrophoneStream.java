@@ -16,7 +16,7 @@ public class MicrophoneStream extends AudioStream {
 	private boolean sentPacket = false;
 	private final MultiLocationalAudioChannel channel;
 
-	public MicrophoneStream(ServerLevel level, SourceNode source) {
+	public MicrophoneStream(ServerLevel level, SourceNode<MicrophoneStream> source) {
 		VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
 		if (api == null) {
 			throw new IllegalStateException("Simple Voice Chat is not initialized");

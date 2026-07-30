@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class AudioStream extends Stream {
 
-	public AudioStream(Consumer<? super ReceiverNode> connectConsumer, Consumer<? super ReceiverNode> disconnectConsumer, SourceNode<AudioStream> source, boolean isLive) {
+	public AudioStream(Consumer<? super ReceiverNode> connectConsumer, Consumer<? super ReceiverNode> disconnectConsumer, SourceNode<? extends AudioStream> source, boolean isLive) {
 		super(n -> n instanceof SpeakerNode, connectConsumer, disconnectConsumer, source, isLive);
 	}
 

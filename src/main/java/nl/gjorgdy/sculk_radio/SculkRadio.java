@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.listeners.OnUseListener;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +35,13 @@ public class SculkRadio implements ModInitializer {
     public static float speakerRange = 48f;
     public static int maxNodeRange = 16;
     public static int minAntennaHeight = 16;
+    public static int microphoneRange = 8;
 
     public static int visualsTick = 20;
     public static int redstoneTick = 4;
     public static int connectionTick = 20;
 
-    public static int microphoneRange = 8;
+    public static boolean forceSync = false;
     // end config
 
     public static boolean microphonesEnabled = false;
@@ -74,7 +74,9 @@ public class SculkRadio implements ModInitializer {
             }
         });
 
-        BlockEvents.USE_WITHOUT_ITEM.register(new OnUseListener());
+        var useListener = new OnUseListener();
+        BlockEvents.USE_WITHOUT_ITEM.register(useListener);
+        BlockEvents.USE_ITEM_ON.register(useListener);
 
         if (FabricLoader.getInstance().isModLoaded("simple-voice-chat")) {
             microphonesEnabled = true;

@@ -3,8 +3,11 @@ package nl.gjorgdy.sculk_radio.listeners;
 import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -14,7 +17,7 @@ import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class OnUseListener implements BlockEvents.UseWithoutItemCallback {
+public class OnUseListener implements BlockEvents.UseWithoutItemCallback, BlockEvents.UseItemOnCallback {
 
 	@Override
 	public @Nullable InteractionResult useWithoutItem(@NonNull BlockState blockState, Level level, @NonNull BlockPos blockPos, @NonNull Player player, @NonNull BlockHitResult blockHitResult) {
@@ -43,4 +46,18 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback {
 		return null;
 	}
 
+	@Override
+	public @Nullable InteractionResult useItemOn(@NonNull ItemStack itemStack, @NonNull BlockState blockState, Level level, @NonNull BlockPos blockPos, @NonNull Player player, @NonNull InteractionHand interactionHand, @NonNull BlockHitResult blockHitResult) {
+		if (level.isClientSide() || !itemStack.is(Items.AMETHYST_SHARD)) return null;
+		var blockEntity = level.getBlockEntity(blockPos);
+		if (blockEntity instanceof INodeContainer nodeContainer) {
+			var node = nodeContainer.sculkRadio$getNode();
+			if (node instanceof AntennaNode) {
+				System.out.println("Frequency: " + level.getRandom().nextInt(0, 1_000_000));
+				player.swing(player.getUsedItemHand(), true);
+				return InteractionResult.SUCCESS;
+			}
+		}
+		return null;
+	}
 }
