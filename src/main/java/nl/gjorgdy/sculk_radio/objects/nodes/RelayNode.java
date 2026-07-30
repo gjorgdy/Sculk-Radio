@@ -32,4 +32,8 @@ public class RelayNode extends Node {
 		if (isLoaded()) VisualUtils.activateSensor(level, pos);
 	}
 
+	@Override
+	public boolean canConnect(Node otherNode) {
+		return otherNode instanceof AntennaNode || super.canConnect(otherNode);
+	}
 }

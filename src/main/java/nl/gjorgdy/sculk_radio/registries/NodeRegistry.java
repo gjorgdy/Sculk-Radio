@@ -115,7 +115,7 @@ public class NodeRegistry extends SavedData {
 
 	private <T extends Node> void registerInternal(@NonNull T node) {
 		forEach(otherNode -> {
-			if (node.canConnect(otherNode)) {
+			if (canConnect(node, otherNode)) {
 				node.connect(otherNode);
 			}
 		});
@@ -126,6 +126,10 @@ public class NodeRegistry extends SavedData {
 			}
 		}
 		node.init(this.level);
+	}
+
+	private boolean canConnect(Node nodeA, Node nodeB) {
+		return nodeA.canConnect(nodeB) && nodeB.canConnect(nodeA);
 	}
 
 	public void remove(@NonNull Node node) {
