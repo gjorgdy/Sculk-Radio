@@ -46,6 +46,7 @@ public class SculkRadio implements ModInitializer {
     public static boolean speakerCategory = false;
     public static boolean microphonesEnabledConfig = true;
     public static boolean redstoneEnabled = true;
+    public static boolean antennasEnabled = true;
     // end config
 
     public static boolean voiceChatInstalled = false;
@@ -73,7 +74,7 @@ public class SculkRadio implements ModInitializer {
             if (s.getTickCount() % connectionTick == 0) {
                 s.getAllLevels().forEach(level -> NodeRegistry.of(level).forSources(SourceNode::connectionTick));
             }
-            if (s.getTickCount() % redstoneTick == 0) {
+            if (SculkRadio.redstoneEnabled && s.getTickCount() % redstoneTick == 0) {
                 s.getAllLevels().forEach(level -> NodeRegistry.of(level).forSources(SourceNode::redstoneTick));
             }
             if (s.getTickCount() % visualsTick == 0) {
@@ -89,7 +90,7 @@ public class SculkRadio implements ModInitializer {
             voiceChatInstalled = true;
         }
         if (FabricLoader.getInstance().isModLoaded("fzzy_config")) {
-            FzzyConfig.load();
+            FzzyConfig.firstLoad();
         } else {
             LOGGER.info("Fzzy Config not found, using default settings.");
             ConfigCallback.RELOAD_CONFIG.invoker().onReload();

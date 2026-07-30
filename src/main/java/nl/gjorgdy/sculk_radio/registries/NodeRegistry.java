@@ -42,7 +42,8 @@ public class NodeRegistry extends SavedData {
 	private final TypedNodeRegistry<RedstoneReceiverNode> redstoneReceiverNodes = new TypedNodeRegistry<>(
 			n -> n instanceof RedstoneReceiverNode, () -> SculkRadio.redstoneEnabled);
 	// communication
-	private final TypedNodeRegistry<AntennaNode> antennaNodes = new TypedNodeRegistry<>(n -> n instanceof AntennaNode);
+	private final TypedNodeRegistry<AntennaNode> antennaNodes = new TypedNodeRegistry<>(
+			n -> n instanceof AntennaNode);
 	private final TypedNodeRegistry<RelayNode> relayNodes = new TypedNodeRegistry<>(n -> n instanceof RelayNode);
 
 	private final TypedNodeRegistry<?>[] nodeRegistries = new TypedNodeRegistry<?>[] {

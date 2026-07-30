@@ -20,6 +20,15 @@ public class FzzyConfig extends Config {
         ConfigApi.event().onSyncClient((_, _) -> FzzyConfig.load());
     }
 
+    public static void firstLoad() {
+        var config = ConfigApiJava.registerAndLoadConfig(FzzyConfig::new);
+        // Only handle the on restart loads here
+        SculkRadio.microphonesEnabledConfig = config.microphonesEnabled.get();
+        SculkRadio.redstoneEnabled = config.redstoneEnabled.get();
+        SculkRadio.antennasEnabled = config.antennasEnabled.get();
+        load();
+    }
+
     public static void load() {
         var config = ConfigApiJava.registerAndLoadConfig(FzzyConfig::new);
         // range
@@ -34,9 +43,7 @@ public class FzzyConfig extends Config {
         // options
         SculkRadio.forceSyncSpeakers = config.forceSync.get();
         SculkRadio.speakerCategory = config.speakerCategory.get();
-        SculkRadio.microphonesEnabledConfig = config.microphonesEnabled.get();
-        SculkRadio.redstoneEnabled = config.redstoneEnabled.get();
-
+        // send event
         ConfigCallback.RELOAD_CONFIG.invoker().onReload();
     }
 
@@ -70,4 +77,7 @@ public class FzzyConfig extends Config {
     @Comment("Should redstone outputs and nodes be enabled. [Requires restart]")
     @RequiresAction(action = Action.RESTART)
     public ValidatedBoolean redstoneEnabled = new ValidatedBoolean(SculkRadio.redstoneEnabled);
+    @Comment("Should antennas be enabled. [Requires restart]")
+    @RequiresAction(action = Action.RESTART)
+    public ValidatedBoolean antennasEnabled = new ValidatedBoolean(SculkRadio.antennasEnabled);
 }
