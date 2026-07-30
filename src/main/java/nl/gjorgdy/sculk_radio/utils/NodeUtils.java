@@ -42,6 +42,7 @@ public abstract class NodeUtils {
 					-> new RadioNode(be.getBlockPos());
 			case CalibratedSculkSensorBlockEntity be
 				when state.is(Blocks.AMETHYST_BLOCK)
+				&& SculkRadio.antennasEnabled
 					-> new AntennaNode(be.getBlockPos());
 			case SculkSensorBlockEntity be
 				when state.is(Blocks.AMETHYST_BLOCK)

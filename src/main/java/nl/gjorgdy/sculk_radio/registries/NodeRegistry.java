@@ -43,7 +43,7 @@ public class NodeRegistry extends SavedData {
 			n -> n instanceof RedstoneReceiverNode, () -> SculkRadio.redstoneEnabled);
 	// communication
 	private final TypedNodeRegistry<AntennaNode> antennaNodes = new TypedNodeRegistry<>(
-			n -> n instanceof AntennaNode);
+			n -> n instanceof AntennaNode, () -> SculkRadio.antennasEnabled);
 	private final TypedNodeRegistry<RelayNode> relayNodes = new TypedNodeRegistry<>(n -> n instanceof RelayNode);
 
 	private final TypedNodeRegistry<?>[] nodeRegistries = new TypedNodeRegistry<?>[] {
@@ -68,6 +68,7 @@ public class NodeRegistry extends SavedData {
 		for (var list : lists) {
 			list.forEach(this::registerInternal);
 		}
+		setDirty();
 	}
 
 	private NodeRegistry(ServerLevel level) {

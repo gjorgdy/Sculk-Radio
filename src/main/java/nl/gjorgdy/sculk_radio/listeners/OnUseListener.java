@@ -25,7 +25,7 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback, BlockE
 		var blockEntity = level.getBlockEntity(blockPos);
 		if (blockEntity instanceof INodeContainer nodeContainer) {
 			var node = nodeContainer.sculkRadio$getNode();
-			if (node != null) {
+			if (node != null && !node.wasRemoved()) {
 				node.getNeighbours().forEach(
 					neighbour -> {
 						if (node instanceof AntennaNode && neighbour instanceof AntennaNode) {
