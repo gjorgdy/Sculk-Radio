@@ -8,18 +8,13 @@ import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.JukeboxSongPlayer;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
-import nl.gjorgdy.sculk_radio.objects.streams.AudioStream;
-import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.VanillaDiscStream;
 import nl.gjorgdy.sculk_radio.utils.NodeUtils;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,7 +44,8 @@ public class JukeboxManagerMixin {
             if (node instanceof RadioNode radio) {
                 this.song = song;
                 this.ticksSinceSongStarted = 0L;
-                radio.start(sn -> new VanillaDiscStream(level, song, sn));
+                int songId = level.registryAccess().lookupOrThrow(Registries.JUKEBOX_SONG).getId(song.value());
+                radio.start(sn -> new VanillaDiscStream(level, songId, sn));
                 this.onSongChanged.notifyChange();
                 ci.cancel();
             }

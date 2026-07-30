@@ -46,10 +46,10 @@ public abstract class Stream {
 	}
 
 	public void start() {
+		connectionTick();
 		if (state == StreamState.IDLE) {
 			state = StreamState.ACTIVE;
 		}
-		connectionTick();
 		visualsTick(source.getLevel());
 		redstoneTick();
 	}
@@ -163,6 +163,7 @@ public abstract class Stream {
 		visited.addAll(unvisitedNeighbours);
 		unvisitedNeighbours.forEach(neighbour -> {
 			if (!neighbour.wasRemoved() && isReceiver.test(neighbour) && neighbour instanceof ReceiverNode receiver) {
+				if (!listeners.contains(neighbour) && blockNewConnections()) return;
 				newListeners.add(receiver);
 				path.append(neighbour).forEach((from, to) -> newConnections.add(new Pair<>(from, to)));
 			} else {
@@ -183,11 +184,16 @@ public abstract class Stream {
 		connections.forEach(pair -> consumer.accept(pair.getFirst(), pair.getSecond()));
 	}
 
+	private boolean blockNewConnections() {
+		return state != StreamState.IDLE && !isLive;
+	}
+
 	private void connect(ReceiverNode listener, NodePath path) {
+		if (blockNewConnections()) return;
 		listeners.add(listener);
 		path.forEach((from, to) -> connections.add(new Pair<>(from, to)));
 		// Only execute consumer if not playing or is live
-		if (state == StreamState.IDLE || isLive) connectConsumer.accept(listener);
+		connectConsumer.accept(listener);
 	}
 
 	private void onDisconnect(ReceiverNode listener) {
