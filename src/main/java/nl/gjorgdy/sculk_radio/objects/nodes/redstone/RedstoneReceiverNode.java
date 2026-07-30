@@ -10,15 +10,9 @@ import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 public class RedstoneReceiverNode extends ReceiverNode {
 
 	public static final Codec<RedstoneReceiverNode> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-             BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos),
-             Codec.INT.fieldOf("redstone_signal").forGetter(RedstoneReceiverNode::getOwnSignal)
+             BlockPos.CODEC.fieldOf("pos").forGetter(Node::getPos)
 	     ).apply(instance, RedstoneReceiverNode::new)
 	);
-
-	private RedstoneReceiverNode(BlockPos pos, int signal) {
-		super(pos);
-		this.redstoneSignal = signal;
-	}
 
 	public RedstoneReceiverNode(BlockPos pos) {
 		super(pos);
@@ -28,7 +22,7 @@ public class RedstoneReceiverNode extends ReceiverNode {
 	public void visualsTick() {
 		if (!isLoaded()) return;
 		VisualUtils.activateSensor(level, pos);
-		VisualUtils.spawnRedstoneParticles(level, pos);
+		VisualUtils.spawnRedstoneParticles(level, pos, getRedstoneSignal());
 	}
 
 }

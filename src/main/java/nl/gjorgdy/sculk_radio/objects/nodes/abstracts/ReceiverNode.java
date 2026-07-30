@@ -2,15 +2,34 @@ package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.objects.streams.Stream;
+import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ReceiverNode extends Node {
 
-	protected int analogRedstoneSignal = 0;
-	protected int redstoneSignal = 0;
+	private final Set<Stream> streams;
 
 	public ReceiverNode(BlockPos pos) {
         super(pos);
+		streams = new HashSet<>(2);
     }
+
+	public final void addStream(Stream stream) {
+		streams.add(stream);
+	}
+
+	public final void removeStream(Stream stream) {
+		streams.remove(stream);
+	}
+
+	public Set<Stream> getStreams() {
+		streams.removeIf(s -> s.getState() == StreamState.STOPPED);
+		return Collections.unmodifiableSet(streams);
+	}
 
     @Override
     public boolean canReceive() {
@@ -22,22 +41,8 @@ public abstract class ReceiverNode extends Node {
 		return false;
 	}
 
-	public void setAnalogRedstoneSignal(int analogRedstoneSignal) {
-		if (this.analogRedstoneSignal != analogRedstoneSignal) {
-			this.analogRedstoneSignal = analogRedstoneSignal;
-			updateNeighbours();
-		}
-	}
-
 	protected void internalInit() {
 		SculkRadio.scheduleNextTick(this::updateNeighbours);
-	}
-
-	public void setRedstoneSignal(int redstoneSignal) {
-		if (this.redstoneSignal != redstoneSignal) {
-			this.redstoneSignal = redstoneSignal;
-			updateNeighbours();
-		}
 	}
 
 	public void updateNeighbours() {
@@ -45,11 +50,13 @@ public abstract class ReceiverNode extends Node {
 		level.updateNeighborsAt(pos.below(), level.getBlockState(pos).getBlock());
 	}
 
-	public final int getAnalogSignal() {
-		return analogRedstoneSignal;
+	public final int getRedstoneSignal() {
+		if (streams.isEmpty()) return 0;
+		return getStreams().stream().mapToInt(Stream::getRedstoneSignal).max().orElse(0);
 	}
 
-	public int getOwnSignal() {
-		return redstoneSignal;
+	public final int getAnalogRedstoneSignal() {
+		if (streams.isEmpty()) return 0;
+		return getStreams().stream().mapToInt(Stream::getAnalogRedstoneSignal).max().orElse(0);
 	}
 }

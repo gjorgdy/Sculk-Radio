@@ -69,10 +69,9 @@ public abstract class VisualUtils {
         serverLevel.sendParticles(ParticleTypes.NOTE, vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
     }
 
-	public static void spawnRedstoneParticles(ServerLevel level, BlockPos pos) {
+	public static void spawnRedstoneParticles(ServerLevel level, BlockPos pos, int strength) {
         Vec3 vec3 = new Vec3(pos).add(0.5F, 0.7F, 0.5F);
-        float f = (float) level.getRandom().nextInt(4) / 24.0F;
-        level.sendParticles(new DustParticleOptions(CommonColors.RED, 1f), vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
+        level.sendParticles(new DustParticleOptions(CommonColors.RED, 1f), vec3.x, vec3.y, vec3.z, strength, 0.3f, 0.3F, 0.3F, 1.0F);
 	}
 
     public static void spawnEnderParticles(ServerLevel serverLevel, BlockPos pos, boolean reverse) {

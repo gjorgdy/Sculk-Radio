@@ -37,7 +37,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
         if (is(Blocks.NOTE_BLOCK) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
-	                ? receiverNode.getAnalogSignal()
+	                ? receiverNode.getAnalogRedstoneSignal()
 	                : original.call(level, pos, direction);
         }
         return original.call(level, pos, direction);
@@ -49,7 +49,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
         if ((is(Blocks.NOTE_BLOCK) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
-	            ? receiverNode.getOwnSignal()
+	            ? receiverNode.getRedstoneSignal()
 	            : original.call(level, pos, direction);
         }
         return original.call(level, pos, direction);

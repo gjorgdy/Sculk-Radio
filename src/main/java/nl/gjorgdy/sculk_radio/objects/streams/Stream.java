@@ -18,6 +18,9 @@ import java.util.function.Predicate;
 
 public abstract class Stream {
 
+	protected int redstoneSignal = 0;
+	protected int analogRedstoneSignal = 0;
+
 	private final Predicate<? super Node> isReceiver;
 	private final Consumer<? super ReceiverNode> connectConsumer;
 	private final Consumer<? super ReceiverNode> disconnectConsumer;
@@ -56,6 +59,10 @@ public abstract class Stream {
 	}
 
 	public void stop() {
+		// to reset redstone state
+		redstoneSignal = 0;
+		analogRedstoneSignal = 0;
+		// disconnect
 		state = StreamState.STOPPED;
 		forListeners(listener -> {
 			disconnectedNodes.add(listener);
@@ -69,7 +76,6 @@ public abstract class Stream {
 		connections.clear();
 		// to reset visual state
 		visualsTick(source.getLevel());
-		redstoneTick();
 	}
 
 	public void visualsTick(ServerLevel level) {
@@ -115,10 +121,13 @@ public abstract class Stream {
 	}
 
 	public void redstoneTick() {
-		int redstone = source.getRedstoneSignal();
-		listeners.forEach(listener -> listener.setRedstoneSignal(redstone));
-		int analogRedstone = source.getAnalogRedstoneSignal();
-		listeners.forEach(listener -> listener.setAnalogRedstoneSignal(analogRedstone));
+		var redstoneSignal = source.getRedstoneSignal();
+		var analogRedstoneSignal = source.getAnalogRedstoneSignal();
+		if (this.redstoneSignal != redstoneSignal || this.analogRedstoneSignal != analogRedstoneSignal) {
+			this.redstoneSignal = redstoneSignal;
+			this.analogRedstoneSignal = analogRedstoneSignal;
+			forListeners(ReceiverNode::updateNeighbours);
+		}
 	}
 
 	public void connectionTick() {
@@ -200,11 +209,21 @@ public abstract class Stream {
 		path.forEach((from, to) -> connections.add(new Pair<>(from, to)));
 		// Only execute consumer if not playing or is live
 		connectConsumer.accept(listener);
+		listener.addStream(this);
+		listener.updateNeighbours();
 	}
 
 	private void onDisconnect(ReceiverNode listener) {
 		disconnectConsumer.accept(listener);
-		listener.setAnalogRedstoneSignal(0);
-		listener.setRedstoneSignal(0);
+		listener.removeStream(this);
+		listener.updateNeighbours();
+	}
+
+	public int getRedstoneSignal() {
+		return redstoneSignal;
+	}
+
+	public int getAnalogRedstoneSignal() {
+		return analogRedstoneSignal;
 	}
 }

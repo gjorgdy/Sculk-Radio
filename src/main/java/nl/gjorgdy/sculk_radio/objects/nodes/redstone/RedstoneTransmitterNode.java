@@ -48,7 +48,7 @@ public class RedstoneTransmitterNode extends SourceNode<RedstoneStream> {
 			if (stream == null || stream.getState() == StreamState.STOPPED) {
 				start(_ -> new RedstoneStream(this));
 			}
-			stream.sendRedstoneSignal();
+			stream.updateListenerNeighbours();
 		} else {
 			if (stream != null && stream.getState() == StreamState.ACTIVE) {
 				stop();

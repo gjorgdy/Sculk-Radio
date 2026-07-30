@@ -6,6 +6,7 @@ import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
+import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 
 import java.util.UUID;
@@ -38,14 +39,15 @@ public class MicrophoneStream extends AudioStream {
 
 	@Override
 	public void redstoneTick() {
-		int signal = getState() == StreamState.ACTIVE ? 15 : 0;
-		int analogSignal = sentPacket ? 15 : 0;
-		forListeners(listener -> {
-			listener.setRedstoneSignal(signal);
-			listener.setAnalogRedstoneSignal(analogSignal);
-		});
+		var redstoneSignal = getState() == StreamState.ACTIVE ? 15 : 0;
+		var analogRedstoneSignal = sentPacket ? 15 : 0;
 		if (sentPacket || getState() == StreamState.STOPPED) {
 			sentPacket = false;
+		}
+		if (this.redstoneSignal != redstoneSignal || this.analogRedstoneSignal != analogRedstoneSignal) {
+			this.redstoneSignal = redstoneSignal;
+			this.analogRedstoneSignal = analogRedstoneSignal;
+			forListeners(ReceiverNode::updateNeighbours);
 		}
 	}
 
