@@ -18,7 +18,6 @@ import java.util.UUID;
 public class MicrophoneStream extends AudioStream {
 
 	private final Set<ServerPlayer> spokenPlayers = new HashSet<>();
-	private boolean sentPacket = false;
 	private final MultiLocationalAudioChannel channel;
 
 	public MicrophoneStream(ServerLevel level, SourceNode<MicrophoneStream> source) {
@@ -54,10 +53,7 @@ public class MicrophoneStream extends AudioStream {
 	@Override
 	public void redstoneTick() {
 		var redstoneSignal = getState() == StreamState.ACTIVE ? 15 : 0;
-		var analogRedstoneSignal = sentPacket ? 15 : 0;
-		if (sentPacket || getState() == StreamState.STOPPED) {
-			sentPacket = false;
-		}
+		var analogRedstoneSignal = Math.min(15, spokenPlayers.size());
 		if (this.redstoneSignal != redstoneSignal || this.analogRedstoneSignal != analogRedstoneSignal) {
 			this.redstoneSignal = redstoneSignal;
 			this.analogRedstoneSignal = analogRedstoneSignal;
@@ -68,7 +64,6 @@ public class MicrophoneStream extends AudioStream {
 	public void send(ServerPlayer player, MicrophonePacket microphonePacket) {
 		if (getState() == StreamState.ACTIVE) {
 			channel.send(microphonePacket);
-			sentPacket = true;
 			spokenPlayers.add(player);
 		}
 	}
