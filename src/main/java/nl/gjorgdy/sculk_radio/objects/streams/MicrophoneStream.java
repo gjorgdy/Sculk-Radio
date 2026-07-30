@@ -4,15 +4,20 @@ import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class MicrophoneStream extends AudioStream {
 
+	private final Set<ServerPlayer> spokenPlayers = new HashSet<>();
 	private boolean sentPacket = false;
 	private final MultiLocationalAudioChannel channel;
 
@@ -38,6 +43,15 @@ public class MicrophoneStream extends AudioStream {
 	}
 
 	@Override
+	public void visualsTick(ServerLevel level) {
+		super.visualsTick(level);
+		spokenPlayers.forEach(player ->
+			VisualUtils.spawnVibrationParticles(level, player.position().add(0, 1, 0), source.getPos())
+		);
+		spokenPlayers.clear();
+	}
+
+	@Override
 	public void redstoneTick() {
 		var redstoneSignal = getState() == StreamState.ACTIVE ? 15 : 0;
 		var analogRedstoneSignal = sentPacket ? 15 : 0;
@@ -51,10 +65,11 @@ public class MicrophoneStream extends AudioStream {
 		}
 	}
 
-	public void send(MicrophonePacket microphonePacket) {
+	public void send(ServerPlayer player, MicrophonePacket microphonePacket) {
 		if (getState() == StreamState.ACTIVE) {
 			channel.send(microphonePacket);
 			sentPacket = true;
+			spokenPlayers.add(player);
 		}
 	}
 

@@ -47,6 +47,12 @@ public abstract class VisualUtils {
         );
     }
 
+    public static void spawnVibrationParticles(ServerLevel world, Vec3 from, BlockPos to) {
+        world.sendParticles(new VibrationParticleOption(
+                                    new BlockPositionSource(to), SculkRadio.visualsTick),
+                            from.x(), from.y(), from.z(), 1, 0.0, 0.0, 0.0, 0.0);
+    }
+
     public static void spawnVibrationParticles(ServerLevel world, BlockPos from, BlockPos to) {
         world.sendParticles(new VibrationParticleOption(
                                     new BlockPositionSource(to), SculkRadio.visualsTick),

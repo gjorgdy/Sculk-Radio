@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.objects.streams.MicrophoneStream;
@@ -28,9 +29,9 @@ public class MicrophoneNode extends SourceNode<MicrophoneStream> {
 		this.active = active;
 	}
 
-	public boolean send(MicrophonePacket microphonePacket) {
+	public boolean send(ServerPlayer player, MicrophonePacket microphonePacket) {
 		if (getState() == StreamState.ACTIVE && stream instanceof MicrophoneStream microphoneStream) {
-			microphoneStream.send(microphonePacket);
+			microphoneStream.send(player, microphonePacket);
 			return true;
 		}
 		return false;
