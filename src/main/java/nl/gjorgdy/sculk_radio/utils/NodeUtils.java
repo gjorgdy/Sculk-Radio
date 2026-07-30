@@ -16,7 +16,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import nl.gjorgdy.sculk_radio.registries.NodeRegistry;
@@ -56,7 +56,7 @@ public abstract class NodeUtils {
 			case SculkShriekerBlockEntity be
 				when state.is(Blocks.TARGET)
 				&& SculkRadio.redstoneEnabled
-					-> new RedstoneSourceNode(be.getBlockPos());
+					-> new RedstoneTransmitterNode(be.getBlockPos());
 			case SculkSensorBlockEntity be
 				when state.is(Blocks.TARGET)
 				&& SculkRadio.redstoneEnabled

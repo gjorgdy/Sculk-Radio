@@ -45,7 +45,6 @@ public class TeleportTransmitterNode extends SourceNode<TeleportStream> {
 		// start if active, stop if not
 		if (this.active && getState() != StreamState.ACTIVE) {
 			start(_ -> new TeleportStream(this));
-			System.out.println("Starting teleport stream at " + getPos());
 		} else if (!this.active && getState() == StreamState.ACTIVE) {
 			stop();
 		}

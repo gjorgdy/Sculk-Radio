@@ -16,7 +16,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import org.jspecify.annotations.NonNull;
@@ -39,8 +39,8 @@ public class NodeRegistry extends SavedData {
 	private final TypedSourceNodeRegistry<MicrophoneNode> microphoneNodes = new TypedSourceNodeRegistry<>(
 			n -> n instanceof MicrophoneNode, SculkRadio::microphonesEnabled);
 	// redstone
-	private final TypedSourceNodeRegistry<RedstoneSourceNode> redstoneSourceNodes = new TypedSourceNodeRegistry<>(
-			n -> n instanceof RedstoneSourceNode, () -> SculkRadio.redstoneEnabled);
+	private final TypedSourceNodeRegistry<RedstoneTransmitterNode> redstoneSourceNodes = new TypedSourceNodeRegistry<>(
+			n -> n instanceof RedstoneTransmitterNode, () -> SculkRadio.redstoneEnabled);
 	private final TypedNodeRegistry<RedstoneReceiverNode> redstoneReceiverNodes = new TypedNodeRegistry<>(
 			n -> n instanceof RedstoneReceiverNode, () -> SculkRadio.redstoneEnabled);
 	// teleportation
@@ -171,17 +171,17 @@ public class NodeRegistry extends SavedData {
 
 	private static NodeRegistry load(ServerLevel level) {
 		Codec<NodeRegistry> codec = RecordCodecBuilder.create(instance -> instance.group(
-               RadioNode.CODEC.listOf().optionalFieldOf("radios").forGetter(i -> i.radioNodes.toList()),
-               SpeakerNode.CODEC.listOf().optionalFieldOf("speakers").forGetter(i -> i.speakerNodes.toList()),
-               RelayNode.CODEC.listOf().optionalFieldOf("relays").forGetter(i -> i.relayNodes.toList()),
-               AntennaNode.CODEC.listOf().optionalFieldOf("antennas").forGetter(i -> i.antennaNodes.toList()),
-               MicrophoneNode.CODEC.listOf().optionalFieldOf("microphones").forGetter(i -> i.microphoneNodes.toList()),
-               RedstoneReceiverNode.CODEC.listOf().optionalFieldOf("redstone_receivers").forGetter(i -> i.redstoneReceiverNodes.toList()),
-               RedstoneSourceNode.CODEC.listOf().optionalFieldOf("redstone_sources").forGetter(i -> i.redstoneSourceNodes.toList()),
-               TeleportTransmitterNode.CODEC.listOf().optionalFieldOf("teleport_transmitters").forGetter(i -> i.teleportTransmitterNodes.toList()),
-               TeleportReceiverNode.CODEC.listOf().optionalFieldOf("teleport_receivers").forGetter(i -> i.teleportReceiverNodes.toList())
-	       ).apply(instance, (ra, sp, re, an, mi, rr, rs, tt, tr)
-				-> new NodeRegistry(level, ra.orElse(null), sp.orElse(null), re.orElse(null), an.orElse(null), mi.orElse(null), rr.orElse(null), rs.orElse(null), tt.orElse(null), tr.orElse(null)))
+				RadioNode.CODEC.listOf().optionalFieldOf("radios").forGetter(i -> i.radioNodes.toList()),
+				SpeakerNode.CODEC.listOf().optionalFieldOf("speakers").forGetter(i -> i.speakerNodes.toList()),
+				RelayNode.CODEC.listOf().optionalFieldOf("relays").forGetter(i -> i.relayNodes.toList()),
+				AntennaNode.CODEC.listOf().optionalFieldOf("antennas").forGetter(i -> i.antennaNodes.toList()),
+				MicrophoneNode.CODEC.listOf().optionalFieldOf("microphones").forGetter(i -> i.microphoneNodes.toList()),
+				RedstoneTransmitterNode.CODEC.listOf().optionalFieldOf("redstone_transmitters").forGetter(i -> i.redstoneSourceNodes.toList()),
+				RedstoneReceiverNode.CODEC.listOf().optionalFieldOf("redstone_receivers").forGetter(i -> i.redstoneReceiverNodes.toList()),
+				TeleportTransmitterNode.CODEC.listOf().optionalFieldOf("teleport_transmitters").forGetter(i -> i.teleportTransmitterNodes.toList()),
+				TeleportReceiverNode.CODEC.listOf().optionalFieldOf("teleport_receivers").forGetter(i -> i.teleportReceiverNodes.toList())
+	       ).apply(instance, (a, b, c, d, e, f, g, h, i)
+				-> new NodeRegistry(level, a.orElse(null), b.orElse(null), c.orElse(null), d.orElse(null), e.orElse(null), f.orElse(null), g.orElse(null), h.orElse(null), i.orElse(null)))
 		);
 		//noinspection DataFlowIssue
 		var type = new SavedDataType<>(

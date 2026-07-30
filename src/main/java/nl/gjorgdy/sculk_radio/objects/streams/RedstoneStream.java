@@ -1,11 +1,11 @@
 package nl.gjorgdy.sculk_radio.objects.streams;
 
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
-import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 
 public class RedstoneStream extends Stream {
 
-	public RedstoneStream(RedstoneSourceNode source) {
+	public RedstoneStream(RedstoneTransmitterNode source) {
 		super(
 			n -> n instanceof RedstoneReceiverNode,
 			n -> n.setRedstoneSignal(source.getRedstoneSignal()),
