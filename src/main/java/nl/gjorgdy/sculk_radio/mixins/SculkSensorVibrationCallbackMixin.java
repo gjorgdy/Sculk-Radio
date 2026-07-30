@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,7 +28,8 @@ public abstract class SculkSensorVibrationCallbackMixin {
         BlockState blockBelow = level.getBlockState(this.blockPos.below());
         if (blockBelow.is(Blocks.NOTE_BLOCK)
                 || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)
-                || blockBelow.is(Blocks.TARGET)
+                || (blockBelow.is(Blocks.TARGET) && SculkRadio.redstoneEnabled)
+                || (blockBelow.is(Blocks.PURPUR_BLOCK) && SculkRadio.teleportEnabled)
         ) {
             cir.setReturnValue(false);
         }

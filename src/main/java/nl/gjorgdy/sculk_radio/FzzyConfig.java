@@ -26,6 +26,8 @@ public class FzzyConfig extends Config {
         SculkRadio.microphonesEnabledConfig = config.microphonesEnabled.get();
         SculkRadio.redstoneEnabled = config.redstoneEnabled.get();
         SculkRadio.antennasEnabled = config.antennasEnabled.get();
+        SculkRadio.teleportEnabled = config.teleportEnabled.get();
+        // Load everything else
         load();
     }
 
@@ -80,4 +82,7 @@ public class FzzyConfig extends Config {
     @Comment("Should antennas be enabled. [Requires restart]")
     @RequiresAction(action = Action.RESTART)
     public ValidatedBoolean antennasEnabled = new ValidatedBoolean(SculkRadio.antennasEnabled);
+    @Comment("Should teleport nodes be enabled. These offer near-instant teleportation, so they are quite OP. [Requires restart]")
+    @RequiresAction(action = Action.RESTART)
+    public ValidatedBoolean teleportEnabled = new ValidatedBoolean(SculkRadio.teleportEnabled);
 }

@@ -12,6 +12,7 @@ import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.MicrophoneNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,6 +32,9 @@ public abstract class SculkShriekerBlockMixin extends BaseEntityBlock {
         if (level.getBlockEntity(pos) instanceof INodeContainer nc) {
             if (nc.sculkRadio$getNode() instanceof MicrophoneNode microphoneNode) {
                 microphoneNode.updateState();
+            }
+            if (nc.sculkRadio$getNode() instanceof TeleportTransmitterNode teleportTransmitterNode) {
+                teleportTransmitterNode.updateState();
             }
             else if (nc.sculkRadio$getNode() instanceof RedstoneSourceNode redstoneSourceNode) {
                 redstoneSourceNode.updateRedstone();

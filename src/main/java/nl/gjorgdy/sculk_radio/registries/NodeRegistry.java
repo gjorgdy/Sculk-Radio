@@ -17,6 +17,8 @@ import nl.gjorgdy.sculk_radio.objects.nodes.audio.RadioNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.audio.SpeakerNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneSourceNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
+import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -41,6 +43,11 @@ public class NodeRegistry extends SavedData {
 			n -> n instanceof RedstoneSourceNode, () -> SculkRadio.redstoneEnabled);
 	private final TypedNodeRegistry<RedstoneReceiverNode> redstoneReceiverNodes = new TypedNodeRegistry<>(
 			n -> n instanceof RedstoneReceiverNode, () -> SculkRadio.redstoneEnabled);
+	// teleportation
+	private final TypedSourceNodeRegistry<TeleportTransmitterNode> teleportTransmitterNodes = new TypedSourceNodeRegistry<>(
+			n -> n instanceof TeleportTransmitterNode, () -> SculkRadio.teleportEnabled);
+	private final TypedNodeRegistry<TeleportReceiverNode> teleportReceiverNodes = new TypedNodeRegistry<>(
+			n -> n instanceof TeleportReceiverNode, () -> SculkRadio.teleportEnabled);
 	// communication
 	private final TypedNodeRegistry<AntennaNode> antennaNodes = new TypedNodeRegistry<>(
 			n -> n instanceof AntennaNode, () -> SculkRadio.antennasEnabled);
@@ -52,6 +59,8 @@ public class NodeRegistry extends SavedData {
 		microphoneNodes,
 		redstoneSourceNodes,
 		redstoneReceiverNodes,
+		teleportTransmitterNodes,
+		teleportReceiverNodes,
 		antennaNodes,
 		relayNodes
 	};
@@ -59,13 +68,15 @@ public class NodeRegistry extends SavedData {
 	private final TypedSourceNodeRegistry<?>[] sourceNodeRegistries = new TypedSourceNodeRegistry[] {
 		radioNodes,
 		microphoneNodes,
-		redstoneSourceNodes
+		redstoneSourceNodes,
+		teleportTransmitterNodes
 	};
 
 	@SafeVarargs
 	private NodeRegistry(ServerLevel level, List<? extends Node>... lists) {
 		this(level);
 		for (var list : lists) {
+			if (list == null) return;
 			list.forEach(this::registerInternal);
 		}
 		setDirty();
@@ -123,7 +134,7 @@ public class NodeRegistry extends SavedData {
 		for (var reg : nodeRegistries) {
 			// Find repo for this node type
 			if (reg.typePredicate.test(node)) {
-				if (!reg.isEnabled()) return false;
+				if (reg.disabled()) return false;
 				// Connect node to neighbours
 				forEach(otherNode -> {
 					if (canConnect(node, otherNode)) {
@@ -160,14 +171,17 @@ public class NodeRegistry extends SavedData {
 
 	private static NodeRegistry load(ServerLevel level) {
 		Codec<NodeRegistry> codec = RecordCodecBuilder.create(instance -> instance.group(
-               RadioNode.CODEC.listOf().fieldOf("radios").forGetter(i -> i.radioNodes.toList()),
-               SpeakerNode.CODEC.listOf().fieldOf("speakers").forGetter(i -> i.speakerNodes.toList()),
-               RelayNode.CODEC.listOf().fieldOf("relays").forGetter(i -> i.relayNodes.toList()),
-               AntennaNode.CODEC.listOf().fieldOf("antennas").forGetter(i -> i.antennaNodes.toList()),
-               MicrophoneNode.CODEC.listOf().fieldOf("microphones").forGetter(i -> i.microphoneNodes.toList()),
-               RedstoneReceiverNode.CODEC.listOf().fieldOf("redstone_receivers").forGetter(i -> i.redstoneReceiverNodes.toList()),
-               RedstoneSourceNode.CODEC.listOf().fieldOf("redstone_sources").forGetter(i -> i.redstoneSourceNodes.toList())
-	       ).apply(instance, (ra, sp, re, an, mi, rr, rs) -> new NodeRegistry(level, ra, sp, re, an, mi, rr, rs))
+               RadioNode.CODEC.listOf().optionalFieldOf("radios").forGetter(i -> i.radioNodes.toList()),
+               SpeakerNode.CODEC.listOf().optionalFieldOf("speakers").forGetter(i -> i.speakerNodes.toList()),
+               RelayNode.CODEC.listOf().optionalFieldOf("relays").forGetter(i -> i.relayNodes.toList()),
+               AntennaNode.CODEC.listOf().optionalFieldOf("antennas").forGetter(i -> i.antennaNodes.toList()),
+               MicrophoneNode.CODEC.listOf().optionalFieldOf("microphones").forGetter(i -> i.microphoneNodes.toList()),
+               RedstoneReceiverNode.CODEC.listOf().optionalFieldOf("redstone_receivers").forGetter(i -> i.redstoneReceiverNodes.toList()),
+               RedstoneSourceNode.CODEC.listOf().optionalFieldOf("redstone_sources").forGetter(i -> i.redstoneSourceNodes.toList()),
+               TeleportTransmitterNode.CODEC.listOf().optionalFieldOf("teleport_transmitters").forGetter(i -> i.teleportTransmitterNodes.toList()),
+               TeleportReceiverNode.CODEC.listOf().optionalFieldOf("teleport_receivers").forGetter(i -> i.teleportReceiverNodes.toList())
+	       ).apply(instance, (ra, sp, re, an, mi, rr, rs, tt, tr)
+				-> new NodeRegistry(level, ra.orElse(null), sp.orElse(null), re.orElse(null), an.orElse(null), mi.orElse(null), rr.orElse(null), rs.orElse(null), tt.orElse(null), tr.orElse(null)))
 		);
 		//noinspection DataFlowIssue
 		var type = new SavedDataType<>(
@@ -211,12 +225,13 @@ public class NodeRegistry extends SavedData {
 			this.enabled = enabled;
 		}
 
-		public boolean isEnabled() {
-			return enabled.get();
+		public boolean disabled() {
+			return !enabled.get();
 		}
 
-		List<T> toList() {
-			return new ArrayList<>(nodes);
+		Optional<List<T>> toList() {
+			if (disabled() || nodes.isEmpty()) return Optional.empty();
+			return Optional.of(new ArrayList<>(nodes));
 		}
 
 		private void add(Node node) {

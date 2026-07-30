@@ -2,6 +2,7 @@ package nl.gjorgdy.sculk_radio.objects.streams;
 
 import kotlin.Pair;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
 import nl.gjorgdy.sculk_radio.objects.nodes.RelayNode;
@@ -178,6 +179,11 @@ public abstract class Stream {
 
 	public void forListeners(Consumer<? super ReceiverNode> consumer) {
 		listeners.forEach(consumer);
+	}
+
+	public void forRandomListener(RandomSource randomSource, Consumer<? super ReceiverNode> consumer) {
+		int randomIndex = randomSource.nextInt(0, listeners.size());
+		listeners.stream().skip(randomIndex).findFirst().ifPresent(consumer);
 	}
 
 	public void forConnections(BiConsumer<Node, Node> consumer) {

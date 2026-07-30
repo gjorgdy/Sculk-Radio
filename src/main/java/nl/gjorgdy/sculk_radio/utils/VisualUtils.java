@@ -74,4 +74,10 @@ public abstract class VisualUtils {
         float f = (float) level.getRandom().nextInt(4) / 24.0F;
         level.sendParticles(new DustParticleOptions(CommonColors.RED, 1f), vec3.x, vec3.y, vec3.z, 0, f, 0.0F, 0.0F, 1.0F);
 	}
+
+    public static void spawnEnderParticles(ServerLevel serverLevel, BlockPos pos, boolean reverse) {
+        Vec3 vec3 = new Vec3(pos).add(0.5F, 0.5F, 0.5F);
+        float f = (float) serverLevel.getRandom().nextInt(4) / 2.0F;
+        serverLevel.sendParticles(reverse ? ParticleTypes.REVERSE_PORTAL : ParticleTypes.PORTAL, vec3.x, vec3.y, vec3.z, 64, f, f, f, 0.5F);
+    }
 }
