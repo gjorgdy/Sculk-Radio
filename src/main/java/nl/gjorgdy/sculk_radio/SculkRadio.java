@@ -45,6 +45,7 @@ public class SculkRadio implements ModInitializer {
     public static boolean forceSyncSpeakers = false;
     public static boolean speakerCategory = false;
     public static boolean microphonesEnabledConfig = true;
+    public static boolean redstoneEnabled = true;
     // end config
 
     public static boolean voiceChatInstalled = false;

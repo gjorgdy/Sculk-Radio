@@ -35,6 +35,7 @@ public class FzzyConfig extends Config {
         SculkRadio.forceSyncSpeakers = config.forceSync.get();
         SculkRadio.speakerCategory = config.speakerCategory.get();
         SculkRadio.microphonesEnabledConfig = config.microphonesEnabled.get();
+        SculkRadio.redstoneEnabled = config.redstoneEnabled.get();
 
         ConfigCallback.RELOAD_CONFIG.invoker().onReload();
     }
@@ -66,4 +67,7 @@ public class FzzyConfig extends Config {
     @Comment("Should microphones be enabled. This requires Simple Voice Chat to be installed. [Requires restart]")
     @RequiresAction(action = Action.RESTART)
     public ValidatedBoolean microphonesEnabled = new ValidatedBoolean(SculkRadio.microphonesEnabledConfig);
+    @Comment("Should redstone outputs and nodes be enabled. [Requires restart]")
+    @RequiresAction(action = Action.RESTART)
+    public ValidatedBoolean redstoneEnabled = new ValidatedBoolean(SculkRadio.redstoneEnabled);
 }

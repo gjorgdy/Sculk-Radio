@@ -52,9 +52,11 @@ public abstract class NodeUtils {
 					-> new MicrophoneNode(be.getBlockPos());
 			case SculkShriekerBlockEntity be
 				when state.is(Blocks.TARGET)
+				&& SculkRadio.redstoneEnabled
 					-> new RedstoneSourceNode(be.getBlockPos());
 			case SculkSensorBlockEntity be
 				when state.is(Blocks.TARGET)
+				&& SculkRadio.redstoneEnabled
 					-> new RedstoneReceiverNode(be.getBlockPos());
 			default -> null;
 		};

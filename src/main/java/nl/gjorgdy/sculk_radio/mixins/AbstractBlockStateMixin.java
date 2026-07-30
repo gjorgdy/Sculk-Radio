@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateHolder;
 import net.minecraft.world.level.block.state.properties.Property;
+import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,11 +27,13 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "hasAnalogOutputSignal")
     public boolean hasAnalog(Operation<Boolean> original) {
+	    if (!SculkRadio.redstoneEnabled) return original.call();
         return is(Blocks.NOTE_BLOCK) || original.call();
     }
 
     @WrapMethod(method = "getAnalogOutputSignal")
     public int redstonePower(Level level, BlockPos pos, Direction direction, Operation<Integer> original) {
+	    if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
         if (is(Blocks.NOTE_BLOCK) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
@@ -42,6 +45,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "getSignal")
     public int redstonePower(BlockGetter level, BlockPos pos, Direction direction, Operation<Integer> original) {
+		if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
         if ((is(Blocks.NOTE_BLOCK) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
