@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
+import nl.gjorgdy.sculk_radio.utils.BlockUtils;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(BlockBehaviour.BlockStateBase.class)
@@ -28,13 +29,13 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
     @WrapMethod(method = "hasAnalogOutputSignal")
     public boolean hasAnalog(Operation<Boolean> original) {
 	    if (!SculkRadio.redstoneEnabled) return original.call();
-        return is(Blocks.NOTE_BLOCK) || original.call();
+        return BlockUtils.isNoteblock(this) || original.call();
     }
 
     @WrapMethod(method = "getAnalogOutputSignal")
     public int redstonePower(Level level, BlockPos pos, Direction direction, Operation<Integer> original) {
 	    if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
-        if (is(Blocks.NOTE_BLOCK) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
+        if (BlockUtils.isNoteblock(this) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
 	                ? receiverNode.getAnalogRedstoneSignal()
@@ -46,7 +47,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
     @WrapMethod(method = "getSignal")
     public int redstonePower(BlockGetter level, BlockPos pos, Direction direction, Operation<Integer> original) {
 		if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
-        if ((is(Blocks.NOTE_BLOCK) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
+        if ((BlockUtils.isNoteblock(this) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
 	        return node instanceof ReceiverNode receiverNode
 	            ? receiverNode.getRedstoneSignal()

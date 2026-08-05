@@ -37,10 +37,10 @@ public abstract class NodeUtils {
 		// create new one
 		node = switch (blockEntity) {
 			case SculkSensorBlockEntity be
-				when state.is(Blocks.NOTE_BLOCK)
+				when BlockUtils.isNoteblock(state)
 					-> new SpeakerNode(be.getBlockPos());
 			case SculkShriekerBlockEntity be
-				when state.is(Blocks.JUKEBOX)
+				when BlockUtils.isJukebox(state)
 					-> new RadioNode(be.getBlockPos());
 			case CalibratedSculkSensorBlockEntity be
 				when state.is(Blocks.AMETHYST_BLOCK)

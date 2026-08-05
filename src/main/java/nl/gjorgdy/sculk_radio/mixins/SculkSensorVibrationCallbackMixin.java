@@ -7,6 +7,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.utils.BlockUtils;
 import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,10 +27,10 @@ public abstract class SculkSensorVibrationCallbackMixin {
     @Inject(method = "canReceiveVibration", at = @At("RETURN"), cancellable = true)
     public void canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> event, GameEvent.@Nullable Context context, CallbackInfoReturnable<Boolean> cir) {
         BlockState blockBelow = level.getBlockState(this.blockPos.below());
-        if (blockBelow.is(Blocks.NOTE_BLOCK)
-                || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)
-                || (blockBelow.is(Blocks.TARGET) && SculkRadio.redstoneEnabled)
-                || (blockBelow.is(Blocks.PURPUR_BLOCK) && SculkRadio.teleportEnabled)
+        if (BlockUtils.isNoteblock(blockBelow)
+            || blockBelow.is(Blocks.AMETHYST_BLOCK) && !isResonateEvent(event)
+            || (blockBelow.is(Blocks.TARGET) && SculkRadio.redstoneEnabled)
+            || (blockBelow.is(Blocks.PURPUR_BLOCK) && SculkRadio.teleportEnabled)
         ) {
             cir.setReturnValue(false);
         }
