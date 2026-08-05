@@ -1,10 +1,6 @@
 package nl.gjorgdy.sculk_radio.utils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.*;
 
 public abstract class SetUtils {
 
@@ -12,8 +8,7 @@ public abstract class SetUtils {
 		return new ArrayList<>(set);
 	}
 
-	public static <T> Stream<T> flatten(Set<Set<? extends T>> set) {
-		return set.stream().flatMap(Collection::stream);
+	public static <T> Set<T> toSet(List<T> list) {
+		return new HashSet<>(list);
 	}
-
 }

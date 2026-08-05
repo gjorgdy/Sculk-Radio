@@ -48,6 +48,7 @@ public class SculkRadio implements ModInitializer {
     public static boolean redstoneEnabled = true;
     public static boolean antennasEnabled = true;
     public static boolean teleportEnabled = false;
+    public static boolean tuningEnabled = true;
     // end config
 
     public static boolean voiceChatInstalled = false;

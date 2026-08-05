@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
@@ -36,18 +35,27 @@ public class AntennaNode extends RelayNode {
 		return frequency;
 	}
 
+	public void setFrequency(int frequency) {
+		this.frequency = frequency;
+		setDirty();
+	}
+
 	public void updateFrequency() {
 		if (!isLoaded()) return;
+		if (frequency > 15 && SculkRadio.tuningEnabled) return; // Return if antenna has a tuned frequency
 		var direction = level.getBlockState(getPos()).getValueOrElse(CalibratedSculkSensorBlock.FACING, Direction.UP);
 		this.frequency = level.getDirectSignal(
 			getPos().relative(direction.getOpposite()),
 			direction.getOpposite()
 		);
-		NodeRegistry.of(level).setDirty();
+		setDirty();
 	}
 
 	private AntennaNode(BlockPos pos, int frequency) {
 		super(pos);
+		if (!SculkRadio.tuningEnabled && frequency > 15) {
+			frequency = 0;
+		}
 		this.frequency = frequency;
 	}
 
