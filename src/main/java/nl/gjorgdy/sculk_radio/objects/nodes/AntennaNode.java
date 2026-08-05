@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.CalibratedSculkSensorBlock;
 import nl.gjorgdy.sculk_radio.SculkRadio;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.Node;
@@ -65,6 +66,20 @@ public class AntennaNode extends RelayNode {
 		neighbours.addAll(this.neighbours);
 		neighbours.addAll(NodeRegistry.of(level).getAntennas(frequency));
 		return neighbours;
+	}
+
+	@Override
+	public void pulseNeighbours() {
+		getNeighbours().forEach(
+			neighbour -> {
+				if (neighbour instanceof AntennaNode) {
+					VisualUtils.spawnVibrationParticles(level, this.getPos(), this.getPos().above(16));
+					VisualUtils.spawnAntennaParticles(level, this.getPos());
+				} else {
+					VisualUtils.spawnVibrationParticles(level, this.getPos(), neighbour.getPos());
+				}
+			}
+		);
 	}
 
 	@Override

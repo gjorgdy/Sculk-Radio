@@ -24,9 +24,10 @@ public abstract class Node {
     abstract public boolean canTransmit();
     abstract public boolean canReceive();
     abstract public void visualsTick();
+    abstract public void pulseNeighbours();
     protected void internalInit() {}
 
-    public final void init(ServerLevel level) {
+	public final void init(ServerLevel level) {
         this.level = level;
         SculkRadio.scheduleNextTick(this::internalInit);
     }

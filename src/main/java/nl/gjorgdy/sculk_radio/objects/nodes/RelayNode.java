@@ -31,6 +31,13 @@ public class RelayNode extends Node {
 	public void visualsTick() {
 		if (isLoaded()) VisualUtils.activateSensor(level, pos);
 	}
+	
+	@Override
+	public void pulseNeighbours() {
+		getNeighbours().forEach(
+				neighbour -> VisualUtils.spawnVibrationParticles(level, this.getPos(), neighbour.getPos())
+		);
+	}
 
 	@Override
 	public boolean canConnect(Node otherNode) {

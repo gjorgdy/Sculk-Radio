@@ -32,19 +32,7 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback, BlockE
 		if (blockEntity instanceof INodeContainer nodeContainer) {
 			var node = nodeContainer.sculkRadio$getNode();
 			if (node != null && !node.wasRemoved()) {
-				node.getNeighbours().forEach(
-					neighbour -> {
-						if (node instanceof AntennaNode && neighbour instanceof AntennaNode) {
-							VisualUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), node.getPos().above(16));
-							VisualUtils.spawnAntennaParticles((ServerLevel) level, node.getPos());
-						}
-						else if (node.canTransmit() && neighbour.canReceive()) {
-							VisualUtils.spawnVibrationParticles((ServerLevel) level, node.getPos(), neighbour.getPos());
-						} else if (node.canReceive() && neighbour.canTransmit()) {
-							VisualUtils.spawnVibrationParticles((ServerLevel) level, neighbour.getPos(), node.getPos());
-						}
-					}
-				);
+				node.pulseNeighbours();
 				player.swing(player.getUsedItemHand(), true);
 				return InteractionResult.SUCCESS;
 			}

@@ -1,9 +1,12 @@
 package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +46,13 @@ public abstract class ReceiverNode extends Node {
 
 	protected void internalInit() {
 		SculkRadio.scheduleNextTick(this::updateNeighbours);
+	}
+
+	@Override
+	public void pulseNeighbours() {
+		getNeighbours().forEach(
+			neighbour -> VisualUtils.spawnVibrationParticles(level, neighbour.getPos(), this.getPos())
+		);
 	}
 
 	public void updateNeighbours() {

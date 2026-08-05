@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 
 import java.util.function.Function;
 
@@ -28,6 +29,13 @@ public abstract class SourceNode<T extends Stream> extends Node {
 	public void connectionTick() {
 		if (stream == null) return;
 		stream.connectionTick();
+	}
+
+	@Override
+	public void pulseNeighbours() {
+		getNeighbours().forEach(
+			neighbour -> VisualUtils.spawnVibrationParticles(level, this.getPos(), neighbour.getPos())
+		);
 	}
 
 	public void visualsTick() {

@@ -5,6 +5,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
 import nl.gjorgdy.sculk_radio.SculkRadio;
@@ -20,6 +22,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
+import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -129,6 +132,8 @@ public class NodeRegistry extends SavedData {
 	public <T extends Node> boolean register(@NonNull T node) {
 		if (registerInternal(node)) {
 			setDirty();
+			level.playSound(null, node.getPos(), SoundEvents.SCULK_CLICKING, SoundSource.BLOCKS, 2f, 2f);
+			node.pulseNeighbours();
 			return true;
 		}
 		return false;
@@ -147,7 +152,6 @@ public class NodeRegistry extends SavedData {
 				});
 				reg.add(node);
 				node.init(this.level);
-				System.out.println("Registered node " + node.getClass().getSimpleName() + " at " + node.getPos());
 				return true;
 			}
 		}
