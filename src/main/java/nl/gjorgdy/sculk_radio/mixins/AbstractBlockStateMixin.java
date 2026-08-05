@@ -34,6 +34,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "getAnalogOutputSignal")
     public int redstonePower(Level level, BlockPos pos, Direction direction, Operation<Integer> original) {
+		if (level.isClientSide()) return original.call(level, pos, direction);
 	    if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
         if (BlockUtils.isNoteblock(this) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();
@@ -46,6 +47,7 @@ public abstract class AbstractBlockStateMixin extends StateHolder<Block, BlockSt
 
     @WrapMethod(method = "getSignal")
     public int redstonePower(BlockGetter level, BlockPos pos, Direction direction, Operation<Integer> original) {
+	    if (level instanceof Level && ((Level) level).isClientSide()) return original.call(level, pos, direction);
 		if (!SculkRadio.redstoneEnabled) return original.call(level, pos, direction);
         if ((BlockUtils.isNoteblock(this) || is(Blocks.TARGET)) && level.getBlockEntity(pos.above()) instanceof INodeContainer nodeContainer) {
             var node = nodeContainer.sculkRadio$getNode();

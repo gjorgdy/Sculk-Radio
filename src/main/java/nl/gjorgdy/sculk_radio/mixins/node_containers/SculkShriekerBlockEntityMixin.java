@@ -28,6 +28,7 @@ public abstract class SculkShriekerBlockEntityMixin extends BlockEntity implemen
 
     @Override
     public void sculkRadio$setNode(Node node) {
+        if (level == null || level.isClientSide()) return;
         this.node = node;
         if (this.node != null && level != null) {
             SculkRadio.scheduleNextTick(() -> level.updateNeighborsAt(
@@ -39,6 +40,7 @@ public abstract class SculkShriekerBlockEntityMixin extends BlockEntity implemen
 
     @Override
     public Node sculkRadio$getNode() {
+        if (level == null || level.isClientSide()) return null;
         if (node == null || node.wasRemoved()) {
             sculkRadio$setNode(SculkRadio.getNode((ServerLevel) this.getLevel(), this.getBlockPos()));
         }
