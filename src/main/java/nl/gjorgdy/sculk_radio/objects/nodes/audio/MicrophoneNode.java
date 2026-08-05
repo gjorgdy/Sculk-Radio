@@ -30,7 +30,7 @@ public class MicrophoneNode extends SourceNode<MicrophoneStream> {
 	}
 
 	public boolean send(ServerPlayer player, MicrophonePacket microphonePacket) {
-		if (getState() == StreamState.ACTIVE && stream instanceof MicrophoneStream microphoneStream) {
+		if (stream instanceof MicrophoneStream microphoneStream) {
 			microphoneStream.send(player, microphonePacket);
 			return true;
 		}

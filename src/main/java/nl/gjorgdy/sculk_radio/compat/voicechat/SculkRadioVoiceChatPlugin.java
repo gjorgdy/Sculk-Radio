@@ -68,7 +68,7 @@ public class SculkRadioVoiceChatPlugin implements VoicechatPlugin {
 
 		NodeRegistry
 			.of(player.level())
-			.getMicrophonesInRange(player.blockPosition())
+			.getActiveMicrophonesInRange(player.blockPosition())
 			.forEach(mic -> {
 				boolean sent = mic.send(player, event.getPacket());
 				if (sent) player.sendOverlayMessage(Component.literal("You are talking into a microphone right now"));

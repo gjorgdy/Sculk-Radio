@@ -19,6 +19,7 @@ import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
+import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -92,8 +93,11 @@ public class NodeRegistry extends SavedData {
 		}
 	}
 
-	public Set<MicrophoneNode> getMicrophonesInRange(BlockPos pos) {
-		return microphoneNodes.filter(n -> n.getPos().distChessboard(pos) < SculkRadio.microphoneRange);
+	public Set<MicrophoneNode> getActiveMicrophonesInRange(BlockPos pos) {
+		return microphoneNodes.filter(n ->
+	          n.getState() == StreamState.ACTIVE
+				&& n.getPos().distChessboard(pos) < SculkRadio.microphoneRange
+		);
 	}
 
 	public Set<AntennaNode> getAntennas(int frequency) {
