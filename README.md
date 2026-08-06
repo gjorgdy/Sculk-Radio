@@ -1,94 +1,102 @@
 ﻿![A jukebox with a sculk shrieker and 2 noteblocks with sculk sensors overlayed with a 3D logo of the mod name](https://cdn.modrinth.com/data/cached_images/cf8b119a3adb67eccd127c24128d79a55c75d89a.png)
 
 <center>
-Use the magic of Sculk to connect Note Blocks to Jukeboxes as speakers.
+Build networks to stream music, redstone, and even voice chat across your world.
 </center>
 
 <br>
 
-## Custom discs
-Sculk Radio has native support for [AudioPlayer](https://modrinth.com/mod/audioplayer) by [henkelmax](https://modrinth.com/user/henkelmax).
-Custom music discs from this mod can be used on a radio and will act the same as vanilla discs.
+## Sculk Networks
+A network is built out of 'nodes', which connect with other nodes in range (16 blocks by default).
+These nodes are _multiblocks_ with a Sculk block as top.
 
-## How to use
-To start of, place a _shrieker_ on a _jukebox_, to turn it into a radio.
-When a jukebox is used as a radio it will not give off any audio itself meaning it can be hidden within redstone contraptions.
+### _Connection_
 
-To 'receive' the signal sent by a _radio_, you need a _speaker_.
-A speaker is made by placing a _sculk sensor_ on top of a _note block_.
-The maximum distance a speaker can receive a signal from is 16 blocks.
+#### Relay
+Created using a _sculk sensor_ on top of an _amethyst block_, a relay acts as a repeater of a stream, connecting source and receiver nodes together.
 
-To expand the range of a signal you can repeat it using a _signal repeater_.
-A single repeater is made by placing a _sculk sensor_ on top of a _block of amethyst_.
-The maximum distance for receiving and repeating a signal is 16 blocks. Which means a single repeater can already double the range of a speaker.
+#### Antenna
+Created using a _calibrated sculk sensor_ on top of an _amethyst block_, an antenna can connect different networks together over a frequency.\
+For an antenna to function, it needs to be placed directly above a relay with a **minimum** distance instead of a maximum (16 blocks by default).
+> An _amethyst shard_ can be used to tune an antenna by right-clicking it.\
+    - If either the shard or the antenna has a frequency, it will be copied over to the other.\
+    - If neither have a frequency, a random new frequency will be tuned to both.
 
-## Things to know
-- Speakers and repeaters give of a redstone signal when playing/repeating audio. This means you can use them in redstone contraptions to trigger other things.
-- The max signal 'depth' is 8, which means a signal can be repeated 8 times making for a total max range of 128 blocks.
-- Radios and repeaters can each send to 8 receivers (speakers and/or repeaters).
+> An analog redstone signal can be input into the _calibrated sculk sensor_ to set that as frequency.
+
+> Can be disabled in config file
+
+---
+
+### _Audio_
+
+#### Radio
+Created using a _sculk shrieker_ on top of a _jukebox_, a radio will stream the audio of any music disc into an _audio stream_ instead of playing it themselves.
+> A radio also streams the redstone signals it outputs, both normal and analog strengths.
+
+####  Microphone ``requires Simple Voice Chat``
+Created using a _sculk shrieker_ on top of a _sculk catalyst_, a microphone will stream the voice chat of any player
+within range (8 blocks by default) into an _audio stream_ as long as it is powered by redstone.
+> A microphone streams a redstone signal of 15 while active, and an analog redstone signal based on the amount of people are speaking in range.
+
+> Can be disabled in config file
+
+#### Speaker
+Created using a _sculk sensor_ on top of a _note block_, a speaker outputs all audio from _audio streams_ it receives.
+> Outputs the highest redstone signal from the streams it's playing.
+
+---
+
+### _Redstone_
+
+#### Redstone Transmitter
+Created using a _sculk shrieker_ on top of a _target block_, a redstone transmitter will stream the highest redstone
+signal going into the target block into a _redstone stream_.
+> Can be disabled in config file
+
+#### Redstone Receiver
+
+Created using a _sculk sensor_ on top of a _target block_, a redstone receiver outputs the strongest redstone power from receiving _redstone streams_.
+> Can be disabled in config file
+
+---
+
+### _Teleport_ ``disabled by default``
+
+#### Teleport Transmitter
+Created using a _sculk shrieker_ on top of a _purpur block_, a teleport transmitter will stream any entities in range (2 blocks) into a _teleport stream_
+as long as it is powered by redstone.
+> Can be enabled in config file
+
+#### Teleport Receiver
+Created using a _sculk sensor_ on top of a _purpur block_, a teleport receiver will teleport any entity from a _teleport stream_ towards itself.
+> Can be enabled in config file
+
+---
+
+## Things to Know
+- Vanilla music discs will only be able to be heard if the player is in range of the speaker when it starts playing.
 - Audio coming out of a speaker has the same distance and volume as if it came out of a jukebox.
-- Sculk blocks will not activate when they are part of a radio, speaker or repeater. Outside of these 'multiblocks' they have their vanilla behavior.
+- Sculk blocks will not activate when they are part of a nodes. Outside of these 'multiblocks' they have their vanilla behavior.
+- Right-clicking a node with an empty hand will show which nodes are in range using vibration particles.
 
-## Experimental frequencies
-The mod has an experimental feature that allows radios to send audio globally using frequencies.
-This is disabled by default and can be enabled in the config file.
-- To set a radio's frequency, point a redstone signal into its Shrieker.
-- To set a speaker's frequency, it needs to have a Calibrated Sculk Sensor with a redstone signal pointed into its 'input'.
-- Only one radio can be on a frequency at a time, but multiple speakers can be on the same frequency.
-- If a radio is on a frequency, it will not connect to normal repeaters and speakers.
+## Voice Chat
+While it works without it, it is recommended to use _Sculk Radio_ alongside
+[Simple Voice Chat](https://modrinth.com/plugin/simple-voice-chat) and [AudioPlayer](https://modrinth.com/mod/audioplayer) by [henkelmax](https://modrinth.com/user/henkelmax)
+to get the most use out of its features.
+
+## Other Mod Support
+Explicit support has been added for [More Jukebox/Noteblock Variants](https://modrinth.com/mod/more-jukebox-noteblock-variants) by [LieOn Studios](https://modrinth.com/organization/lieonstudios)
+
+Music Discs added by mods _should_ work exactly the same as any vanilla disc.
 
 ## Configuration
 
 On its own, the mod will not create a config file.
-To change settings, you can install [Fzzy Config](https://modrinth.com/mod/fzzy-config).
+To change settings, you need to install [Fzzy Config](https://modrinth.com/mod/fzzy-config).
 
 To load changes to the config file, you can use the vanilla ``/reload`` command.
-
-```toml
-# Whether to enable the experimental version of global frequencies.
-enableExperimentalFrequencies = true
-```
-
-## Other Mod compatibilities
-Mods that add new music discs and resource packs that change vanilla discs should also work natively. But be sure to create an issue on the Github if there are incompatibilities.
-
-If you're a mod developer, and you want to use Sculk Radio for your own projects, you can use the API provided by the mod.
-
-Maven
-```xml
-<repository>
-  <id>modrinth-repo</id>
-  <url>https://api.modrinth.com/maven/</url>
-</repository>
-
-<dependency>
-  <groupId>maven.modrinth</groupId>
-  <artifactId>${mod_id}</artifactId>
-  <version>${mod_version}</version>
-  <scope>provided</scope>
-</dependency>
-```
-
-Gradle
-```gradle
-repositories {
-    exclusiveContent {
-        forRepository { maven { url = "https://api.modrinth.com/maven" } }
-        filter { includeGroup "maven.modrinth" }
-    }
-}
-
-dependencies {
-    compileOnly 'maven.modrinth:${mod_id}:${mod_version}'
-}
-```
-
-You can call the API like this:
-```java
-import nl.gjorgdy.sculk_radio.SculkRadio;
-
-SculkRadio.api();
-```
+> Some config options are labelled with ``[Requires restart]``, these can not be reloaded using the command.
 
 ## Demo
 <iframe width="1439" height="1261" src="https://www.youtube.com/embed/6YeBJH30QTU" title="Sculk Radio Mod Showcase - Copper Golem Tavern" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

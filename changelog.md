@@ -1,4 +1,21 @@
-Minecraft Patches keep on coming
+Reconnected
 ---
 
-- Updated the Minecraft version to 26.1.2
+- A complete rewrite of the connection logic
+  - Nodes can now reconnect and reroute so they don't lose streams
+  - Connected nodes can be seen by right-clicking the sculk on top
+  - Nodes now work no matter if they are chunk-loaded
+- Expanded the config
+  - Enable/disable all new features
+  - Enable/disable redstone signals being streamed
+  - Set how often connection, visual and redstone ticks happen
+  - Set the audio ranges of speakers and microphones
+  - Set the max distance between nodes
+  - Set the minimum height of an antenna
+- Added tuning
+  - Set the frequency of antennas using amethyst shards
+- Added support for [More Jukebox/Noteblock Variants](https://modrinth.com/mod/more-jukebox-noteblock-variants)
+- Added Antennas - to connect over infinite distances
+- Added Microphones - to communicate over voice chat
+- Added Redstone nodes - to connect redstone wirelessly
+- Added Teleport nodes - to teleport over a network
