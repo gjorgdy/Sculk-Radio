@@ -12,11 +12,19 @@ These nodes are _multiblocks_ with a Sculk block as top.
 
 ### _Connection_
 
-#### Relay
-Created using a _sculk sensor_ on top of an _amethyst block_, a relay acts as a repeater of a stream, connecting source and receiver nodes together.
+To connect all other nodes together to create and interconnect networks.
 
-#### Antenna
-Created using a _calibrated sculk sensor_ on top of an _amethyst block_, an antenna can connect different networks together over a frequency.\
+<details>
+<summary>Relay - sculk sensor on top of an amethyst block</summary>
+
+A relay acts as a repeater of a stream, connecting source and receiver nodes together.
+
+</details>
+
+<details>
+<summary>Antenna - calibrated sculk sensor on top of an amethyst block</summary>
+
+An antenna can connect different networks together over a frequency.\
 For an antenna to function, it needs to be placed directly above a relay with a **minimum** distance instead of a maximum (16 blocks by default).
 > An _amethyst shard_ can be used to tune an antenna by right-clicking it.\
     - If either the shard or the antenna has a frequency, it will be copied over to the other.\
@@ -26,51 +34,82 @@ For an antenna to function, it needs to be placed directly above a relay with a 
 
 > Can be disabled in config file
 
----
+</details>
 
 ### _Audio_
 
-#### Radio
-Created using a _sculk shrieker_ on top of a _jukebox_, a radio will stream the audio of any music disc into an _audio stream_ instead of playing it themselves.
+Stream vanilla or voice chat audio across sculk networks.
+
+<details>
+<summary>Radio - sculk shrieker on top of a jukebox</summary>
+
+A radio will stream the audio of any music disc into an _audio stream_ instead of playing it themselves.
 > A radio also streams the redstone signals it outputs, both normal and analog strengths.
 
-####  Microphone ``requires Simple Voice Chat``
-Created using a _sculk shrieker_ on top of a _sculk catalyst_, a microphone will stream the voice chat of any player
+</details>
+
+<details>
+<summary>Microphone - sculk shrieker on top of a sculk catalyst</summary> 
+
+``requires Simple Voice Chat``
+
+A microphone will stream the voice chat of any player
 within range (8 blocks by default) into an _audio stream_ as long as it is powered by redstone.
 > A microphone streams a redstone signal of 15 while active, and an analog redstone signal based on the amount of people are speaking in range.
 
 > Can be disabled in config file
 
-#### Speaker
-Created using a _sculk sensor_ on top of a _note block_, a speaker outputs all audio from _audio streams_ it receives.
+</details>
+
+<details>
+<summary>Speaker - sculk sensor on top of a note block</summary>
+
+A speaker outputs all audio from _audio streams_ it receives.
 > Outputs the highest redstone signal from the streams it's playing.
 
----
+</details>
 
 ### _Redstone_
 
-#### Redstone Transmitter
-Created using a _sculk shrieker_ on top of a _target block_, a redstone transmitter will stream the highest redstone
+Stream redstone signals across sculk networks. 
+
+<details>
+<summary>Redstone Transmitter - sculk shrieker on top of a target block</summary>
+
+A redstone transmitter will stream the highest redstone
 signal going into the target block into a _redstone stream_.
 > Can be disabled in config file
 
-#### Redstone Receiver
+</details>
 
-Created using a _sculk sensor_ on top of a _target block_, a redstone receiver outputs the strongest redstone power from receiving _redstone streams_.
+<details>
+<summary>Redstone Receiver - sculk sensor on top of a target block</summary>
+
+A redstone receiver outputs the strongest redstone power from receiving _redstone streams_.
 > Can be disabled in config file
 
----
+</details>
 
-### _Teleport_ ``disabled by default``
+### _Teleportation_ ``disabled by default``
 
-#### Teleport Transmitter
-Created using a _sculk shrieker_ on top of a _purpur block_, a teleport transmitter will stream any entities in range (2 blocks) into a _teleport stream_
+Stream entities across sculk networks for teleportation.
+
+<details>
+<summary>Teleport Transmitter - sculk shrieker on top of a purpur bloc</summary>
+
+A teleport transmitter will stream any entities in range (2 blocks) into a _teleport stream_
 as long as it is powered by redstone.
 > Can be enabled in config file
 
-#### Teleport Receiver
-Created using a _sculk sensor_ on top of a _purpur block_, a teleport receiver will teleport any entity from a _teleport stream_ towards itself.
+</details>
+
+<details>
+<summary>Teleport Receiver - sculk sensor on top of a purpur bloc</summary>
+
+A teleport receiver will teleport any entity from a _teleport stream_ towards itself.
 > Can be enabled in config file
+
+</details>
 
 ---
 
