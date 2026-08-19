@@ -137,5 +137,6 @@ modrinth {
         required.project "fabric-api"
         optional.version "audioplayer", project.audioplayer_mod_version
         optional.version "fzzy-config", project.fzzy_config_version
+        optional.version "simple-voice-chat", project.voicechat_mod_version
     }
 }

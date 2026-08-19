@@ -1,7 +1,7 @@
 ﻿![A jukebox with a sculk shrieker and 2 noteblocks with sculk sensors overlayed with a 3D logo of the mod name](https://cdn.modrinth.com/data/cached_images/cf8b119a3adb67eccd127c24128d79a55c75d89a.png)
 
 <center>
-Build networks to stream music, redstone, and even voice chat across your world.
+Build networks to stream music, redstone, and voice chat across your world.
 </center>
 
 <br>
