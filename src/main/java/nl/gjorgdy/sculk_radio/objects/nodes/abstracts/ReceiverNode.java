@@ -1,9 +1,7 @@
 package nl.gjorgdy.sculk_radio.objects.nodes.abstracts;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import nl.gjorgdy.sculk_radio.SculkRadio;
-import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.objects.streams.Stream;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
 import nl.gjorgdy.sculk_radio.utils.VisualUtils;
@@ -34,6 +32,10 @@ public abstract class ReceiverNode extends Node {
 		return Collections.unmodifiableSet(streams);
 	}
 
+	public final boolean hasActiveStream() {
+		return streams.stream().anyMatch(s -> s.getState() == StreamState.ACTIVE);
+	}
+
     @Override
     public boolean canReceive() {
 		return true;
@@ -53,6 +55,7 @@ public abstract class ReceiverNode extends Node {
 		getNeighbours().forEach(
 			neighbour -> VisualUtils.spawnVibrationParticles(level, neighbour.getPos(), this.getPos())
 		);
+		visualsTick();
 	}
 
 	public void updateNeighbours() {

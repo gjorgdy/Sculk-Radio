@@ -116,7 +116,8 @@ public abstract class Stream {
 		while (!disconnectedNodes.isEmpty()) {
 			Node node = disconnectedNodes.poll();
 			if (node == null) continue;
-			VisualUtils.deactivateSensor(level, node.getPos());
+			if (!(node instanceof ReceiverNode receiverNode && receiverNode.hasActiveStream()))
+				VisualUtils.deactivateSensor(level, node.getPos());
 		}
 	}
 
