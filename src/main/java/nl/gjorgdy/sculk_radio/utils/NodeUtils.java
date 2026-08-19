@@ -24,7 +24,7 @@ import org.jspecify.annotations.Nullable;
 
 public abstract class NodeUtils {
 
-	public static void register(ServerLevel level, BlockState state, BlockEntity blockEntity) {
+	public static void register(ServerLevel level, BlockState state, BlockEntity blockEntity, boolean byPlayer) {
 		// check if exists
 		var registry = NodeRegistry.of(level);
 		var node = registry.getNode(blockEntity.getBlockPos()).orElse(null);
@@ -72,7 +72,9 @@ public abstract class NodeUtils {
 			default -> null;
 		};
 		if (node != null) {
-			boolean added = NodeRegistry.of(level).register(node);
+			boolean added = byPlayer
+				? NodeRegistry.of(level).registerByPlayer(node)
+				: NodeRegistry.of(level).register(node);
 			if (added && blockEntity instanceof INodeContainer nodeContainer) {
 				nodeContainer.sculkRadio$setNode(node);
 			}

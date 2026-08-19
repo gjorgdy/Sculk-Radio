@@ -22,7 +22,6 @@ import nl.gjorgdy.sculk_radio.objects.nodes.redstone.RedstoneTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.teleport.TeleportTransmitterNode;
 import nl.gjorgdy.sculk_radio.objects.streams.StreamState;
-import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.util.*;
@@ -129,11 +128,19 @@ public class NodeRegistry extends SavedData {
 		}
 	}
 
-	public <T extends Node> boolean register(@NonNull T node) {
+	public <T extends Node> boolean registerByPlayer(@NonNull T node) {
 		if (registerInternal(node)) {
 			setDirty();
 			level.playSound(null, node.getPos(), SoundEvents.SCULK_CLICKING, SoundSource.BLOCKS, 2f, 2f);
 			node.pulseNeighbours();
+			return true;
+		}
+		return false;
+	}
+
+	public <T extends Node> boolean register(@NonNull T node) {
+		if (registerInternal(node)) {
+			setDirty();
 			return true;
 		}
 		return false;

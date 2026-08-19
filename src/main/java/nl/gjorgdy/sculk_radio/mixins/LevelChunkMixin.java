@@ -33,7 +33,8 @@ public abstract class LevelChunkMixin extends ChunkAccess {
         NodeUtils.register(
             (ServerLevel) getLevel(),
             getBlockState(blockEntity.getBlockPos().below()),
-            blockEntity
+            blockEntity,
+            false
         );
     }
 

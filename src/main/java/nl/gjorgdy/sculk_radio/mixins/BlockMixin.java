@@ -36,7 +36,7 @@ public class BlockMixin {
         if (level.isClientSide()) return;
         var topBlockEntity = level.getBlockEntity(pos.above());
         if (topBlockEntity instanceof INodeContainer) {
-            NodeUtils.register((ServerLevel) level, state, topBlockEntity);
+            NodeUtils.register((ServerLevel) level, state, topBlockEntity, true);
         }
     }
 
