@@ -13,7 +13,8 @@ These nodes are _multiblocks_ with a Sculk block as top.
 ### _Connection_
 
 To connect all other nodes together to create and interconnect networks.
-![Connection Nodes](https://cdn.modrinth.com/data/cached_images/7ffca0ecf44df93cf91852c2792df4a0cbe6bdd3.webp)
+
+![Connection Nodes](https://cdn.modrinth.com/data/cached_images/9a2e43b24bbca88901466062f93d015ef9aea0ee.webp)
 
 <details>
 <summary>Relay - sculk sensor on top of an amethyst block</summary>
