@@ -13,6 +13,7 @@ These nodes are _multiblocks_ with a Sculk block as top.
 ### _Connection_
 
 To connect all other nodes together to create and interconnect networks.
+![Connection Nodes](https://cdn.modrinth.com/data/cached_images/7ffca0ecf44df93cf91852c2792df4a0cbe6bdd3.webp)
 
 <details>
 <summary>Relay - sculk sensor on top of an amethyst block</summary>
@@ -24,11 +25,13 @@ A relay acts as a repeater of a stream, connecting source and receiver nodes tog
 <details>
 <summary>Antenna - calibrated sculk sensor on top of an amethyst block</summary>
 
+![Antenna Setup](https://cdn.modrinth.com/data/cached_images/754ceb526c5f3b4785c132741221eadfaa8cc809.webp)
+
 An antenna can connect different networks together over a frequency.\
-For an antenna to function, it needs to be placed directly above a relay with a **minimum** distance instead of a maximum (16 blocks by default).
+For an antenna to function, it needs to be placed directly **above** a relay with a **minimum** distance instead of a maximum (16 blocks by default).
 > An _amethyst shard_ can be used to tune an antenna by right-clicking it.\
-    - If either the shard or the antenna has a frequency, it will be copied over to the other.\
-    - If neither have a frequency, a random new frequency will be tuned to both.
+- If either the shard or the antenna has a frequency, it will be copied over to the other.\
+- If neither have a frequency, a random new frequency will be tuned to both.
 
 > An analog redstone signal can be input into the _calibrated sculk sensor_ to set that as frequency.
 
@@ -39,6 +42,8 @@ For an antenna to function, it needs to be placed directly above a relay with a 
 ### _Audio_
 
 Stream vanilla or voice chat audio across sculk networks.
+
+![Audio Nodes](https://cdn.modrinth.com/data/cached_images/5e0a5250e20897d3d98e2d1b98732650b16b8b72.webp)
 
 <details>
 <summary>Radio - sculk shrieker on top of a jukebox</summary>
@@ -71,7 +76,9 @@ A speaker outputs all audio from _audio streams_ it receives.
 
 ### _Redstone_
 
-Stream redstone signals across sculk networks. 
+Stream redstone signals across sculk networks.
+
+![Redstone Nodes](https://cdn.modrinth.com/data/cached_images/2aebed624e0bd86ac7fc00d41cee9f30049d96d8.webp)
 
 <details>
 <summary>Redstone Transmitter - sculk shrieker on top of a target block</summary>
@@ -94,19 +101,21 @@ A redstone receiver outputs the strongest redstone power from receiving _redston
 
 Stream entities across sculk networks for teleportation.
 
-<details>
-<summary>Teleport Transmitter - sculk shrieker on top of a purpur bloc</summary>
+![Teleport Nodes](https://cdn.modrinth.com/data/cached_images/6328ded3eb4a609834f0be443818c21ed7eb63db.webp)
 
-A teleport transmitter will stream any entities in range (2 blocks) into a _teleport stream_
+<details>
+<summary>Ender Transmitter - sculk shrieker on top of a purpur block</summary>
+
+An ender transmitter will stream any entities in range (2 blocks) into a _teleport stream_
 as long as it is powered by redstone.
 > Can be enabled in config file
 
 </details>
 
 <details>
-<summary>Teleport Receiver - sculk sensor on top of a purpur bloc</summary>
+<summary>Ender Receiver - sculk sensor on top of a purpur block</summary>
 
-A teleport receiver will teleport any entity from a _teleport stream_ towards itself.
+An ender receiver will teleport any entity from a _teleport stream_ towards itself.
 > Can be enabled in config file
 
 </details>
