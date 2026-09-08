@@ -1,6 +1,6 @@
 package nl.gjorgdy.sculk_radio.objects.streams;
 
-import kotlin.Pair;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;

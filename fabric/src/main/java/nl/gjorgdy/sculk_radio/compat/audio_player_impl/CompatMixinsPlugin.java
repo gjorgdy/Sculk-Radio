@@ -1,4 +1,4 @@
-package nl.gjorgdy.sculk_radio.compat;
+package nl.gjorgdy.sculk_radio.compat.audio_player_impl;
 
 import me.fallenbreath.conditionalmixin.api.mixin.RestrictiveMixinConfigPlugin;
 import nl.gjorgdy.sculk_radio.SculkRadio;

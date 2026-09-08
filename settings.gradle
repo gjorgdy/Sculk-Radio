@@ -24,4 +24,4 @@ rootProject.name = 'SculkRadio'
 includeBuild('build-logic')
 include('common')
 include('fabric')
-//include('neoforge')
+include('neoforge')

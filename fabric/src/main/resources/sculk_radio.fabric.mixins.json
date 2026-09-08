@@ -16,5 +16,5 @@
   "overwrites": {
     "requireAnnotations": true
   },
-  "plugin": "nl.gjorgdy.sculk_radio.compat.CompatMixinsPlugin"
+  "plugin": "nl.gjorgdy.sculk_radio.compat.audio_player_impl.CompatMixinsPlugin"
 }
