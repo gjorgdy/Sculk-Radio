@@ -1,0 +1,96 @@
+plugins {
+    id 'multiloader-loader'
+    id 'net.fabricmc.fabric-loom'
+//    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+var min_minecraft_version = project.minecraft_versions.split(',').first()
+var last_minecraft_version = project.minecraft_versions.split(',').last()
+var mc_version = min_minecraft_version == last_minecraft_version
+        ? min_minecraft_version
+        : "${min_minecraft_version}-${last_minecraft_version}"
+version = "${project.version}+${mc_version}"
+group = project.group
+
+base {
+    archivesName = project.mod_name
+}
+
+repositories {
+    maven { url = 'https://maven.maxhenkel.de/repository/public' }
+    maven {
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven { url = 'https://maven.parchmentmc.org/' }
+    maven { url 'https://maven.fallenbreath.me/releases' }
+    maven {
+        name = "FzzyMaven"
+        url = "https://maven.fzzyhmstrs.me/"
+    }
+    maven {
+        name = "Terraformers"
+        url = "https://maven.terraformersmc.com/"
+    }
+}
+
+dependencies {
+    minecraft ("com.mojang:minecraft:${project.minecraft_version}")
+    implementation "net.fabricmc:fabric-loader:${project.fabric_loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    // Plugin for conditional mixins
+    implementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
+    compileOnly 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
+    // Audio Player compatibility
+    runtimeOnly "maven.modrinth:admiral:${project.admiral_version}"
+    runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
+    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
+    // AudioPlayer
+    implementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
+    // Fzzy Config
+    implementation "me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
+}
+
+loom {
+    def aw = project(':common').file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath.set(aw)
+    }
+    runs {
+        client {
+            client()
+            setConfigName('Fabric Client')
+            ideConfigGenerated(true)
+            runDir('runs/client')
+        }
+        server {
+            server()
+            setConfigName('Fabric Server')
+            ideConfigGenerated(true)
+            runDir('runs/server')
+        }
+    }
+}
+
+// Implement mcgradleconventions loader attribute
+def loaderAttribute = Attribute.of('io.github.mcgradleconventions.loader', String)
+['apiElements', 'runtimeElements', 'sourcesElements', 'javadocElements', 'includeInternal', 'modCompileClasspath'].each { variant ->
+    configurations.named(variant) {
+        attributes {
+            attribute(loaderAttribute, 'fabric')
+        }
+    }
+}
+sourceSets.configureEach {
+    [it.compileClasspathConfigurationName, it.runtimeClasspathConfigurationName].each { variant->
+        configurations.named(variant) {
+            attributes {
+                attribute(loaderAttribute, 'fabric')
+            }
+        }
+    }
+}
+

@@ -1,142 +1,56 @@
 plugins {
-    id 'net.fabricmc.fabric-loom' version "${loom_version}"
-    id 'maven-publish'
-    id "com.modrinth.minotaur" version "2.+"
+    // see https://maven.fabricmc.net/fabric-loom/fabric-loom.gradle.plugin/maven-metadata.xml for new versions
+    id 'net.fabricmc.fabric-loom' version '1.16.3' apply false
+    // see https://projects.neoforged.net/neoforged/moddevgradle for new versions
+    id 'net.neoforged.moddev' version '2.0.141' apply false
+//    id 'maven-publish'
+//    id "com.modrinth.minotaur" version "2.+"
 }
-
-var min_minecraft_version = project.minecraft_versions.split(',').first()
-var last_minecraft_version = project.minecraft_versions.split(',').last()
-var mc_version = min_minecraft_version == last_minecraft_version
-        ? min_minecraft_version
-        : "${min_minecraft_version}-${last_minecraft_version}"
-version = "${project.version}+${mc_version}"
-group = project.maven_group
-
-base {
-    archivesName = project.archives_base_name
-}
-
-repositories {
-    maven { url = 'https://maven.maxhenkel.de/repository/public' }
-    maven {
-        url = 'https://api.modrinth.com/maven'
-        content {
-            includeGroup "maven.modrinth"
-        }
-    }
-    maven { url = 'https://maven.parchmentmc.org/' }
-    maven { url 'https://maven.fallenbreath.me/releases' }
-    maven {
-        name = "FzzyMaven"
-        url = "https://maven.fzzyhmstrs.me/"
-    }
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
-    }
-}
-
-dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-    // Plugin for conditional mixins
-    implementation 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
-    include 'me.fallenbreath:conditional-mixin-fabric:0.6.4'
-    // Audio Player compatibility
-    runtimeOnly "maven.modrinth:admiral:${project.admiral_version}"
-    runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
-    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
-    compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
-    implementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
-    // Fzzy Config
-    implementation "me.fzzyhmstrs:fzzy_config:${project.fzzy_config_version}"
-}
-
-processResources {
-    inputs.property "version", version
-    inputs.property "minecraft_version", project.minecraft_version
-    inputs.property "loader_version", project.loader_version
-    filteringCharset "UTF-8"
-
-    filesMatching("fabric.mod.json") {
-        expand "version": version,
-                "minecraft_version": project.minecraft_version,
-                "min_minecraft_version": min_minecraft_version,
-                "loader_version": project.loader_version,
-                "fabric_version": project.fabric_api_version,
-                "voicechat_api_version": project.voicechat_api_version,
-                "audioplayer_api_version": project.audioplayer_api_version,
-                "fzzy_config_version": project.fzzy_config_version
-    }
-}
-
-def targetJavaVersion = 25
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        it.options.release.set(targetJavaVersion)
-    }
-}
-
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    withSourcesJar()
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
-}
-
-publishing {
-    publications {
-        create("mavenJava", MavenPublication) {
-            artifactId = "${project.name}-${version}"
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url = 'https://api.modrinth.com/maven'
-        }
-    }
-}
-
-static String getModrinthToken() {
-    return new File('.env')
-            .readLines()
-            .findAll { it?.trim() && !it.trim().startsWith('#') }
-            .collect { it.split('=') }
-            .find { it[0] == 'MODRINTH_TOKEN' }[1]
-}
-
-String getBody() {
-    return rootProject.file("README.md").text
-        .replace('${mod_id}', project.mod_id)
-        .replace('${mod_version}', String.valueOf(version))
-}
-
-tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
-modrinth {
-    token = getModrinthToken()
-    projectId = project.mod_id
-    versionNumber = "${version}"
-    versionName = "${project.name} ${version}"
-    changelog = rootProject.file("changelog.md").text
-    syncBodyFrom = getBody()
-    versionType = project.mod_release_type
-    uploadFile = jar
-    gameVersions = project.minecraft_versions.split(',') as List<String>
-    loaders = ["fabric"]
-    dependencies {
-        required.project "fabric-api"
-        optional.version "audioplayer", project.audioplayer_mod_version
-        optional.version "fzzy-config", project.fzzy_config_version
-        optional.version "simple-voice-chat", project.voicechat_mod_version
-    }
-}
+//
+//publishing {
+//    publications {
+//        create("mavenJava", MavenPublication) {
+//            artifactId = "${project.name}-${version}"
+//            from components.java
+//        }
+//    }
+//    repositories {
+//        maven {
+//            url = 'https://api.modrinth.com/maven'
+//        }
+//    }
+//}
+//
+//static String getModrinthToken() {
+//    return new File('.env')
+//            .readLines()
+//            .findAll { it?.trim() && !it.trim().startsWith('#') }
+//            .collect { it.split('=') }
+//            .find { it[0] == 'MODRINTH_TOKEN' }[1]
+//}
+//
+//String getBody() {
+//    return rootProject.file("README.md").text
+//        .replace('${mod_id}', project.mod_id)
+//        .replace('${mod_version}', String.valueOf(version))
+//}
+//
+//tasks.modrinth.dependsOn(tasks.modrinthSyncBody)
+//modrinth {
+//    token = getModrinthToken()
+//    projectId = project.mod_id
+//    versionNumber = "${version}"
+//    versionName = "${project.name} ${version}"
+//    changelog = rootProject.file("changelog.md").text
+//    syncBodyFrom = getBody()
+//    versionType = project.mod_release_type
+//    uploadFile = jar
+//    gameVersions = project.minecraft_versions.split(',') as List<String>
+//    loaders = ["fabric"]
+//    dependencies {
+//        required.project "fabric-api"
+//        optional.version "audioplayer", project.audioplayer_mod_version
+//        optional.version "fzzy-config", project.fzzy_config_version
+//        optional.version "simple-voice-chat", project.voicechat_mod_version
+//    }
+//}
