@@ -11,6 +11,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -19,7 +20,6 @@ import nl.gjorgdy.sculk_radio.interfaces.INodeContainer;
 import nl.gjorgdy.sculk_radio.objects.nodes.AntennaNode;
 import nl.gjorgdy.sculk_radio.registries.FrequencyRegistry;
 import nl.gjorgdy.sculk_radio.utils.ItemUtils;
-import nl.gjorgdy.sculk_radio.utils.VisualUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -33,7 +33,7 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback, BlockE
 			var node = nodeContainer.sculkRadio$getNode();
 			if (node != null && !node.wasRemoved()) {
 				node.pulseNeighbours();
-				player.swing(player.getUsedItemHand(), true);
+				player.swing(player.getUsedItemHand(), SwingAnimation.DEFAULT, true);
 				return InteractionResult.SUCCESS;
 			}
 		}
@@ -79,6 +79,6 @@ public class OnUseListener implements BlockEvents.UseWithoutItemCallback, BlockE
 			Component.literal("Tuned " + obj + " to " + Integer.toHexString(frequency).toUpperCase())
 		);
 		level.playSound(null, blockPos, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 1.0f, 1.0f);
-		player.swing(player.getUsedItemHand(), true);
+		player.swing(player.getUsedItemHand(), SwingAnimation.DEFAULT, true);
 	}
 }

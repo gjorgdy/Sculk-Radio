@@ -46,7 +46,7 @@ dependencies {
     // Audio Player compatibility
     runtimeOnly "maven.modrinth:admiral:${project.admiral_version}"
     runtimeOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}:fabric-stub"
-    runtimeOnly "maven.modrinth:simple-voice-chat:fabric-${project.voicechat_mod_version}"
+    runtimeOnly "maven.modrinth:simple-voice-chat:${project.voicechat_mod_version}"
     compileOnly "de.maxhenkel.voicechat:voicechat-api:${project.voicechat_api_version}"
     implementation "maven.modrinth:audioplayer:${project.audioplayer_mod_version}"
     // Fzzy Config
