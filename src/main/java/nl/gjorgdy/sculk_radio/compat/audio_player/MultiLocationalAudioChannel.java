@@ -1,6 +1,5 @@
 package nl.gjorgdy.sculk_radio.compat.audio_player;
 
-import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.Position;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
@@ -10,6 +9,7 @@ import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.SculkRadio;
+import nl.gjorgdy.sculk_radio.compat.voicechat.SculkRadioVoiceChatPlugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -45,7 +45,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     }
 
     public void addChannel(ServerLevel level, Vec3 pos) {
-        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
+        VoicechatServerApi api = SculkRadioVoiceChatPlugin.serverApi;
         if (api == null) return;
         var position = api.createPosition(pos.x, pos.y, pos.z);
         var channel = api.createLocationalAudioChannel(UUID.randomUUID(), api.fromServerLevel(level), position);
@@ -57,7 +57,7 @@ public class MultiLocationalAudioChannel implements LocationalAudioChannel {
     }
 
     public void removeChannel(Vec3 pos) {
-        VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
+        VoicechatServerApi api = SculkRadioVoiceChatPlugin.serverApi;
         if (api == null) return;
         var position = api.createPosition(pos.x, pos.y, pos.z);
         var channel = audioChannels.remove(position);

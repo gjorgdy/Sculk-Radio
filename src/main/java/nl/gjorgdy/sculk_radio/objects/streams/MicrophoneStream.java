@@ -1,12 +1,12 @@
 package nl.gjorgdy.sculk_radio.objects.streams;
 
-import de.maxhenkel.audioplayer.voicechat.VoicechatAudioPlayerPlugin;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import de.maxhenkel.voicechat.api.packets.MicrophonePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import nl.gjorgdy.sculk_radio.compat.audio_player.MultiLocationalAudioChannel;
+import nl.gjorgdy.sculk_radio.compat.voicechat.SculkRadioVoiceChatPlugin;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.ReceiverNode;
 import nl.gjorgdy.sculk_radio.objects.nodes.abstracts.SourceNode;
 import nl.gjorgdy.sculk_radio.utils.VisualUtils;
@@ -21,7 +21,7 @@ public class MicrophoneStream extends AudioStream {
 	private final MultiLocationalAudioChannel channel;
 
 	public MicrophoneStream(ServerLevel level, SourceNode<MicrophoneStream> source) {
-		VoicechatServerApi api = VoicechatAudioPlayerPlugin.voicechatServerApi;
+		VoicechatServerApi api = SculkRadioVoiceChatPlugin.serverApi;
 		if (api == null) {
 			throw new IllegalStateException("Simple Voice Chat is not initialized");
 		}
