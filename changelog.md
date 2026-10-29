@@ -1,7 +1,4 @@
-Reconnected Release
+Some Fixes Here and Some Fixes There
 ---
 
-- Release of the mod (with the v2 connection engine)
-- Fixed not being able to load chunks with unknown nodes
-- Fixed receiver nodes 'blinking' on a stream disconnecting
-  - This still happens to relays and antennae to signify reconnecting
+- Fixed an error when trying to use a microphone without AudioPlayer being installed
